@@ -1,17 +1,17 @@
 <template>
-  <div class="flex min-h-screen bg-[#F7F7F9] text-gray-900 antialiased overflow-x-hidden" style="font-family: 'Instrument Sans', Inter, sans-serif">
+  <div class="flex min-h-screen bg-gray-50 text-gray-900 antialiased overflow-x-hidden font-sans">
     <AdminSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
     
     <div class="flex-1 w-full min-w-0 lg:ml-[260px]">
       <!-- Header -->
       <header class="sticky top-0 z-[100] flex w-full items-center justify-between gap-4 px-6 py-4 bg-white border-b border-gray-200">
         <div class="flex items-center gap-4">
-          <button class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:text-gray-900 transition-all lg:hidden" @click="sidebarOpen = !sidebarOpen">
+          <button class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors lg:hidden" @click="sidebarOpen = !sidebarOpen">
             <Bars3Icon class="w-5 h-5" />
           </button>
           <div>
             <div class="flex items-center gap-2 mb-0.5">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-indigo-500/20 bg-indigo-500/[0.04] text-[0.625rem] font-bold tracking-wider uppercase text-indigo-600">
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[0.625rem] font-bold tracking-wider uppercase bg-[#5530AB]/10 text-[#5530AB]">
                 <ClipboardDocumentCheckIcon class="w-3 h-3" />
                 Student & Assignment
               </span>
@@ -22,7 +22,7 @@
 
         <button
           @click="openAddAssignmentModal"
-          class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-indigo-500/25"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#5530AB] hover:bg-[#43238A] text-white text-sm font-semibold transition-colors cursor-pointer"
         >
           <PlusIcon class="w-4 h-4" />
           <span>Buat Tugas Baru</span>
@@ -32,67 +32,67 @@
       <main class="p-6 space-y-6 max-w-[1440px] mx-auto">
         <!-- Top Metrics -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
             <div class="flex items-center justify-between">
-              <p class="text-[0.6875rem] font-medium text-gray-500 uppercase tracking-widest">Total Tugas</p>
-              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Total Tugas</p>
+              <div class="w-8 h-8 rounded-lg bg-[#5530AB]/10 text-[#5530AB] flex items-center justify-center">
                 <DocumentTextIcon class="w-4 h-4" />
               </div>
             </div>
             <p class="text-2xl font-bold text-gray-900 mt-2">{{ assignments.length }}</p>
-            <p class="text-xs text-gray-400 mt-1">Quizizz, Praktek & Studi Kasus</p>
+            <p class="text-xs text-gray-500 mt-1">Quizizz, Praktek & Studi Kasus</p>
           </div>
 
-          <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
             <div class="flex items-center justify-between">
-              <p class="text-[0.6875rem] font-medium text-gray-500 uppercase tracking-widest">Total Siswa Aktif</p>
-              <div class="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Total Siswa Aktif</p>
+              <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-700 flex items-center justify-center">
                 <AcademicCapIcon class="w-4 h-4" />
               </div>
             </div>
             <p class="text-2xl font-bold text-gray-900 mt-2">{{ studentsList.length }}</p>
-            <p class="text-xs text-gray-400 mt-1">Terdaftar di platform</p>
+            <p class="text-xs text-gray-500 mt-1">Terdaftar di platform</p>
           </div>
 
-          <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
             <div class="flex items-center justify-between">
-              <p class="text-[0.6875rem] font-medium text-gray-500 uppercase tracking-widest">Tugas Terkumpul</p>
-              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Tugas Terkumpul</p>
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
                 <CheckCircleIcon class="w-4 h-4" />
               </div>
             </div>
             <p class="text-2xl font-bold text-gray-900 mt-2">{{ totalSubmittedSubmissions }}</p>
-            <p class="text-xs text-emerald-600 font-medium mt-1">{{ overallCompletionRate }}% dari total penugasan</p>
+            <p class="text-xs text-emerald-700 font-semibold mt-1">{{ overallCompletionRate }}% dari total penugasan</p>
           </div>
 
-          <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
             <div class="flex items-center justify-between">
-              <p class="text-[0.6875rem] font-medium text-gray-500 uppercase tracking-widest">Perlu Feedback</p>
-              <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Perlu Feedback</p>
+              <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
                 <ChatBubbleLeftRightIcon class="w-4 h-4" />
               </div>
             </div>
             <p class="text-2xl font-bold text-gray-900 mt-2">{{ totalPendingFeedback }}</p>
-            <p class="text-xs text-amber-600 font-medium mt-1">Menunggu review mentor</p>
+            <p class="text-xs text-amber-700 font-semibold mt-1">Menunggu review mentor</p>
           </div>
         </div>
 
         <!-- Navigation Tabs & Filters -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-gray-200">
           <!-- Tabs -->
-          <div class="flex items-center p-1 bg-gray-100 rounded-xl w-fit">
+          <div class="flex items-center p-1 bg-gray-100 rounded-lg w-fit">
             <button
               @click="activeTab = 'assignments'"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all"
-              :class="activeTab === 'assignments' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
+              class="flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer"
+              :class="activeTab === 'assignments' ? 'bg-white text-gray-900' : 'text-gray-500 hover:text-gray-900'"
             >
               <ClipboardDocumentListIcon class="w-4 h-4" />
               Daftar Tugas ({{ assignments.length }})
             </button>
             <button
               @click="activeTab = 'students'"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all"
-              :class="activeTab === 'students' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'"
+              class="flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer"
+              :class="activeTab === 'students' ? 'bg-white text-gray-900' : 'text-gray-500 hover:text-gray-900'"
             >
               <UsersIcon class="w-4 h-4" />
               Monitoring Siswa ({{ studentsList.length }})
@@ -107,15 +107,15 @@
                 v-model="searchQuery"
                 type="text"
                 :placeholder="activeTab === 'assignments' ? 'Cari judul tugas...' : 'Cari nama siswa...'"
-                class="w-full h-10 pl-10 pr-4 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/10 transition-all shadow-sm"
+                class="w-full h-10 pl-10 pr-4 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:bg-white focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors"
               />
             </div>
 
-            <!-- Filter Type (Only in assignments tab) -->
+            <!-- Filter Type -->
             <select
               v-if="activeTab === 'assignments'"
               v-model="filterType"
-              class="h-10 px-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 outline-none focus:border-indigo-500/50 transition-all cursor-pointer shadow-sm"
+              class="h-10 px-3.5 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 outline-none focus:bg-white focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors cursor-pointer"
             >
               <option value="">Semua Tipe Tugas</option>
               <option value="quizizz">Quizizz</option>
@@ -126,30 +126,30 @@
         </div>
 
         <!-- ════════════════════════════════════════════════════════════════ -->
-        <!-- TAB 1: DAFTAR TUGAS (ASSIGNMENTS VIEW) -->
+        <!-- TAB 1: DAFTAR TUGAS -->
         <!-- ════════════════════════════════════════════════════════════════ -->
         <div v-if="activeTab === 'assignments'" class="space-y-4">
           <!-- Loading State -->
-          <div v-if="isLoadingAssignments" class="bg-white border border-gray-200 rounded-2xl p-16 flex flex-col items-center justify-center">
-            <div class="w-8 h-8 border-2 border-gray-200 border-t-indigo-600 rounded-full animate-spin"></div>
-            <p class="text-xs text-gray-400 mt-3 font-medium">Memuat data tugas & penugasan...</p>
+          <div v-if="isLoadingAssignments" class="bg-white border border-gray-200 rounded-xl p-16 flex flex-col items-center justify-center">
+            <div class="w-8 h-8 border-2 border-gray-200 border-t-[#5530AB] rounded-full animate-spin"></div>
+            <p class="text-xs text-gray-500 mt-3 font-semibold">Memuat data tugas...</p>
           </div>
 
           <!-- Empty State -->
-          <div v-else-if="filteredAssignments.length === 0" class="bg-white border border-gray-200 rounded-2xl p-16 flex flex-col items-center justify-center text-center">
-            <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-400 mb-3">
+          <div v-else-if="filteredAssignments.length === 0" class="bg-white border border-gray-200 rounded-xl p-16 flex flex-col items-center justify-center text-center">
+            <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 mb-3">
               <ClipboardDocumentCheckIcon class="w-7 h-7" />
             </div>
-            <h3 class="text-sm font-semibold text-gray-800">Belum ada tugas ditemukan</h3>
+            <h3 class="text-sm font-bold text-gray-900">Belum ada tugas ditemukan</h3>
             <p class="text-xs text-gray-500 mt-1 max-w-sm">
               {{ searchQuery || filterType ? 'Coba ubah kata kunci pencarian atau filter tipe tugas.' : 'Buat tugas Quizizz, Praktek, atau Studi Kasus baru sekarang.' }}
             </p>
             <button
               v-if="!searchQuery && !filterType"
               @click="openAddAssignmentModal"
-              class="mt-4 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-all shadow-sm"
+              class="mt-4 px-4 py-2 rounded-lg bg-[#5530AB] text-white text-xs font-semibold hover:bg-[#43238A] transition-colors cursor-pointer"
             >
-              + Buat Tugas Pertama
+              Buat Tugas Pertama
             </button>
           </div>
 
@@ -158,13 +158,13 @@
             <div
               v-for="item in filteredAssignments"
               :key="item.id"
-              class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
+              class="bg-white border border-gray-200 rounded-xl p-5 hover:border-[#5530AB] transition-colors flex flex-col justify-between group"
             >
               <div>
                 <!-- Top Badge & Actions -->
                 <div class="flex items-start justify-between gap-2 mb-3">
                   <span
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[0.6875rem] font-bold uppercase"
                     :class="getTypeBadgeClasses(item.type)"
                   >
                     <component :is="getTypeIcon(item.type)" class="w-3.5 h-3.5" />
@@ -174,14 +174,14 @@
                   <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       @click="openEditAssignmentModal(item)"
-                      class="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                      class="p-1.5 rounded-md text-gray-400 hover:text-[#5530AB] hover:bg-[#5530AB]/10 transition-colors cursor-pointer"
                       title="Edit Tugas"
                     >
                       <PencilSquareIcon class="w-4 h-4" />
                     </button>
                     <button
                       @click="deleteAssignment(item)"
-                      class="p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-all"
+                      class="p-1.5 rounded-md text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                       title="Hapus Tugas"
                     >
                       <TrashIcon class="w-4 h-4" />
@@ -190,61 +190,60 @@
                 </div>
 
                 <!-- Title & Description -->
-                <h3 class="text-base font-bold text-gray-900 group-hover:text-indigo-600 transition-colors leading-snug">
+                <h3 class="text-base font-bold text-gray-900 group-hover:text-[#5530AB] transition-colors leading-snug">
                   {{ item.title }}
                 </h3>
-                <p class="text-xs text-gray-500 mt-1.5 line-clamp-2 leading-relaxed">
+                <p class="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">
                   {{ item.description || 'Tidak ada instruksi tambahan.' }}
                 </p>
 
-                <!-- Reference Link if any -->
-                <div v-if="item.link_url" class="mt-3">
+                <!-- Reference Link -->
+                <div v-if="item.link_url" class="mt-4">
                   <a
                     :href="item.link_url"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-50 border border-gray-200 text-[0.75rem] text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-100 transition-colors truncate max-w-full"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-xs text-gray-700 font-semibold hover:text-[#5530AB] hover:bg-[#5530AB]/5 hover:border-[#5530AB]/30 transition-colors truncate max-w-full"
                   >
-                    <LinkIcon class="w-3 h-3 shrink-0 text-gray-400" />
+                    <LinkIcon class="w-3.5 h-3.5 shrink-0 text-gray-400" />
                     <span class="truncate">{{ item.link_url }}</span>
                     <ArrowTopRightOnSquareIcon class="w-3 h-3 shrink-0" />
                   </a>
                 </div>
 
                 <!-- Due Date -->
-                <div class="flex items-center gap-1.5 mt-3 text-xs" :class="isOverdue(item.due_date) ? 'text-rose-600 font-medium' : 'text-gray-500'">
+                <div class="flex items-center gap-1.5 mt-4 text-xs font-semibold" :class="isOverdue(item.due_date) ? 'text-rose-600' : 'text-gray-500'">
                   <CalendarIcon class="w-3.5 h-3.5 shrink-0" />
                   <span>Deadline: {{ formatDueDate(item.due_date) }}</span>
-                  <span v-if="isOverdue(item.due_date)" class="px-1.5 py-0.5 rounded bg-rose-50 text-[0.625rem] font-bold">Terlewat</span>
+                  <span v-if="isOverdue(item.due_date)" class="px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 text-[0.625rem]">Terlewat</span>
                 </div>
               </div>
 
               <!-- Bottom Stats & Progress -->
-              <div class="mt-5 pt-4 border-t border-gray-100 space-y-3">
+              <div class="mt-5 pt-4 border-t border-gray-100 space-y-4">
                 <!-- Progress bar -->
                 <div>
                   <div class="flex items-center justify-between text-xs mb-1.5">
-                    <span class="text-gray-500">Status Pengumpulan</span>
-                    <span class="font-bold text-gray-800">
-                      {{ item.stats?.submittedCount || 0 }}/{{ item.stats?.totalAssigned || 0 }} Siswa ({{ item.stats?.completionRate || 0 }}%)
+                    <span class="text-gray-500 font-semibold">Status Pengumpulan</span>
+                    <span class="font-bold text-gray-900">
+                      {{ item.stats?.submittedCount || 0 }}/{{ item.stats?.totalAssigned || 0 }} ({{ item.stats?.completionRate || 0 }}%)
                     </span>
                   </div>
-                  <div class="w-full h-2 rounded-full bg-gray-100 overflow-hidden">
+                  <div class="w-full h-1.5 rounded-full bg-gray-200 overflow-hidden">
                     <div
                       class="h-full rounded-full transition-all duration-500"
-                      :class="item.stats?.completionRate === 100 ? 'bg-emerald-500' : 'bg-indigo-600'"
+                      :class="item.stats?.completionRate === 100 ? 'bg-emerald-500' : 'bg-[#5530AB]'"
                       :style="{ width: `${item.stats?.completionRate || 0}%` }"
                     ></div>
                   </div>
                 </div>
 
                 <!-- Footer details & button -->
-                <div class="flex items-center justify-between gap-2 pt-1">
-                  <!-- Student Avatar Stack -->
-                  <div class="flex items-center -space-x-2 overflow-hidden">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center -space-x-1.5 overflow-hidden">
                     <template v-for="(sub, idx) in (item.student_assignments || []).slice(0, 4)" :key="sub.id">
                       <div
-                        class="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center text-[0.625rem] font-bold text-white shadow-xs"
+                        class="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[0.5rem] font-bold text-white"
                         :style="{ background: getAvatarColor(sub.users?.fullname || 'Student') }"
                         :title="sub.users?.fullname || 'Student'"
                       >
@@ -253,19 +252,18 @@
                     </template>
                     <div
                       v-if="(item.student_assignments || []).length > 4"
-                      class="w-7 h-7 rounded-full border-2 border-white bg-gray-200 text-gray-600 flex items-center justify-center text-[0.625rem] font-bold shadow-xs"
+                      class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 text-gray-600 flex items-center justify-center text-[0.5rem] font-bold"
                     >
                       +{{ (item.student_assignments || []).length - 4 }}
                     </div>
                   </div>
 
-                  <!-- Detail / Submissions Button -->
                   <button
                     @click="openSubmissionsModal(item)"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-indigo-50 hover:text-indigo-600 text-gray-700 text-xs font-semibold transition-all"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-[#5530AB] hover:text-white text-gray-800 text-xs font-semibold transition-colors cursor-pointer"
                   >
                     <span>Cek Submisi</span>
-                    <ChevronRightIcon class="w-3.5 h-3.5" />
+                    <ChevronRightIcon class="w-3 h-3" />
                   </button>
                 </div>
               </div>
@@ -274,83 +272,83 @@
         </div>
 
         <!-- ════════════════════════════════════════════════════════════════ -->
-        <!-- TAB 2: MONITORING SISWA (STUDENTS VIEW) -->
+        <!-- TAB 2: MONITORING SISWA -->
         <!-- ════════════════════════════════════════════════════════════════ -->
-        <div v-else-if="activeTab === 'students'" class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div v-else-if="activeTab === 'students'" class="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <div v-if="isLoadingStudents" class="flex items-center justify-center py-20">
-            <div class="w-8 h-8 border-2 border-gray-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            <div class="w-8 h-8 border-2 border-gray-200 border-t-[#5530AB] rounded-full animate-spin"></div>
           </div>
 
           <div v-else-if="filteredStudentsSummary.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
             <UsersIcon class="w-10 h-10 text-gray-300 mb-3" />
-            <p class="text-sm font-semibold text-gray-700">Tidak ada siswa ditemukan</p>
-            <p class="text-xs text-gray-400 mt-1">Cek kembali filter pencarian Anda.</p>
+            <p class="text-sm font-bold text-gray-900">Tidak ada siswa ditemukan</p>
+            <p class="text-xs text-gray-500 mt-1">Cek kembali filter pencarian Anda.</p>
           </div>
 
           <div v-else class="overflow-x-auto">
             <table class="w-full text-left">
               <thead>
-                <tr class="border-b border-gray-100 bg-gray-50/70">
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Siswa</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Tugas Di-assign</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Sudah Upload</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Belum Upload</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Rata-Rata Nilai</th>
-                  <th class="px-5 py-3.5 text-right text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
+                <tr class="border-b border-gray-200 bg-gray-50">
+                  <th class="px-5 py-3 text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wider">Siswa</th>
+                  <th class="px-5 py-3 text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wider">Tugas Di-assign</th>
+                  <th class="px-5 py-3 text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wider">Sudah Upload</th>
+                  <th class="px-5 py-3 text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wider">Belum Upload</th>
+                  <th class="px-5 py-3 text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wider">Rata-Rata Nilai</th>
+                  <th class="px-5 py-3 text-right text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 text-sm">
-                <tr v-for="stu in filteredStudentsSummary" :key="stu.id" class="hover:bg-gray-50/70 transition-colors">
-                  <td class="px-5 py-4">
+                <tr v-for="stu in filteredStudentsSummary" :key="stu.id" class="hover:bg-gray-50 transition-colors">
+                  <td class="px-5 py-3">
                     <div class="flex items-center gap-3">
                       <div
-                        class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-xs"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0"
                         :style="{ background: getAvatarColor(stu.fullname || stu.username || 'Student') }"
                       >
                         {{ getInitials(stu.fullname || stu.username || '?') }}
                       </div>
                       <div>
-                        <p class="font-semibold text-gray-900 leading-tight">{{ stu.fullname || 'Tanpa Nama' }}</p>
-                        <p class="text-xs text-gray-400 font-mono mt-0.5">@{{ stu.username || '—' }}</p>
+                        <p class="font-bold text-gray-900 leading-tight">{{ stu.fullname || 'Tanpa Nama' }}</p>
+                        <p class="text-[0.6875rem] text-gray-500 font-mono mt-0.5">@{{ stu.username || '—' }}</p>
                       </div>
                     </div>
                   </td>
 
-                  <td class="px-5 py-4">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-100 text-gray-700 text-xs font-bold">
+                  <td class="px-5 py-3">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-gray-100 text-gray-800 text-xs font-bold">
                       <DocumentTextIcon class="w-3.5 h-3.5 text-gray-500" />
-                      {{ stu.totalAssigned }} Tugas
+                      {{ stu.totalAssigned }}
                     </span>
                   </td>
 
-                  <td class="px-5 py-4">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100">
-                      <CheckCircleIcon class="w-3.5 h-3.5 text-emerald-500" />
-                      {{ stu.totalSubmitted }} Tugas
+                  <td class="px-5 py-3">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-50 text-emerald-700 text-xs font-bold">
+                      <CheckCircleIcon class="w-3.5 h-3.5 text-emerald-600" />
+                      {{ stu.totalSubmitted }}
                     </span>
                   </td>
 
-                  <td class="px-5 py-4">
+                  <td class="px-5 py-3">
                     <span
-                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold"
-                      :class="stu.totalPending > 0 ? 'bg-rose-50 text-rose-700 border border-rose-100' : 'bg-gray-100 text-gray-500'"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-bold"
+                      :class="stu.totalPending > 0 ? 'bg-rose-50 text-rose-700' : 'bg-gray-100 text-gray-500'"
                     >
-                      <ExclamationCircleIcon class="w-3.5 h-3.5" :class="stu.totalPending > 0 ? 'text-rose-500' : 'text-gray-400'" />
-                      {{ stu.totalPending }} Tugas
+                      <ExclamationCircleIcon class="w-3.5 h-3.5" :class="stu.totalPending > 0 ? 'text-rose-600' : 'text-gray-400'" />
+                      {{ stu.totalPending }}
                     </span>
                   </td>
 
-                  <td class="px-5 py-4">
-                    <span v-if="stu.averageGrade !== null" class="font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">
+                  <td class="px-5 py-3">
+                    <span v-if="stu.averageGrade !== null" class="font-bold text-[#5530AB] bg-[#5530AB]/10 px-2.5 py-1 rounded">
                       {{ stu.averageGrade }} / 100
                     </span>
-                    <span v-else class="text-xs text-gray-400 italic">Belum ada nilai</span>
+                    <span v-else class="text-xs text-gray-400 font-medium">Belum ada</span>
                   </td>
 
-                  <td class="px-5 py-4 text-right">
+                  <td class="px-5 py-3 text-right">
                     <button
                       @click="openStudentDetailModal(stu)"
-                      class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-all shadow-2xs"
+                      class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-700 bg-gray-100 hover:bg-[#5530AB] hover:text-white transition-colors cursor-pointer"
                     >
                       <span>Lihat Riwayat</span>
                       <ChevronRightIcon class="w-3 h-3" />
@@ -370,187 +368,164 @@
     <Teleport to="body">
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-if="assignmentModal.open" class="fixed inset-0 z-[500] flex items-center justify-center p-4">
-          <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-xs" @click="assignmentModal.open = false" />
+          <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="assignmentModal.open = false" />
           
-          <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shrink-0">
+          <div class="relative w-full max-w-2xl bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white shrink-0">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-                  <ClipboardDocumentCheckIcon class="w-4 h-4 text-white" />
+                <div class="w-8 h-8 rounded-lg bg-[#5530AB]/10 flex items-center justify-center">
+                  <ClipboardDocumentCheckIcon class="w-4 h-4 text-[#5530AB]" />
                 </div>
                 <div>
-                  <h2 class="text-base font-semibold leading-tight">{{ assignmentModal.isEditing ? 'Edit Tugas' : 'Buat Tugas Baru' }}</h2>
-                  <p class="text-xs text-indigo-100 mt-0.5">Quizizz, Praktek, atau Studi Kasus untuk siswa</p>
+                  <h2 class="text-base font-bold text-gray-900 leading-tight">{{ assignmentModal.isEditing ? 'Edit Tugas' : 'Buat Tugas Baru' }}</h2>
                 </div>
               </div>
-              <button @click="assignmentModal.open = false" class="p-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors">
+              <button @click="assignmentModal.open = false" class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
                 <XMarkIcon class="w-5 h-5" />
               </button>
             </div>
 
-            <!-- Modal Form -->
-            <form @submit.prevent="submitAssignmentForm" class="p-6 space-y-4 overflow-y-auto flex-1">
-              <!-- Judul -->
+            <form @submit.prevent="submitAssignmentForm" class="p-6 space-y-5 overflow-y-auto flex-1">
               <div class="space-y-1.5">
-                <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Judul Tugas <span class="text-rose-500">*</span></label>
+                <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Judul Tugas <span class="text-rose-500">*</span></label>
                 <input
                   v-model="assignmentForm.title"
                   type="text"
                   required
                   placeholder="Contoh: Praktek Redesign Mobile Checkout Funnel"
-                  class="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all bg-white"
+                  class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 outline-none focus:bg-white focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors"
                 />
               </div>
 
-              <!-- Tipe Tugas Selector -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Pilih Jenis Tugas <span class="text-rose-500">*</span></label>
+                <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Pilih Jenis Tugas <span class="text-rose-500">*</span></label>
                 <div class="grid grid-cols-3 gap-3">
                   <button
                     type="button"
                     @click="assignmentForm.type = 'quizizz'"
-                    class="flex flex-col items-center p-3 rounded-xl border-2 text-center transition-all cursor-pointer"
-                    :class="assignmentForm.type === 'quizizz' ? 'border-purple-600 bg-purple-50/50 text-purple-900 shadow-xs' : 'border-gray-200 hover:border-gray-300 text-gray-600'"
+                    class="flex flex-col items-center p-3 rounded-xl border-2 text-center transition-colors cursor-pointer"
+                    :class="assignmentForm.type === 'quizizz' ? 'border-[#5530AB] bg-[#5530AB]/5 text-[#5530AB]' : 'border-gray-200 bg-white hover:border-gray-300 text-gray-600'"
                   >
-                    <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-1.5">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mb-1.5" :class="assignmentForm.type === 'quizizz' ? 'bg-[#5530AB]/10' : 'bg-gray-100'">
                       <SparklesIcon class="w-4 h-4" />
                     </div>
                     <span class="text-xs font-bold">Quizizz</span>
-                    <span class="text-[0.625rem] text-gray-400 mt-0.5">Kuis Interaktif</span>
                   </button>
 
                   <button
                     type="button"
                     @click="assignmentForm.type = 'practice'"
-                    class="flex flex-col items-center p-3 rounded-xl border-2 text-center transition-all cursor-pointer"
-                    :class="assignmentForm.type === 'practice' ? 'border-blue-600 bg-blue-50/50 text-blue-900 shadow-xs' : 'border-gray-200 hover:border-gray-300 text-gray-600'"
+                    class="flex flex-col items-center p-3 rounded-xl border-2 text-center transition-colors cursor-pointer"
+                    :class="assignmentForm.type === 'practice' ? 'border-[#5530AB] bg-[#5530AB]/5 text-[#5530AB]' : 'border-gray-200 bg-white hover:border-gray-300 text-gray-600'"
                   >
-                    <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-1.5">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mb-1.5" :class="assignmentForm.type === 'practice' ? 'bg-[#5530AB]/10' : 'bg-gray-100'">
                       <CodeBracketIcon class="w-4 h-4" />
                     </div>
                     <span class="text-xs font-bold">Praktek</span>
-                    <span class="text-[0.625rem] text-gray-400 mt-0.5">Hands-on Task</span>
                   </button>
 
                   <button
                     type="button"
                     @click="assignmentForm.type = 'case_study'"
-                    class="flex flex-col items-center p-3 rounded-xl border-2 text-center transition-all cursor-pointer"
-                    :class="assignmentForm.type === 'case_study' ? 'border-amber-600 bg-amber-50/50 text-amber-900 shadow-xs' : 'border-gray-200 hover:border-gray-300 text-gray-600'"
+                    class="flex flex-col items-center p-3 rounded-xl border-2 text-center transition-colors cursor-pointer"
+                    :class="assignmentForm.type === 'case_study' ? 'border-[#5530AB] bg-[#5530AB]/5 text-[#5530AB]' : 'border-gray-200 bg-white hover:border-gray-300 text-gray-600'"
                   >
-                    <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center mb-1.5">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mb-1.5" :class="assignmentForm.type === 'case_study' ? 'bg-[#5530AB]/10' : 'bg-gray-100'">
                       <BriefcaseIcon class="w-4 h-4" />
                     </div>
                     <span class="text-xs font-bold">Studi Kasus</span>
-                    <span class="text-[0.625rem] text-gray-400 mt-0.5">Analisis Komprehensif</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Link Referensi & Deadline Grid -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Link Soal / Quizizz <span class="text-gray-400 font-normal">(opsional)</span>
-                  </label>
+                  <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Link Tambahan <span class="text-gray-500 font-normal">(opsional)</span></label>
                   <input
                     v-model="assignmentForm.link_url"
                     type="url"
-                    placeholder="https://quizizz.com/... atau Drive/Figma"
-                    class="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all bg-white"
+                    placeholder="https://quizizz.com/..."
+                    class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 outline-none focus:bg-white focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors"
                   />
                 </div>
 
                 <div class="space-y-1.5">
-                  <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Batas Waktu (Deadline)</label>
+                  <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Batas Waktu (Deadline)</label>
                   <input
                     v-model="assignmentForm.due_date"
                     type="datetime-local"
-                    class="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all bg-white"
+                    class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 outline-none focus:bg-white focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors"
                   />
                 </div>
               </div>
 
-              <!-- Deskripsi / Petunjuk -->
               <div class="space-y-1.5">
-                <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Deskripsi & Instruksi Tugas</label>
+                <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Deskripsi Tugas</label>
                 <textarea
                   v-model="assignmentForm.description"
                   rows="3"
-                  placeholder="Tuliskan petunjuk pengerjaan tugas, kriteria penilaian, atau format link yang harus diupload..."
-                  class="w-full p-4 rounded-xl border border-gray-200 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition-all bg-white resize-none"
+                  placeholder="Tuliskan petunjuk pengerjaan..."
+                  class="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 outline-none focus:bg-white focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors resize-none"
                 ></textarea>
               </div>
 
-              <!-- Assign ke Siswa (Multi-Select) -->
-              <div class="space-y-2 pt-2 border-t border-gray-100">
+              <div class="space-y-2 pt-3 border-t border-gray-200">
                 <div class="flex items-center justify-between">
                   <div>
-                    <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Assign ke Siswa <span class="text-rose-500">*</span>
-                    </label>
-                    <p class="text-[0.7rem] text-gray-400">
-                      Terpilih {{ assignmentForm.student_ids.length }} dari {{ studentsList.length }} siswa
-                    </p>
+                    <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Assign ke Siswa <span class="text-rose-500">*</span></label>
+                    <p class="text-xs text-gray-500 mt-0.5">Terpilih {{ assignmentForm.student_ids.length }} / {{ studentsList.length }} siswa</p>
                   </div>
-
-                  <div class="flex items-center gap-2">
-                    <button
-                      type="button"
-                      @click="toggleSelectAllStudents"
-                      class="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-colors"
-                    >
-                      {{ assignmentForm.student_ids.length === studentsList.length ? 'Batal Pilih Semua' : 'Pilih Semua Siswa' }}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    @click="toggleSelectAllStudents"
+                    class="text-xs font-bold text-[#5530AB] bg-[#5530AB]/10 hover:bg-[#5530AB]/20 px-2.5 py-1.5 rounded-md transition-colors cursor-pointer"
+                  >
+                    {{ assignmentForm.student_ids.length === studentsList.length ? 'Batal Pilih Semua' : 'Pilih Semua Siswa' }}
+                  </button>
                 </div>
 
-                <!-- Student List Box -->
-                <div class="border border-gray-200 rounded-xl max-h-48 overflow-y-auto divide-y divide-gray-100 bg-gray-50/50 p-1">
+                <div class="border border-gray-200 rounded-xl max-h-48 overflow-y-auto divide-y divide-gray-100 bg-gray-50 p-1">
                   <div
                     v-for="s in studentsList"
                     :key="s.id"
                     @click="toggleStudentSelection(s.id)"
                     class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white transition-colors cursor-pointer"
                   >
-                    <div class="flex items-center gap-2.5">
+                    <div class="flex items-center gap-3">
                       <input
                         type="checkbox"
                         :checked="assignmentForm.student_ids.includes(s.id)"
-                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 pointer-events-none"
+                        class="rounded border-gray-300 text-[#5530AB] focus:ring-[#5530AB] pointer-events-none"
                       />
                       <div
-                        class="w-6 h-6 rounded-full flex items-center justify-center text-[0.625rem] font-bold text-white shrink-0"
+                        class="w-6 h-6 rounded-md flex items-center justify-center text-[0.625rem] font-bold text-white shrink-0"
                         :style="{ background: getAvatarColor(s.fullname || s.username || 'Student') }"
                       >
                         {{ getInitials(s.fullname || s.username || '?') }}
                       </div>
-                      <span class="text-xs font-semibold text-gray-800">{{ s.fullname || s.username }}</span>
+                      <span class="text-xs font-bold text-gray-900">{{ s.fullname || s.username }}</span>
                     </div>
-                    <span class="text-[0.6875rem] text-gray-400 font-mono">@{{ s.username }}</span>
+                    <span class="text-[0.6875rem] text-gray-500 font-mono">@{{ s.username }}</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Error Box -->
-              <p v-if="assignmentModal.error" class="text-xs text-rose-600 bg-rose-50 border border-rose-100 px-3.5 py-2.5 rounded-xl">
+              <p v-if="assignmentModal.error" class="text-xs text-rose-700 bg-rose-50 p-3 rounded-lg border border-rose-200 font-medium">
                 {{ assignmentModal.error }}
               </p>
 
-              <!-- Footer Buttons -->
-              <div class="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+              <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                 <button
                   type="button"
                   @click="assignmentModal.open = false"
-                  class="px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   :disabled="assignmentModal.saving || !assignmentForm.title || assignmentForm.student_ids.length === 0"
-                  class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-sm"
+                  class="px-5 py-2 rounded-lg bg-[#5530AB] hover:bg-[#43238A] text-white text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
                 >
                   <div v-if="assignmentModal.saving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span v-else>{{ assignmentModal.isEditing ? 'Simpan Perubahan' : 'Terbitkan Tugas' }}</span>
@@ -563,61 +538,53 @@
     </Teleport>
 
     <!-- ════════════════════════════════════════════════════════════════ -->
-    <!-- MODAL: DETAIL & SUBMISSIONS PER TUGAS (DRAWER / MODAL) -->
+    <!-- MODAL: DETAIL & SUBMISSIONS PER TUGAS -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <Teleport to="body">
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-if="submissionsModal.open" class="fixed inset-0 z-[500] flex items-center justify-center p-4">
-          <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-xs" @click="submissionsModal.open = false" />
+          <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="submissionsModal.open = false" />
           
-          <div class="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <!-- Header -->
-            <div class="flex items-start justify-between px-6 py-5 border-b border-gray-100 bg-gray-50 shrink-0">
+          <div class="relative w-full max-w-4xl bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex items-start justify-between px-6 py-5 border-b border-gray-200 shrink-0">
               <div>
-                <div class="flex items-center gap-2 mb-1.5">
+                <div class="flex items-center gap-2 mb-2">
                   <span
-                    class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold"
+                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[0.6875rem] font-bold uppercase"
                     :class="getTypeBadgeClasses(submissionsModal.assignment?.type)"
                   >
                     <component :is="getTypeIcon(submissionsModal.assignment?.type)" class="w-3.5 h-3.5" />
                     {{ getTypeLabel(submissionsModal.assignment?.type) }}
                   </span>
-                  <span class="text-xs text-gray-500">Deadline: {{ formatDueDate(submissionsModal.assignment?.due_date) }}</span>
+                  <span class="text-xs text-gray-500 font-medium">Deadline: {{ formatDueDate(submissionsModal.assignment?.due_date) }}</span>
                 </div>
                 <h2 class="text-lg font-bold text-gray-900">{{ submissionsModal.assignment?.title }}</h2>
-                <p v-if="submissionsModal.assignment?.description" class="text-xs text-gray-500 mt-1 max-w-2xl">
-                  {{ submissionsModal.assignment?.description }}
-                </p>
                 <div v-if="submissionsModal.assignment?.link_url" class="mt-2">
                   <a
                     :href="submissionsModal.assignment?.link_url"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="inline-flex items-center gap-1 text-xs text-indigo-600 font-semibold hover:underline"
+                    class="inline-flex items-center gap-1 text-xs text-[#5530AB] font-bold hover:underline"
                   >
                     <LinkIcon class="w-3 h-3" />
-                    Buka Link Soal / Quizizz Referensi →
+                    Buka Link Tambahan →
                   </a>
                 </div>
               </div>
-
-              <button @click="submissionsModal.open = false" class="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-200/50 transition-colors">
+              <button @click="submissionsModal.open = false" class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
                 <XMarkIcon class="w-5 h-5" />
               </button>
             </div>
 
-            <!-- Submissions Table -->
-            <div class="p-6 overflow-y-auto flex-1 space-y-4">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold text-gray-600 uppercase tracking-wider">
-                  Daftar Pengumpulan Siswa ({{ (submissionsModal.assignment?.student_assignments || []).length }})
-                </h3>
-              </div>
+            <div class="p-6 overflow-y-auto flex-1 space-y-4 bg-gray-50">
+              <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                Daftar Pengumpulan Siswa ({{ (submissionsModal.assignment?.student_assignments || []).length }})
+              </h3>
 
-              <div class="border border-gray-200 rounded-2xl overflow-hidden shadow-2xs">
+              <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
                 <table class="w-full text-left text-sm">
                   <thead>
-                    <tr class="bg-gray-50/80 border-b border-gray-100">
+                    <tr class="bg-gray-50/50 border-b border-gray-200">
                       <th class="px-4 py-3 text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wider">Siswa</th>
                       <th class="px-4 py-3 text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wider">Status</th>
                       <th class="px-4 py-3 text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wider">Link Upload Tugas</th>
@@ -629,90 +596,80 @@
                     <tr
                       v-for="sub in (submissionsModal.assignment?.student_assignments || [])"
                       :key="sub.id"
-                      class="hover:bg-gray-50/60 transition-colors"
+                      class="hover:bg-gray-50 transition-colors"
                     >
-                      <!-- Siswa -->
-                      <td class="px-4 py-3.5">
+                      <td class="px-4 py-3">
                         <div class="flex items-center gap-2.5">
                           <div
-                            class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0"
+                            class="w-7 h-7 rounded-md flex items-center justify-center text-white text-[0.625rem] font-bold shrink-0"
                             :style="{ background: getAvatarColor(sub.users?.fullname || 'Student') }"
                           >
                             {{ getInitials(sub.users?.fullname || '?') }}
                           </div>
                           <div>
-                            <p class="font-semibold text-gray-900 text-xs leading-tight">{{ sub.users?.fullname || 'Student' }}</p>
-                            <p class="text-[0.6875rem] text-gray-400 font-mono">@{{ sub.users?.username || '—' }}</p>
+                            <p class="font-bold text-gray-900 text-xs leading-tight">{{ sub.users?.fullname || 'Student' }}</p>
                           </div>
                         </div>
                       </td>
 
-                      <!-- Status -->
-                      <td class="px-4 py-3.5">
+                      <td class="px-4 py-3">
                         <span
-                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-bold uppercase tracking-wider"
+                          class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[0.6875rem] font-bold uppercase"
                           :class="getStatusBadgeClasses(sub.status)"
                         >
-                          <span class="w-1.5 h-1.5 rounded-full" :class="getStatusDotClass(sub.status)"></span>
                           {{ getStatusLabel(sub.status) }}
                         </span>
                       </td>
 
-                      <!-- Link Upload Tugas -->
-                      <td class="px-4 py-3.5 max-w-[200px]">
+                      <td class="px-4 py-3 max-w-[200px]">
                         <div v-if="sub.submission_url" class="space-y-1">
                           <a
                             :href="sub.submission_url"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold truncate max-w-full transition-colors"
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#5530AB]/10 text-[#5530AB] hover:bg-[#5530AB]/20 text-xs font-bold truncate max-w-full transition-colors"
                             :title="sub.submission_url"
                           >
                             <LinkIcon class="w-3 h-3 shrink-0" />
-                            <span class="truncate">Buka Link Tugas</span>
-                            <ArrowTopRightOnSquareIcon class="w-3 h-3 shrink-0" />
+                            <span class="truncate">Buka Tugas</span>
                           </a>
-                          <p v-if="sub.submitted_at" class="text-[0.625rem] text-gray-400">
+                          <p v-if="sub.submitted_at" class="text-[0.625rem] text-gray-500 font-medium">
                             Diunggah: {{ formatDateOnly(sub.submitted_at) }}
                           </p>
                         </div>
-                        <div v-else class="text-xs text-gray-400 italic">
-                          Belum upload link
+                        <div v-else class="text-xs text-gray-400 font-medium">
+                          Belum upload
                         </div>
                       </td>
 
-                      <!-- Feedback & Nilai -->
-                      <td class="px-4 py-3.5 max-w-[220px]">
+                      <td class="px-4 py-3 max-w-[220px]">
                         <div v-if="sub.feedback || sub.grade !== null" class="space-y-1">
-                          <div v-if="sub.grade !== null" class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-violet-50 text-violet-700 text-xs font-bold">
+                          <div v-if="sub.grade !== null" class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-100 text-gray-900 text-xs font-bold">
                             Nilai: {{ sub.grade }}
                           </div>
-                          <p v-if="sub.feedback" class="text-xs text-gray-600 line-clamp-2 bg-gray-50 p-1.5 rounded border border-gray-100">
+                          <p v-if="sub.feedback" class="text-xs text-gray-700 line-clamp-2">
                             "{{ sub.feedback }}"
                           </p>
                         </div>
-                        <span v-else class="text-xs text-gray-400 italic">Belum dinilai</span>
+                        <span v-else class="text-xs text-gray-400 font-medium">Belum dinilai</span>
                       </td>
 
-                      <!-- Aksi -->
-                      <td class="px-4 py-3.5 text-right space-x-1.5 whitespace-nowrap">
-                        <!-- Button Upload Link (Simulasi / Quick action) -->
+                      <td class="px-4 py-3 text-right space-x-1.5 whitespace-nowrap">
                         <button
                           @click="openUploadLinkModal(sub)"
-                          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
+                          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-xs font-bold hover:bg-gray-200 transition-colors cursor-pointer"
                           title="Upload / Ubah Link Tugas"
                         >
-                          <ArrowUpTrayIcon class="w-3.5 h-3.5 text-gray-500" />
-                          <span>{{ sub.submission_url ? 'Edit Link' : 'Upload Link' }}</span>
+                          <ArrowUpTrayIcon class="w-3.5 h-3.5" />
+                          <span>{{ sub.submission_url ? 'Edit' : 'Upload' }}</span>
                         </button>
 
-                        <!-- Button Beri Feedback Mentor -->
                         <button
                           @click="openFeedbackModal(sub)"
-                          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors shadow-2xs"
+                          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#5530AB] hover:bg-[#43238A] text-white text-xs font-bold transition-colors cursor-pointer"
                         >
                           <ChatBubbleBottomCenterTextIcon class="w-3.5 h-3.5" />
-                          <span>Beri Feedback</span>
+                          <span>Nilai</span>
                         </button>
                       </td>
                     </tr>
@@ -726,91 +683,85 @@
     </Teleport>
 
     <!-- ════════════════════════════════════════════════════════════════ -->
-    <!-- MODAL: BERI FEEDBACK & NILAI (MENTOR ACTION) -->
+    <!-- MODAL: BERI FEEDBACK & NILAI -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <Teleport to="body">
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-if="feedbackModal.open" class="fixed inset-0 z-[600] flex items-center justify-center p-4">
-          <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-xs" @click="feedbackModal.open = false" />
+          <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="feedbackModal.open = false" />
           
-          <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-600 to-teal-700 text-white">
+          <div class="relative w-full max-w-lg bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-                  <ChatBubbleBottomCenterTextIcon class="w-4 h-4 text-white" />
+                <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                  <ChatBubbleBottomCenterTextIcon class="w-4 h-4 text-emerald-700" />
                 </div>
                 <div>
-                  <h2 class="text-base font-semibold leading-tight">Review & Feedback Mentor</h2>
-                  <p class="text-xs text-emerald-100 mt-0.5">{{ feedbackModal.submission?.users?.fullname || 'Siswa' }}</p>
+                  <h2 class="text-base font-bold text-gray-900 leading-tight">Review & Feedback</h2>
+                  <p class="text-xs text-gray-500 mt-0.5">{{ feedbackModal.submission?.users?.fullname || 'Siswa' }}</p>
                 </div>
               </div>
-              <button @click="feedbackModal.open = false" class="p-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors">
+              <button @click="feedbackModal.open = false" class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
                 <XMarkIcon class="w-5 h-5" />
               </button>
             </div>
 
-            <form @submit.prevent="submitFeedbackForm" class="p-6 space-y-4">
-              <!-- Link Tugas Siswa Preview -->
-              <div v-if="feedbackModal.submission?.submission_url" class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs">
+            <form @submit.prevent="submitFeedbackForm" class="p-6 space-y-4 bg-gray-50">
+              <div v-if="feedbackModal.submission?.submission_url" class="p-3 bg-white rounded-lg border border-gray-200 text-xs">
                 <p class="font-bold text-gray-700 mb-1">Link Tugas Siswa:</p>
                 <a
                   :href="feedbackModal.submission?.submission_url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1.5 text-indigo-600 font-semibold hover:underline break-all"
+                  class="inline-flex items-center gap-1.5 text-[#5530AB] font-bold hover:underline break-all"
                 >
                   <LinkIcon class="w-3.5 h-3.5 shrink-0" />
                   <span>{{ feedbackModal.submission?.submission_url }}</span>
-                  <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5 shrink-0" />
                 </a>
-                <p v-if="feedbackModal.submission?.submission_notes" class="text-gray-500 mt-2 text-[0.75rem]">
-                  <strong>Catatan Siswa:</strong> "{{ feedbackModal.submission?.submission_notes }}"
+                <p v-if="feedbackModal.submission?.submission_notes" class="text-gray-600 mt-2 text-xs">
+                  <strong>Catatan:</strong> "{{ feedbackModal.submission?.submission_notes }}"
                 </p>
               </div>
 
-              <!-- Nilai / Score -->
               <div class="space-y-1.5">
-                <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Nilai / Skor (0 - 100)</label>
+                <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Nilai / Skor (0 - 100)</label>
                 <input
                   v-model="feedbackForm.grade"
                   type="number"
                   min="0"
                   max="100"
                   placeholder="Contoh: 95"
-                  class="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all bg-white"
+                  class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors"
                 />
               </div>
 
-              <!-- Feedback Textarea -->
               <div class="space-y-1.5">
-                <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Catatan Feedback & Saran Mentor</label>
+                <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Catatan Feedback</label>
                 <textarea
                   v-model="feedbackForm.feedback"
                   rows="4"
                   required
-                  placeholder="Tuliskan apresiasi, koreksi desain/kode, atau saran perbaikan untuk siswa..."
-                  class="w-full p-4 rounded-xl border border-gray-200 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all bg-white resize-none"
+                  placeholder="Berikan saran atau apresiasi..."
+                  class="w-full p-3 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors resize-none"
                 ></textarea>
               </div>
 
-              <!-- Error -->
-              <p v-if="feedbackModal.error" class="text-xs text-rose-600 bg-rose-50 border border-rose-100 px-3.5 py-2 rounded-xl">
+              <p v-if="feedbackModal.error" class="text-xs text-rose-700 bg-rose-50 p-2 rounded border border-rose-200">
                 {{ feedbackModal.error }}
               </p>
 
-              <!-- Buttons -->
-              <div class="flex items-center justify-end gap-3 pt-2 border-t border-gray-100">
+              <div class="flex items-center justify-end gap-3 pt-3">
                 <button
                   type="button"
                   @click="feedbackModal.open = false"
-                  class="px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   :disabled="feedbackModal.saving || !feedbackForm.feedback"
-                  class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-all disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                  class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   <div v-if="feedbackModal.saving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span v-else>Simpan Feedback</span>
@@ -823,70 +774,66 @@
     </Teleport>
 
     <!-- ════════════════════════════════════════════════════════════════ -->
-    <!-- MODAL: UPLOAD / SUBMIT LINK TUGAS (LINK BASED) -->
+    <!-- MODAL: UPLOAD / SUBMIT LINK TUGAS -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <Teleport to="body">
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-if="uploadLinkModal.open" class="fixed inset-0 z-[600] flex items-center justify-center p-4">
-          <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-xs" @click="uploadLinkModal.open = false" />
+          <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="uploadLinkModal.open = false" />
           
-          <div class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+          <div class="relative w-full max-w-md bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-                  <ArrowUpTrayIcon class="w-4 h-4 text-white" />
+                <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                  <ArrowUpTrayIcon class="w-4 h-4 text-gray-700" />
                 </div>
                 <div>
-                  <h2 class="text-base font-semibold leading-tight">Upload Link Tugas</h2>
-                  <p class="text-xs text-blue-100 mt-0.5">{{ uploadLinkModal.submission?.users?.fullname || 'Siswa' }}</p>
+                  <h2 class="text-base font-bold text-gray-900 leading-tight">Upload Link Tugas</h2>
+                  <p class="text-xs text-gray-500 mt-0.5">{{ uploadLinkModal.submission?.users?.fullname || 'Siswa' }}</p>
                 </div>
               </div>
-              <button @click="uploadLinkModal.open = false" class="p-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors">
+              <button @click="uploadLinkModal.open = false" class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
                 <XMarkIcon class="w-5 h-5" />
               </button>
             </div>
 
-            <form @submit.prevent="submitLinkUploadForm" class="p-6 space-y-4">
+            <form @submit.prevent="submitLinkUploadForm" class="p-6 space-y-4 bg-gray-50">
               <div class="space-y-1.5">
-                <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Link Hasil Tugas <span class="text-rose-500">*</span></label>
+                <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Link Hasil Tugas <span class="text-rose-500">*</span></label>
                 <input
                   v-model="uploadLinkForm.submission_url"
                   type="text"
                   required
-                  placeholder="https://figma.com/..., https://github.com/..., https://drive.google.com/..."
-                  class="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all bg-white"
+                  placeholder="https://..."
+                  class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors"
                 />
-                <p class="text-[0.6875rem] text-gray-400">Pastikan akses link sudah diset publik/siap ditinjau oleh mentor.</p>
               </div>
 
               <div class="space-y-1.5">
-                <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Catatan Tambahan <span class="text-gray-400 font-normal">(opsional)</span></label>
+                <label class="text-xs font-bold text-gray-800 uppercase tracking-wider">Catatan Tambahan</label>
                 <textarea
                   v-model="uploadLinkForm.submission_notes"
                   rows="2"
-                  placeholder="Catatan pengerjaan atau password jika ada..."
-                  class="w-full p-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all bg-white resize-none"
+                  class="w-full p-3 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors resize-none"
                 ></textarea>
               </div>
 
-              <!-- Error -->
-              <p v-if="uploadLinkModal.error" class="text-xs text-rose-600 bg-rose-50 border border-rose-100 px-3.5 py-2 rounded-xl">
+              <p v-if="uploadLinkModal.error" class="text-xs text-rose-700 bg-rose-50 p-2 rounded border border-rose-200">
                 {{ uploadLinkModal.error }}
               </p>
 
-              <!-- Buttons -->
-              <div class="flex items-center justify-end gap-3 pt-2 border-t border-gray-100">
+              <div class="flex items-center justify-end gap-3 pt-3">
                 <button
                   type="button"
                   @click="uploadLinkModal.open = false"
-                  class="px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  class="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   :disabled="uploadLinkModal.saving || !uploadLinkForm.submission_url"
-                  class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-all disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                  class="px-5 py-2 rounded-lg bg-[#5530AB] hover:bg-[#43238A] text-white text-sm font-bold transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   <div v-if="uploadLinkModal.saving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span v-else>Simpan Link</span>
@@ -899,34 +846,34 @@
     </Teleport>
 
     <!-- ════════════════════════════════════════════════════════════════ -->
-    <!-- MODAL: RIWAYAT TUGAS SISWA (STUDENT DETAIL) -->
+    <!-- MODAL: RIWAYAT TUGAS SISWA -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <Teleport to="body">
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-if="studentDetailModal.open" class="fixed inset-0 z-[500] flex items-center justify-center p-4">
-          <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-xs" @click="studentDetailModal.open = false" />
+          <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" @click="studentDetailModal.open = false" />
           
-          <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50 shrink-0">
+          <div class="relative w-full max-w-2xl bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white shrink-0">
               <div class="flex items-center gap-3">
                 <div
-                  class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
+                  class="w-10 h-10 rounded-lg flex items-center justify-center text-white text-sm font-bold shrink-0"
                   :style="{ background: getAvatarColor(studentDetailModal.student?.fullname || 'Student') }"
                 >
                   {{ getInitials(studentDetailModal.student?.fullname || '?') }}
                 </div>
                 <div>
                   <h2 class="text-base font-bold text-gray-900 leading-tight">{{ studentDetailModal.student?.fullname }}</h2>
-                  <p class="text-xs text-gray-500">@{{ studentDetailModal.student?.username }} • Riwayat Tugas & Nilai</p>
+                  <p class="text-xs text-gray-500">@{{ studentDetailModal.student?.username }} • Riwayat Tugas</p>
                 </div>
               </div>
-              <button @click="studentDetailModal.open = false" class="p-2 rounded-xl text-gray-400 hover:text-gray-700 transition-colors">
+              <button @click="studentDetailModal.open = false" class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
                 <XMarkIcon class="w-5 h-5" />
               </button>
             </div>
 
-            <div class="p-6 overflow-y-auto space-y-4 flex-1">
-              <div v-if="studentDetailModal.submissions.length === 0" class="text-center py-10 text-gray-400 text-xs">
+            <div class="p-6 overflow-y-auto space-y-4 flex-1 bg-gray-50">
+              <div v-if="studentDetailModal.submissions.length === 0" class="text-center py-10 text-gray-500 text-xs font-medium">
                 Belum ada penugasan untuk siswa ini.
               </div>
 
@@ -934,50 +881,46 @@
                 <div
                   v-for="sub in studentDetailModal.submissions"
                   :key="sub.id"
-                  class="p-4 rounded-xl border border-gray-200 bg-white hover:border-indigo-200 transition-colors space-y-2"
+                  class="p-4 rounded-xl border border-gray-200 bg-white"
                 >
                   <div class="flex items-start justify-between gap-2">
                     <div>
                       <span
-                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[0.6875rem] font-bold uppercase mb-1"
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[0.625rem] font-bold uppercase mb-1"
                         :class="getTypeBadgeClasses(sub.assignment?.type)"
                       >
                         {{ getTypeLabel(sub.assignment?.type) }}
                       </span>
                       <h4 class="text-sm font-bold text-gray-900">{{ sub.assignment?.title }}</h4>
                     </div>
-
                     <span
-                      class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.6875rem] font-bold uppercase"
+                      class="inline-flex items-center px-2 py-1 rounded text-[0.625rem] font-bold uppercase"
                       :class="getStatusBadgeClasses(sub.status)"
                     >
                       {{ getStatusLabel(sub.status) }}
                     </span>
                   </div>
 
-                  <!-- Link Submitted -->
-                  <div v-if="sub.submission_url" class="flex items-center gap-2 pt-1">
+                  <div v-if="sub.submission_url" class="flex items-center gap-2 mt-3">
                     <a
                       :href="sub.submission_url"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1 text-xs text-indigo-600 font-semibold hover:underline"
+                      class="inline-flex items-center gap-1 text-xs text-[#5530AB] font-bold hover:underline"
                     >
                       <LinkIcon class="w-3.5 h-3.5" />
                       <span>Link Hasil Tugas</span>
-                      <ArrowTopRightOnSquareIcon class="w-3 h-3" />
                     </a>
                   </div>
 
-                  <!-- Feedback & Grade -->
-                  <div v-if="sub.feedback || sub.grade !== null" class="p-3 bg-emerald-50/60 rounded-lg border border-emerald-100 text-xs space-y-1 mt-2">
-                    <div class="flex items-center justify-between">
-                      <span class="font-bold text-emerald-800">Feedback Mentor:</span>
-                      <span v-if="sub.grade !== null" class="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
-                        Nilai: {{ sub.grade }} / 100
+                  <div v-if="sub.feedback || sub.grade !== null" class="p-3 bg-gray-50 rounded-lg border border-gray-200 text-xs mt-3">
+                    <div class="flex items-center justify-between mb-1.5">
+                      <span class="font-bold text-gray-700">Feedback Mentor:</span>
+                      <span v-if="sub.grade !== null" class="font-bold text-gray-900 bg-gray-200 px-2 py-0.5 rounded">
+                        Nilai: {{ sub.grade }}
                       </span>
                     </div>
-                    <p class="text-emerald-900 leading-relaxed">{{ sub.feedback }}</p>
+                    <p class="text-gray-800 leading-relaxed">{{ sub.feedback }}</p>
                   </div>
                 </div>
               </div>
@@ -1173,7 +1116,6 @@ const filteredStudentsSummary = computed(() => {
   const q = searchQuery.value.toLowerCase().trim()
   return studentsList.value
     .map(stu => {
-      // Find all submissions assigned to this student
       const subs: StudentAssignmentRow[] = []
       for (const a of assignments.value) {
         const found = (a.student_assignments || []).find(s => s.student_id === stu.id)
@@ -1221,13 +1163,9 @@ async function fetchAssignments() {
   try {
     const res = await $fetch<{ assignments: AssignmentItem[] }>('/api/admin/assignments')
     assignments.value = res.assignments || []
-
-    // Selalu sync submissionsModal jika ada assignment yang sedang di-view
     if (submissionsModal.assignment) {
       const refreshed = assignments.value.find(a => a.id === submissionsModal.assignment!.id)
-      if (refreshed) {
-        submissionsModal.assignment = refreshed
-      }
+      if (refreshed) submissionsModal.assignment = refreshed
     }
   } catch (err: any) {
     console.error('[fetchAssignments]', err?.data?.statusMessage || err?.message || err)
@@ -1263,7 +1201,7 @@ function openAddAssignmentModal() {
   assignmentForm.type = 'practice'
   assignmentForm.link_url = ''
   assignmentForm.due_date = ''
-  assignmentForm.student_ids = studentsList.value.map(s => s.id) // Default auto-select all
+  assignmentForm.student_ids = studentsList.value.map(s => s.id)
   assignmentModal.open = true
 }
 
@@ -1306,35 +1244,23 @@ async function submitAssignmentForm() {
     assignmentModal.error = 'Pilih minimal satu siswa untuk di-assign tugas.'
     return
   }
-
   assignmentModal.saving = true
   assignmentModal.error = ''
 
   try {
+    const payload = {
+      title: assignmentForm.title,
+      description: assignmentForm.description,
+      type: assignmentForm.type,
+      link_url: assignmentForm.link_url,
+      due_date: assignmentForm.due_date ? new Date(assignmentForm.due_date).toISOString() : null,
+      student_ids: assignmentForm.student_ids
+    }
+
     if (assignmentModal.isEditing && assignmentModal.editingId) {
-      await $fetch(`/api/admin/assignments/${assignmentModal.editingId}`, {
-        method: 'PUT',
-        body: {
-          title: assignmentForm.title,
-          description: assignmentForm.description,
-          type: assignmentForm.type,
-          link_url: assignmentForm.link_url,
-          due_date: assignmentForm.due_date ? new Date(assignmentForm.due_date).toISOString() : null,
-          student_ids: assignmentForm.student_ids
-        }
-      })
+      await $fetch(`/api/admin/assignments/${assignmentModal.editingId}`, { method: 'PUT', body: payload })
     } else {
-      await $fetch('/api/admin/assignments', {
-        method: 'POST',
-        body: {
-          title: assignmentForm.title,
-          description: assignmentForm.description,
-          type: assignmentForm.type,
-          link_url: assignmentForm.link_url,
-          due_date: assignmentForm.due_date ? new Date(assignmentForm.due_date).toISOString() : null,
-          student_ids: assignmentForm.student_ids
-        }
-      })
+      await $fetch('/api/admin/assignments', { method: 'POST', body: payload })
     }
 
     assignmentModal.open = false
@@ -1348,7 +1274,6 @@ async function submitAssignmentForm() {
 
 async function deleteAssignment(item: AssignmentItem) {
   if (!confirm(`Hapus tugas "${item.title}" beserta seluruh data pengumpulan siswa?`)) return
-
   try {
     await $fetch(`/api/admin/assignments/${item.id}`, { method: 'DELETE' })
     await fetchAssignments()
@@ -1373,10 +1298,8 @@ function openFeedbackModal(sub: StudentAssignmentRow) {
 
 async function submitFeedbackForm() {
   if (!feedbackModal.submission) return
-
   feedbackModal.saving = true
   feedbackModal.error = ''
-
   try {
     await $fetch('/api/admin/assignments/feedback', {
       method: 'POST',
@@ -1387,15 +1310,9 @@ async function submitFeedbackForm() {
         status: 'reviewed'
       }
     })
-
-    // Tutup feedback modal terlebih dahulu, lalu refresh agar submissionsModal juga ikut update
     feedbackModal.open = false
     feedbackModal.submission = null
     await fetchAssignments()
-    // Buka kembali submissionsModal dengan data yang sudah diperbarui (tetap terbuka)
-    if (submissionsModal.open && submissionsModal.assignment) {
-      // submissionsModal.assignment sudah di-sync di fetchAssignments
-    }
   } catch (err: any) {
     feedbackModal.error = err?.data?.statusMessage || err?.message || 'Gagal menyimpan feedback.'
   } finally {
@@ -1413,10 +1330,8 @@ function openUploadLinkModal(sub: StudentAssignmentRow) {
 
 async function submitLinkUploadForm() {
   if (!uploadLinkModal.submission || !uploadLinkForm.submission_url.trim()) return
-
   uploadLinkModal.saving = true
   uploadLinkModal.error = ''
-
   try {
     await $fetch('/api/admin/assignments/submit-link', {
       method: 'POST',
@@ -1426,8 +1341,6 @@ async function submitLinkUploadForm() {
         submission_notes: uploadLinkForm.submission_notes.trim()
       }
     })
-
-    // Tutup upload modal terlebih dahulu, lalu refresh agar submissionsModal juga ikut update
     uploadLinkModal.open = false
     uploadLinkModal.submission = null
     await fetchAssignments()
@@ -1439,7 +1352,6 @@ async function submitLinkUploadForm() {
 }
 
 function openStudentDetailModal(stuSummary: any) {
-  // Gunakan data terbaru dari filteredStudentsSummary (sudah dihitung ulang dari assignments)
   studentDetailModal.student = { ...stuSummary }
   studentDetailModal.submissions = stuSummary.submissions ? [...stuSummary.submissions] : []
   studentDetailModal.open = true
@@ -1466,10 +1378,10 @@ function getTypeIcon(type?: string) {
 
 function getTypeBadgeClasses(type?: string) {
   switch (type) {
-    case 'quizizz': return 'bg-purple-50 text-purple-700 border border-purple-100'
-    case 'practice': return 'bg-blue-50 text-blue-700 border border-blue-100'
-    case 'case_study': return 'bg-amber-50 text-amber-700 border border-amber-100'
-    default: return 'bg-gray-50 text-gray-700 border border-gray-200'
+    case 'quizizz': return 'bg-[#5530AB]/10 text-[#5530AB]'
+    case 'practice': return 'bg-sky-100 text-sky-700'
+    case 'case_study': return 'bg-gray-800 text-white'
+    default: return 'bg-gray-100 text-gray-700'
   }
 }
 
@@ -1484,19 +1396,10 @@ function getStatusLabel(status: string) {
 
 function getStatusBadgeClasses(status: string) {
   switch (status) {
-    case 'pending': return 'bg-rose-50 text-rose-700 border border-rose-100'
-    case 'submitted': return 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-    case 'reviewed': return 'bg-indigo-50 text-indigo-700 border border-indigo-100'
-    default: return 'bg-gray-100 text-gray-600'
-  }
-}
-
-function getStatusDotClass(status: string) {
-  switch (status) {
-    case 'pending': return 'bg-rose-500'
-    case 'submitted': return 'bg-emerald-500'
-    case 'reviewed': return 'bg-indigo-600'
-    default: return 'bg-gray-400'
+    case 'pending': return 'bg-rose-100 text-rose-700'
+    case 'submitted': return 'bg-emerald-100 text-emerald-700'
+    case 'reviewed': return 'bg-[#5530AB]/10 text-[#5530AB]'
+    default: return 'bg-gray-100 text-gray-700'
   }
 }
 
@@ -1532,7 +1435,7 @@ function getInitials(name: string) {
   return parts[0][0].toUpperCase()
 }
 
-const AVATAR_COLORS = ['#4F46E5', '#7C3AED', '#2563EB', '#059669', '#D97706', '#E11D48', '#0891B2']
+const AVATAR_COLORS = ['#5530AB', '#111827', '#2563EB', '#059669', '#D97706', '#E11D48', '#0891B2']
 function getAvatarColor(name: string) {
   let hash = 0
   for (const c of name || '') hash = c.charCodeAt(0) + ((hash << 5) - hash)

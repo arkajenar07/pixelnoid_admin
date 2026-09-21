@@ -19,6 +19,27 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'ID Absensi tidak valid.' })
   }
 
+  // Ambil bukti_foto sebelum dihapus
+  const { data: row } = await client
+    .from('absensi')
+    .select('bukti_foto')
+    .eq('id', id)
+    .single()
+
+  // Hapus foto dari storage jika ada
+  if (row?.bukti_foto) {
+    try {
+      const url = new URL(row.bukti_foto)
+      // Path di storage: segmen setelah "/object/public/absensi/"
+      const match = url.pathname.match(/\/object\/public\/absensi\/(.+)/)
+      if (match?.[1]) {
+        await client.storage.from('absensi').remove([decodeURIComponent(match[1])])
+      }
+    } catch (_) {
+      // Abaikan error storage, lanjut hapus record
+    }
+  }
+
   // Hapus absensi (relasi di absensi_students otomatis terhapus karena ON DELETE CASCADE)
   const { error } = await client
     .from('absensi')

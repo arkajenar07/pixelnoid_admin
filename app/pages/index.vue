@@ -153,61 +153,6 @@
 
             </div>
           </div>
-
-          <!-- Quick Actions & System Resources -->
-          <div class="flex flex-col gap-8">
-            <div class="bg-gray-900 rounded-[2rem] p-8 shadow-2xl shadow-gray-300 relative overflow-hidden group">
-              <div class="absolute -top-10 -right-10 w-40 h-40 bg-rose-500 blur-[50px] rounded-full opacity-30 group-hover:opacity-40 transition-opacity"></div>
-              <h2 class="text-lg font-bold text-white tracking-tight mb-6 relative z-10">Quick Actions</h2>
-              <div class="flex flex-col gap-3 relative z-10">
-                <button class="w-full flex items-center justify-between p-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-colors text-left group/btn">
-                  <span class="text-[0.875rem] font-bold text-white">Create Broadcast</span>
-                  <ArrowRightIcon class="w-4 h-4 text-gray-400 group-hover/btn:translate-x-1 transition-transform" />
-                </button>
-                <button class="w-full flex items-center justify-between p-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-colors text-left group/btn">
-                  <span class="text-[0.875rem] font-bold text-white">Add New Mentor</span>
-                  <ArrowRightIcon class="w-4 h-4 text-gray-400 group-hover/btn:translate-x-1 transition-transform" />
-                </button>
-                <button class="w-full flex items-center justify-between p-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-colors text-left group/btn">
-                  <span class="text-[0.875rem] font-bold text-white">Review Reports</span>
-                  <span class="px-2 py-0.5 rounded-md bg-rose-500 text-white text-[0.625rem] font-black">12</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="bg-white rounded-[2rem] border border-gray-200 shadow-sm p-6 lg:p-8">
-              <h2 class="text-lg font-bold text-gray-900 tracking-tight mb-6">System Resources</h2>
-              <div class="space-y-5">
-                <div>
-                  <div class="flex justify-between text-[0.75rem] font-bold mb-2">
-                    <span class="text-gray-600">Database Storage</span>
-                    <span class="text-gray-900">45% (45GB / 100GB)</span>
-                  </div>
-                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-indigo-500 w-[45%]"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="flex justify-between text-[0.75rem] font-bold mb-2">
-                    <span class="text-gray-600">Server Memory (RAM)</span>
-                    <span class="text-gray-900">72% (11.5GB / 16GB)</span>
-                  </div>
-                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-amber-500 w-[72%]"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="flex justify-between text-[0.75rem] font-bold mb-2">
-                    <span class="text-gray-600">API Request Quota</span>
-                    <span class="text-gray-900">12% (1.2M / 10M)</span>
-                  </div>
-                  <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-emerald-500 w-[12%]"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </main>
     </div>

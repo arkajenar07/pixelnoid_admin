@@ -1,146 +1,136 @@
 <template>
-  <div class="lesson-editor-root font-['Instrument_Sans','Raleway',sans-serif]">
+  <div class="flex flex-col min-h-screen bg-gray-50 font-['Instrument_Sans','Raleway',sans-serif]">
 
     <!-- ── Top Nav Bar ── -->
-    <header class="editor-topbar">
-      <div class="flex items-center gap-3 min-w-0">
+    <header class="sticky top-0 z-50 flex items-center justify-between gap-4 px-6 py-4 bg-white border-b border-gray-200">
+      <div class="flex items-center gap-3.5 min-w-0">
         <NuxtLink
           to="/modules"
-          class="p-2 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors shrink-0"
-          title="Kembali ke Module Management"
+          class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 text-gray-500 hover:text-[#5530AB] hover:bg-[#5530AB]/10 transition-colors shrink-0 cursor-pointer"
+          title="Kembali ke Modul"
         >
           <ArrowLeftIcon class="w-4 h-4" />
         </NuxtLink>
-        <div class="min-w-0">
-          <p class="text-[0.625rem] font-bold uppercase tracking-widest text-gray-400">Editing Lesson</p>
-          <h1 class="text-sm font-semibold text-gray-900 truncate">{{ lessonForm.title || 'Lesson Tanpa Judul' }}</h1>
+
+        <div class="h-6 w-px bg-gray-200 shrink-0" />
+
+        <div class="min-w-0 flex flex-col justify-center">
+          <h1 class="text-sm font-semibold text-gray-900 truncate max-w-[200px] sm:max-w-xs md:max-w-md lg:max-w-lg mt-0.5">
+            {{ lessonForm.title || 'Lesson Tanpa Judul' }}
+          </h1>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <!-- Auto-save indicator -->
-        <div class="flex items-center gap-1.5 text-xs">
-          <div v-if="saveStatus === 'saving'" class="w-3 h-3 border-2 border-gray-300 border-t-emerald-500 rounded-full animate-spin" />
-          <div v-else-if="saveStatus === 'saved'" class="w-3 h-3 rounded-full bg-emerald-500" />
-          <div v-else-if="saveStatus === 'error'" class="w-3 h-3 rounded-full bg-rose-500" />
-          <div v-else class="w-3 h-3 rounded-full bg-gray-200" />
-          <span class="text-gray-400">
-            {{ saveStatus === 'saving' ? 'Menyimpan...' : saveStatus === 'saved' ? 'Tersimpan' : saveStatus === 'error' ? 'Gagal simpan' : 'Belum ada perubahan' }}
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Quick Cross-Lesson Copy / Paste Actions -->
+        <button
+          v-if="lessonForm.type === 'text'"
+          type="button"
+          @click="copyAllLessonBlocks"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium transition-colors cursor-pointer"
+          title="Salin semua blok konten lesson ini"
+          aria-label="Salin semua blok lesson ke clipboard"
+        >
+          <Square2StackIcon class="w-3.5 h-3.5 text-gray-500" />
+          <span class="hidden md:inline">Salin Semua Blok</span>
+          <span class="md:hidden">Salin</span>
+        </button>
+
+        <button
+          v-if="lessonForm.type === 'text'"
+          type="button"
+          @click="pasteLessonBlocks"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#5530AB]/10 hover:bg-[#5530AB]/20 text-[#5530AB] border border-[#5530AB]/20 text-xs font-medium transition-colors cursor-pointer"
+          title="Tempel blok yang telah disalin dari lesson lain"
+          aria-label="Tempel blok dari clipboard"
+        >
+          <ClipboardDocumentListIcon class="w-3.5 h-3.5 text-[#5530AB]" />
+          <span class="hidden md:inline">Tempel Blok</span>
+          <span class="md:hidden">Tempel</span>
+        </button>
+
+        <!-- Auto-save status pill -->
+        <div
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+          :class="{
+            'bg-[#5530AB]/10 text-[#5530AB]': saveStatus === 'saving',
+            'bg-emerald-100 text-emerald-700': saveStatus === 'saved',
+            'bg-rose-100 text-rose-700': saveStatus === 'error',
+            'bg-gray-100 text-gray-500': saveStatus === 'idle'
+          }"
+        >
+          <span v-if="saveStatus === 'saving'" class="w-2.5 h-2.5 border-2 border-[#5530AB] border-t-transparent rounded-full animate-spin shrink-0" />
+          <CheckCircleIcon v-else-if="saveStatus === 'saved'" class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <ExclamationTriangleIcon v-else-if="saveStatus === 'error'" class="w-3.5 h-3.5 text-rose-600 shrink-0" />
+          <span v-else class="w-2 h-2 rounded-full bg-gray-300 shrink-0" />
+
+          <span class="hidden sm:inline">
+            {{ saveStatus === 'saving' ? 'Menyimpan...' : saveStatus === 'saved' ? 'Tersimpan otomatis' : saveStatus === 'error' ? 'Gagal menyimpan' : 'Semua tersimpan' }}
+          </span>
+          <span class="sm:hidden">
+            {{ saveStatus === 'saving' ? 'Menyimpan' : saveStatus === 'saved' ? 'Tersimpan' : saveStatus === 'error' ? 'Gagal' : 'Siap' }}
           </span>
         </div>
 
+        <!-- Save Button -->
         <button
           @click="saveNow"
           :disabled="saveStatus === 'saving'"
-          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-all disabled:opacity-60"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#5530AB] hover:bg-[#43238d] text-white text-xs sm:text-sm font-semibold transition-colors active:scale-[0.98] disabled:opacity-60 cursor-pointer"
         >
-          <CloudArrowUpIcon class="w-4 h-4" />
-          Simpan
+          <ArrowPathIcon v-if="saveStatus === 'saving'" class="w-4 h-4 animate-spin" />
+          <CloudArrowUpIcon v-else class="w-4 h-4" />
+          <span>Simpan</span>
         </button>
       </div>
     </header>
 
     <!-- ── Main Area ── -->
-    <div class="editor-main">
-
-      <!-- Left: Lesson Metadata Sidebar -->
-      <aside class="editor-metadata-sidebar">
-        <div class="sidebar-inner">
-          <p class="sidebar-section-label">Info Lesson</p>
-
-          <div class="form-field">
-            <label class="form-label">Judul *</label>
-            <input v-model="lessonForm.title" type="text" placeholder="Judul lesson"
-              class="form-input" @input="scheduleAutoSave" />
-          </div>
-
-          <div v-if="lessonForm.type === 'video'" class="form-field">
-            <label class="form-label">URL Video</label>
-            <input v-model="lessonForm.video_url" type="url" placeholder="https://youtube.com/..."
-              class="form-input" @input="scheduleAutoSave" />
-          </div>
-
-          <div class="form-field">
-            <label class="form-label">Urutan</label>
-            <input v-model.number="lessonForm.sort_order" type="number" min="0"
-              class="form-input" @input="scheduleAutoSave" />
-          </div>
-
-          <div class="form-field">
-            <label class="form-label">XP Reward</label>
-            <input v-model.number="lessonForm.xp_reward" type="number" min="0"
-              class="form-input" @input="scheduleAutoSave" />
-          </div>
-
-          <div class="separator" />
-
-          <p class="sidebar-section-label">Konten</p>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <p class="stat-value">{{ blocks.length }}</p>
-              <p class="stat-label">Blok</p>
-            </div>
-            <div class="stat-item">
-              <p class="stat-value">{{ wordCount }}</p>
-              <p class="stat-label">Kata</p>
-            </div>
-          </div>
-
-          <div class="separator" />
-
-          <p class="sidebar-section-label">Tips Paste</p>
-          <div class="flex flex-col gap-1.5 text-xs text-gray-500">
-            <div class="flex items-start gap-2 p-2 bg-emerald-50 rounded-xl border border-emerald-100">
-              <span class="text-emerald-500 font-bold shrink-0 mt-0.5">✓</span>
-              <span>Paste dari <strong class="text-emerald-700">Notion</strong> langsung ke editor</span>
-            </div>
-            <div class="flex items-start gap-2 p-2 bg-blue-50 rounded-xl border border-blue-100">
-              <span class="text-blue-500 font-bold shrink-0 mt-0.5">✓</span>
-              <span>Paste dari <strong class="text-blue-700">Google Docs</strong> otomatis format</span>
-            </div>
-            <div class="flex items-start gap-2 p-2 bg-gray-50 rounded-xl border border-gray-100">
-              <span class="text-gray-400 font-bold shrink-0 mt-0.5">+</span>
-              <span>Klik <strong>+</strong> di editor untuk pilih tipe blok</span>
-            </div>
-          </div>
-
-          <div class="separator" />
-
-          <!-- Danger Zone -->
-          <p class="text-[0.625rem] font-bold uppercase tracking-widest text-rose-400 mb-2">Danger Zone</p>
-          <button
-            @click="clearContent"
-            class="w-full py-2 px-3 rounded-xl border border-rose-200 text-rose-500 text-xs font-medium hover:bg-rose-50 transition-colors text-left"
-          >
-            Hapus semua konten
-          </button>
-        </div>
-      </aside>
+    <div class="flex flex-1 min-h-0">
 
       <!-- Right: Block Editor Area -->
-      <div class="editor-canvas-wrapper">
+      <div class="flex-1 overflow-y-auto bg-gray-50">
         <!-- Loading lesson data -->
-        <div v-if="isLoading" class="flex items-center justify-center py-24">
-          <div class="w-8 h-8 border-2 border-gray-200 border-t-emerald-500 rounded-full animate-spin" />
+        <div v-if="isLoading" class="flex flex-col items-center justify-center py-32 gap-3">
+          <div class="w-9 h-9 border-2 border-[#5530AB]/20 border-t-[#5530AB] rounded-full animate-spin" />
+          <p class="text-xs font-medium text-gray-400">Memuat editor lesson...</p>
         </div>
 
-        <div v-else class="editor-canvas">
+        <div v-else class="max-w-[860px] mx-auto px-16 sm:px-20 lg:px-24 py-8">
           <!-- Page title (lesson title as big heading) -->
-          <div class="canvas-title-area">
+          <div class="mb-8 pb-6 border-b border-gray-200">
+            <div class="flex items-center gap-2 mb-4">
+              <span
+                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-colors"
+                :class="activeTypeBadgeClass"
+              >
+                <component :is="activeTypeInfo.icon" class="w-3.5 h-3.5" />
+                <span>{{ activeTypeInfo.label }}</span>
+              </span>
+              <span class="text-xs text-gray-300">•</span>
+              <span v-if="lessonForm.xp_reward" class="text-xs font-semibold text-amber-700 bg-amber-100 px-4 py-2 rounded-full">
+                +{{ lessonForm.xp_reward }} XP
+              </span>
+            </div>
+
             <div
-              class="canvas-title-input"
+              ref="canvasTitleRef"
+              class="text-3xl sm:text-4xl font-bold text-gray-900 outline-none w-full leading-tight tracking-tight min-h-[52px] break-words whitespace-pre-wrap caret-[#5530AB] empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 empty:before:font-bold empty:before:pointer-events-none"
               contenteditable="true"
               :data-placeholder="'Judul Lesson...'"
               @input="onTitleInput"
               v-title-init="lessonForm.title"
             />
-            <p class="canvas-subtitle">Tulis konten di sini, atau <strong>paste langsung dari Notion / Google Docs</strong> — heading, list, code akan terdeteksi otomatis.</p>
+            <p class="text-sm text-gray-500 mt-4 leading-relaxed">
+              Mulai menulis konten di bawah, atau paste langsung dari <strong class="text-gray-700 font-semibold">Notion / Google Docs</strong>. Ketik <kbd class="inline-flex items-center px-1.5 py-0.5 text-xs font-mono bg-gray-200 text-gray-700 rounded font-bold mx-1">/</kbd> untuk memilih blok cepat.
+            </p>
           </div>
 
           <!-- Conditional Editors Based on Lesson Type -->
           <ClientOnly>
             <BlockEditor
               v-if="lessonForm.type === 'text'"
+              ref="blockEditorRef"
               v-model="blocks"
               @update:modelValue="onBlocksUpdate"
             />
@@ -166,9 +156,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import {
-  ArrowLeftIcon, CloudArrowUpIcon,
+  ArrowLeftIcon,
+  CloudArrowUpIcon,
+  ArrowPathIcon,
+  SparklesIcon,
+  DocumentTextIcon,
+  VideoCameraIcon,
+  QuestionMarkCircleIcon,
+  TrashIcon,
+  ClockIcon,
+  HashtagIcon,
+  Bars3BottomLeftIcon,
+  LightBulbIcon,
+  ExclamationTriangleIcon,
+  CheckCircleIcon,
+  Square2StackIcon,
+  ClipboardDocumentListIcon
 } from '@heroicons/vue/24/outline'
 import BlockEditor from '~/components/admin/modules/BlockEditor.vue'
 import QuizEditor from '~/components/admin/modules/QuizEditor.vue'
@@ -183,6 +188,29 @@ const lessonId = route.params.lessonId as string
 // ── State ──────────────────────────────────────────────────────
 const isLoading = ref(true)
 const saveStatus = ref<'idle' | 'saving' | 'saved' | 'error'>('idle')
+const canvasTitleRef = ref<HTMLElement | null>(null)
+const blockEditorRef = ref<any>(null)
+
+function copyAllLessonBlocks() {
+  if (blockEditorRef.value?.copyAllBlocks) {
+    blockEditorRef.value.copyAllBlocks()
+  }
+}
+
+function pasteLessonBlocks() {
+  if (blockEditorRef.value?.pasteStoredBlocks) {
+    const success = blockEditorRef.value.pasteStoredBlocks()
+    if (success) {
+      scheduleAutoSave()
+    }
+  }
+}
+
+const lessonTypes = [
+  { value: 'text', label: 'Teks', icon: DocumentTextIcon },
+  { value: 'video', label: 'Video', icon: VideoCameraIcon },
+  { value: 'quiz', label: 'Quiz', icon: QuestionMarkCircleIcon },
+]
 
 const lessonForm = reactive({
   title: '',
@@ -194,6 +222,17 @@ const lessonForm = reactive({
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blocks = ref<any[]>([])
+
+const activeTypeInfo = computed(() => {
+  return lessonTypes.find(t => t.value === lessonForm.type) || lessonTypes[0]
+})
+
+// Disederhanakan menjadi warna solid, menghapus border
+const activeTypeBadgeClass = computed(() => {
+  if (lessonForm.type === 'video') return 'bg-blue-100 text-blue-700'
+  if (lessonForm.type === 'quiz') return 'bg-amber-100 text-amber-700'
+  return 'bg-[#5530AB]/10 text-[#5530AB]'
+})
 
 // ── Fetch lesson data ──────────────────────────────────────────
 interface LessonData {
@@ -211,10 +250,10 @@ async function fetchLesson() {
   try {
     const data = await $fetch<{ lesson: LessonData }>(`/api/admin/lessons/${lessonId}`)
     const lesson = data.lesson
-    lessonForm.title = lesson.title
-    lessonForm.type = lesson.type
+    lessonForm.title = lesson.title || ''
+    lessonForm.type = lesson.type || 'text'
     lessonForm.video_url = lesson.video_url || ''
-    lessonForm.sort_order = lesson.sort_order
+    lessonForm.sort_order = lesson.sort_order || 0
     lessonForm.xp_reward = lesson.xp_reward || 0
     let parsedContent: any = lesson.content
     if (typeof parsedContent === 'string') {
@@ -238,7 +277,7 @@ async function fetchLesson() {
 onMounted(fetchLesson)
 
 // ── Block Editor handlers ─────────────────────────────────────
-function onBlocksUpdate(newBlocks: Block[]) {
+function onBlocksUpdate(newBlocks: any[]) {
   blocks.value = newBlocks
   scheduleAutoSave()
 }
@@ -249,23 +288,26 @@ function onTitleInput(e: Event) {
   scheduleAutoSave()
 }
 
+// Keep canvas title synchronized if updated from sidebar
+watch(() => lessonForm.title, (newTitle) => {
+  if (canvasTitleRef.value && document.activeElement !== canvasTitleRef.value) {
+    if (canvasTitleRef.value.textContent !== newTitle) {
+      canvasTitleRef.value.textContent = newTitle
+    }
+  }
+})
+
 // ── Custom directive: set initial title text ──────────────────
 const vTitleInit = {
   mounted(el: HTMLElement, binding: { value: string }) {
     el.textContent = binding.value || ''
   },
+  updated(el: HTMLElement, binding: { value: string }) {
+    if (document.activeElement !== el && el.textContent !== binding.value) {
+      el.textContent = binding.value || ''
+    }
+  },
 }
-
-// ── Word count ────────────────────────────────────────────────
-const wordCount = computed(() => {
-  const allText = blocks.value
-    .map(b => {
-      if (Array.isArray(b.items)) return b.items.join(' ')
-      return b.content || ''
-    })
-    .join(' ')
-  return allText.trim() ? allText.trim().split(/\s+/).length : 0
-})
 
 // ── Auto-save with debounce ───────────────────────────────────
 let saveTimer: ReturnType<typeof setTimeout> | null = null
@@ -298,125 +340,7 @@ async function saveNow() {
   }
 }
 
-function clearContent() {
-  if (!confirm('Hapus semua blok konten lesson ini?')) return
-  blocks.value = [{ id: crypto.randomUUID(), type: 'paragraph', content: '' }]
-  scheduleAutoSave()
-}
-
 onBeforeUnmount(() => {
   if (saveTimer) clearTimeout(saveTimer)
 })
-
-
 </script>
-
-<style scoped>
-.lesson-editor-root {
-  @apply flex flex-col min-h-screen bg-[#FAFBFC];
-}
-
-/* ── Top Bar ── */
-.editor-topbar {
-  @apply sticky top-0 z-[200] flex items-center justify-between gap-4 px-6 py-3 bg-white border-b border-gray-200 shadow-sm;
-}
-
-/* ── Main Layout ── */
-.editor-main {
-  @apply flex flex-1 min-h-0;
-}
-
-/* ── Left Sidebar ── */
-.editor-metadata-sidebar {
-  @apply hidden lg:flex flex-col w-[280px] shrink-0 bg-white border-r border-gray-200 overflow-y-auto;
-  height: calc(100vh - 57px);
-  position: sticky;
-  top: 57px;
-}
-
-.sidebar-inner {
-  @apply p-5 flex flex-col gap-3;
-}
-
-.sidebar-section-label {
-  @apply text-[0.625rem] font-bold uppercase tracking-widest text-gray-400 mb-1;
-}
-
-.separator {
-  @apply border-t border-gray-100 my-1;
-}
-
-.form-field {
-  @apply flex flex-col gap-1;
-}
-
-.form-label {
-  @apply text-[0.75rem] font-medium text-gray-600;
-}
-
-.form-input {
-  @apply w-full px-3 py-2 rounded-xl border border-gray-200 text-sm text-gray-800 outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10 transition-all bg-white;
-}
-
-.stats-grid {
-  @apply grid grid-cols-2 gap-2;
-}
-
-.stat-item {
-  @apply bg-gray-50 rounded-xl p-3 text-center;
-}
-
-.stat-value {
-  @apply text-xl font-bold text-gray-900;
-}
-
-.stat-label {
-  @apply text-[0.625rem] text-gray-400 uppercase tracking-wider mt-0.5;
-}
-
-.block-type-legend {
-  @apply flex flex-col gap-1;
-}
-
-.legend-item {
-  @apply flex items-center gap-2 text-xs text-gray-600;
-}
-
-.legend-icon {
-  @apply w-6 h-6 flex items-center justify-center bg-gray-100 rounded text-[0.6875rem] font-bold text-gray-600 shrink-0;
-}
-
-/* ── Editor Canvas ── */
-.editor-canvas-wrapper {
-  @apply flex-1 overflow-y-auto;
-}
-
-.editor-canvas {
-  @apply max-w-[780px] mx-auto px-6 lg:px-12 py-10;
-}
-
-.canvas-title-area {
-  @apply mb-6 pb-6 border-b border-gray-100;
-}
-
-.canvas-title-input {
-  @apply text-4xl font-bold text-gray-900 outline-none w-full leading-tight;
-  caret-color: #10B981;
-  white-space: pre-wrap;
-  word-break: break-word;
-  min-height: 52px;
-}
-
-.canvas-title-input:empty::before {
-  content: attr(data-placeholder);
-  @apply text-gray-200 pointer-events-none;
-}
-
-.canvas-subtitle {
-  @apply text-sm text-gray-400 mt-3;
-}
-
-.kbd-key {
-  @apply inline-flex items-center px-1.5 py-0.5 text-xs font-mono bg-gray-100 border border-gray-200 rounded;
-}
-</style>
