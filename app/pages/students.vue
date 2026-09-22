@@ -10,13 +10,7 @@
             <Bars3Icon class="w-5 h-5" />
           </button>
           <div>
-            <div class="flex items-center gap-2 mb-0.5">
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[0.625rem] font-bold tracking-wider uppercase bg-[#5530AB]/10 text-[#5530AB]">
-                <ClipboardDocumentCheckIcon class="w-3 h-3" />
-                Student & Assignment
-              </span>
-            </div>
-            <h1 class="text-base font-semibold text-gray-900 leading-none">Student Management</h1>
+            <h1 class="text-base font-semibold text-gray-900 leading-none">Student Assigment Management</h1>
           </div>
         </div>
 

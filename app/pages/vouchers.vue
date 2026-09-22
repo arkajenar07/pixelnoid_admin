@@ -10,7 +10,6 @@
           </button>
           <div>
             <h1 class="text-base font-medium text-gray-900 leading-none">Voucher Management</h1>
-            <p class="text-xs text-gray-500 mt-0.5">Kelola voucher pengguna</p>
           </div>
         </div>
         <button @click="openAddModal" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-[0.875rem] font-medium transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-rose-500/30">
@@ -21,18 +20,38 @@
 
       <main class="p-6 space-y-6 max-w-[1440px] mx-auto">
         <!-- Stats -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <p class="text-[0.6875rem] font-medium text-gray-500 uppercase tracking-widest">Total Voucher</p>
-            <p class="text-xl font-medium text-gray-900 mt-1">{{ vouchers.length }}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Total Voucher</p>
+              <div class="w-8 h-8 rounded-lg bg-[#5530AB]/10 text-[#5530AB] flex items-center justify-center">
+                <TicketIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ vouchers.length }}</p>
+            <p class="text-xs text-gray-500 mt-1">Seluruh kupon voucher</p>
           </div>
-          <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <p class="text-[0.6875rem] font-medium text-gray-500 uppercase tracking-widest">Available</p>
-            <p class="text-xl font-medium text-emerald-600 mt-1">{{ vouchers.filter(v => v.status === 'available').length }}</p>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Available</p>
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                <CheckCircleIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ vouchers.filter(v => v.status === 'available').length }}</p>
+            <p class="text-xs text-emerald-700 font-semibold mt-1">Siap untuk diklaim</p>
           </div>
-          <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <p class="text-[0.6875rem] font-medium text-gray-500 uppercase tracking-widest">Claimed</p>
-            <p class="text-xl font-medium text-gray-900 mt-1">{{ vouchers.filter(v => v.status === 'claimed').length }}</p>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Claimed</p>
+              <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-700 flex items-center justify-center">
+                <ClockIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ vouchers.filter(v => v.status === 'claimed').length }}</p>
+            <p class="text-xs text-gray-500 mt-1">Sudah terpakai</p>
           </div>
         </div>
 
@@ -221,7 +240,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
-import { Bars3Icon, PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, XMarkIcon, CheckIcon, ExclamationCircleIcon, CheckCircleIcon, TrashIcon, QrCodeIcon } from '@heroicons/vue/24/outline'
+import { Bars3Icon, PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, XMarkIcon, CheckIcon, ExclamationCircleIcon, CheckCircleIcon, TrashIcon, QrCodeIcon, ClockIcon } from '@heroicons/vue/24/outline'
 import { TicketIcon } from '@heroicons/vue/24/solid'
 import QRCode from 'qrcode'
 

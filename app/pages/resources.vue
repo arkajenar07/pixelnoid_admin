@@ -14,7 +14,6 @@
           </button>
           <div>
             <h1 class="text-base font-semibold text-gray-900 leading-none">Resource Management</h1>
-            <p class="text-xs text-gray-500 mt-1">Kelola materi, ebook, template, dan link per kelas belajar</p>
           </div>
         </div>
 
@@ -30,25 +29,52 @@
       <main class="p-6 space-y-6 max-w-[1440px] mx-auto">
         <!-- Stats Summary -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white border border-gray-200 rounded-lg p-4">
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Resource</p>
-            <p class="text-2xl font-bold text-gray-900 mt-1">{{ resources.length }}</p>
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Total Resource</p>
+              <div class="w-8 h-8 rounded-lg bg-[#5530AB]/10 text-[#5530AB] flex items-center justify-center">
+                <FolderIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ resources.length }}</p>
+            <p class="text-xs text-gray-500 mt-1">Seluruh materi & aset</p>
           </div>
-          <div class="bg-white border border-gray-200 rounded-lg p-4">
-            <p class="text-xs font-medium text-[#5530AB] uppercase tracking-wider">Kelas Terdaftar</p>
-            <p class="text-2xl font-bold text-[#5530AB] mt-1">{{ classes.length }}</p>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Kelas Terdaftar</p>
+              <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-700 flex items-center justify-center">
+                <AcademicCapIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ classes.length }}</p>
+            <p class="text-xs text-gray-500 mt-1">Kelas terafiliasi</p>
           </div>
-          <div class="bg-white border border-gray-200 rounded-lg p-4">
-            <p class="text-xs font-medium text-indigo-600 uppercase tracking-wider">E-Book & Panduan</p>
-            <p class="text-2xl font-bold text-indigo-600 mt-1">
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">E-Book & Panduan</p>
+              <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                <BookOpenIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">
               {{ resources.filter(r => r.type === 'ebook' || r.type === 'pdf' || r.type === 'document').length }}
             </p>
+            <p class="text-xs text-indigo-700 font-semibold mt-1">Dokumen bacaan</p>
           </div>
-          <div class="bg-white border border-gray-200 rounded-lg p-4">
-            <p class="text-xs font-medium text-purple-600 uppercase tracking-wider">Template & Tools</p>
-            <p class="text-2xl font-bold text-purple-600 mt-1">
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Template & Tools</p>
+              <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center">
+                <WrenchScrewdriverIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">
               {{ resources.filter(r => ['template', 'figma', 'tool', 'video', 'cheatsheet', 'github'].includes(r.type || '')).length }}
             </p>
+            <p class="text-xs text-purple-700 font-semibold mt-1">Peralatan belajar</p>
           </div>
         </div>
 
@@ -445,7 +471,9 @@ import {
   CheckIcon,
   ExclamationCircleIcon,
   ArrowTopRightOnSquareIcon,
-  AcademicCapIcon
+  AcademicCapIcon,
+  BookOpenIcon,
+  WrenchScrewdriverIcon
 } from '@heroicons/vue/24/outline'
 
 useSeoMeta({

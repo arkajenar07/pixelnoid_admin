@@ -11,7 +11,6 @@
           </button>
           <div>
             <h1 class="text-base font-medium text-gray-900 leading-none">Settings</h1>
-            <p class="text-xs text-gray-500 mt-0.5">Kelola konfigurasi platform</p>
           </div>
         </div>
       </header>

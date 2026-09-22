@@ -5,9 +5,7 @@ import {
   SparklesIcon,
   DocumentChartBarIcon,
   DocumentTextIcon,
-  CodeBracketSquareIcon,
   ClipboardDocumentCheckIcon,
-  ClipboardDocumentIcon,
   PrinterIcon,
   PlusIcon,
   TrashIcon,
@@ -28,8 +26,8 @@ import {
 // State Sidebar Mobile
 const sidebarOpen = ref(false)
 
-// Tabs tampilan hasil: 'visual' | 'text' | 'json' | 'history'
-const activeResultTab = ref<'visual' | 'text' | 'json' | 'history'>('visual')
+// Tabs tampilan hasil: 'visual' | 'history'
+const activeResultTab = ref<'visual' | 'history'>('visual')
 
 // Status generate AI
 const isGenerating = ref(false)
@@ -848,7 +846,8 @@ onMounted(() => {
           >
             <Bars3Icon class="w-5 h-5" />
           </button>
-          <div>
+          <div class="flex flex-col gap-4">
+            <h1 class="text-base font-bold text-gray-900 leading-none">Student Progress Report Generator</h1>
             <div class="flex items-center gap-2 mb-0.5">
               <span class="inline-flex items-center gap-1.5 px-2 py-0.5 border border-[#5530AB]/20 bg-[#5530AB]/5 text-[0.6875rem] font-semibold text-[#5530AB]">
                 <SparklesIcon class="w-3.5 h-3.5" />
@@ -857,7 +856,6 @@ onMounted(() => {
               <span class="text-xs text-gray-400">•</span>
               <span class="text-xs text-gray-500">Gemini 3.6 Flash</span>
             </div>
-            <h1 class="text-base font-bold text-gray-900 leading-none">Student Progress Report Generator</h1>
           </div>
         </div>
 
@@ -1408,24 +1406,6 @@ onMounted(() => {
                 </button>
                 <button
                   type="button"
-                  @click="activeResultTab = 'text'"
-                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
-                  :class="activeResultTab === 'text' ? 'bg-white text-gray-900 border border-gray-200' : 'text-gray-500 hover:text-gray-900 border border-transparent'"
-                >
-                  <DocumentTextIcon class="w-4 h-4" />
-                  Teks
-                </button>
-                <button
-                  type="button"
-                  @click="activeResultTab = 'json'"
-                  class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
-                  :class="activeResultTab === 'json' ? 'bg-white text-gray-900 border border-gray-200' : 'text-gray-500 hover:text-gray-900 border border-transparent'"
-                >
-                  <CodeBracketSquareIcon class="w-4 h-4" />
-                  JSON
-                </button>
-                <button
-                  type="button"
                   @click="activeResultTab = 'history'"
                   class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
                   :class="activeResultTab === 'history' ? 'bg-white text-gray-900 border border-gray-200' : 'text-gray-500 hover:text-gray-900 border border-transparent'"
@@ -1541,53 +1521,7 @@ onMounted(() => {
               <ProgressReportDocument :report="reportResult" />
             </div>
 
-            <!-- TAB 2: PLAIN TEXT OUTPUT -->
-            <div
-              v-if="reportResult && activeResultTab === 'text'"
-              class="bg-white border border-gray-200 p-6 space-y-4 print:hidden"
-            >
-              <div class="flex items-center justify-between">
-                <div>
-                  <h4 class="text-sm font-bold text-gray-900 uppercase">Format Plain Text</h4>
-                </div>
-                <button
-                  type="button"
-                  @click="copyToClipboard(reportResult?.human_readable_text || '', 'Teks Laporan')"
-                  class="flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold transition-colors cursor-pointer"
-                >
-                  <ClipboardDocumentCheckIcon class="w-4 h-4" />
-                  Salin Teks
-                </button>
-              </div>
-              <div class="relative">
-                <pre class="w-full p-4 bg-gray-50 text-[#121212] font-mono text-xs overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-[600px] border border-gray-300">{{ reportResult.human_readable_text }}</pre>
-              </div>
-            </div>
-
-            <!-- TAB 3: MACHINE READABLE JSON -->
-            <div
-              v-if="reportResult && activeResultTab === 'json'"
-              class="bg-white border border-gray-200 p-6 space-y-4 print:hidden"
-            >
-              <div class="flex items-center justify-between">
-                <div>
-                  <h4 class="text-sm font-bold text-gray-900 uppercase">Format JSON</h4>
-                </div>
-                <button
-                  type="button"
-                  @click="copyToClipboard(JSON.stringify(reportResult, null, 2), 'JSON Laporan')"
-                  class="flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 bg-white hover:bg-gray-50 text-gray-800 text-xs font-bold transition-colors cursor-pointer"
-                >
-                  <ClipboardDocumentIcon class="w-4 h-4" />
-                  Salin JSON
-                </button>
-              </div>
-              <div class="relative">
-                <pre class="w-full p-4 bg-gray-50 text-[#121212] font-mono text-xs overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-[600px] border border-gray-300">{{ JSON.stringify(reportResult, null, 2) }}</pre>
-              </div>
-            </div>
-
-            <!-- TAB 4: RIWAYAT LAPORAN TERSIMPAN -->
+            <!-- TAB 2: RIWAYAT LAPORAN TERSIMPAN -->
             <div
               v-if="activeResultTab === 'history'"
               class="bg-white border border-gray-200 p-6 space-y-4 print:hidden"

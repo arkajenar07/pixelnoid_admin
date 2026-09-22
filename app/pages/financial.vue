@@ -10,7 +10,6 @@
           </button>
           <div>
             <h1 class="text-base font-semibold text-gray-900 leading-none">Financial Tracker</h1>
-            <p class="text-xs text-gray-500 mt-1">Kelola pemasukan dan pengeluaran platform</p>
           </div>
         </div>
         <button @click="openAddModal" class="flex items-center gap-2 px-4 py-2 rounded-md bg-[#5530AB] hover:bg-[#432687] text-white text-sm font-medium transition-colors">
@@ -22,21 +21,48 @@
       <main class="p-6 space-y-6 max-w-[1440px] mx-auto">
         <!-- Stats -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white border border-gray-200 rounded-md p-4">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Pemasukan</p>
-            <p class="text-2xl font-bold text-emerald-600 mt-1">{{ formatCurrency(totalIncome) }}</p>
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Total Pemasukan</p>
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                <ArrowTrendingUpIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ formatCurrency(totalIncome) }}</p>
+            <p class="text-xs text-emerald-700 font-semibold mt-1">Akumulasi penerimaan</p>
           </div>
-          <div class="bg-white border border-gray-200 rounded-md p-4">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Pengeluaran</p>
-            <p class="text-2xl font-bold text-red-600 mt-1">{{ formatCurrency(totalExpense) }}</p>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Total Pengeluaran</p>
+              <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center">
+                <ArrowTrendingDownIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ formatCurrency(totalExpense) }}</p>
+            <p class="text-xs text-rose-700 font-semibold mt-1">Akumulasi pengeluaran</p>
           </div>
-          <div class="bg-white border border-gray-200 rounded-md p-4">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Saldo Bersih</p>
-            <p class="text-2xl font-bold text-gray-900 mt-1">{{ formatCurrency(totalIncome - totalExpense) }}</p>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Saldo Bersih</p>
+              <div class="w-8 h-8 rounded-lg bg-[#5530AB]/10 text-[#5530AB] flex items-center justify-center">
+                <ScaleIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ formatCurrency(totalIncome - totalExpense) }}</p>
+            <p class="text-xs text-gray-500 mt-1">Kas operasional aktif</p>
           </div>
-          <div class="bg-white border border-gray-200 rounded-md p-4">
-            <p class="text-xs font-semibold text-[#5530AB] uppercase tracking-wider">Total Transaksi</p>
-            <p class="text-2xl font-bold text-[#5530AB] mt-1">{{ records.length }}</p>
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Total Transaksi</p>
+              <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-700 flex items-center justify-center">
+                <ReceiptPercentIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ records.length }}</p>
+            <p class="text-xs text-gray-500 mt-1">Seluruh mutasi tercatat</p>
           </div>
         </div>
 
@@ -225,7 +251,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
-import { Bars3Icon, PlusIcon, MagnifyingGlassIcon, BanknotesIcon, PencilSquareIcon, XMarkIcon, CheckIcon, ExclamationCircleIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { Bars3Icon, PlusIcon, MagnifyingGlassIcon, BanknotesIcon, PencilSquareIcon, XMarkIcon, CheckIcon, ExclamationCircleIcon, TrashIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon, ScaleIcon, ReceiptPercentIcon } from '@heroicons/vue/24/outline'
 
 useSeoMeta({ title: 'Financial Tracker — Admin Pixelnoid' })
 definePageMeta({ layout: false })

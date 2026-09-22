@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col min-h-screen bg-gray-50 font-['Instrument_Sans','Raleway',sans-serif]">
+  <div class="flex flex-col min-h-screen bg-gray-50 font-sans">
 
     <!-- ── Top Nav Bar ── -->
     <header class="sticky top-0 z-50 flex items-center justify-between gap-4 px-6 py-4 bg-white border-b border-gray-200">

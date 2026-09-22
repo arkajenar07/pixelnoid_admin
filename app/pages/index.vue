@@ -1,100 +1,93 @@
 <template>
-  <div class="min-h-screen bg-[#F8F9FD] font-['Instrument_Sans','Raleway',sans-serif] relative overflow-x-hidden">
+  <div class="min-h-screen bg-gray-50 font-sans relative overflow-x-hidden">
     <AdminSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
 
-    <div class="lg:ml-[260px] flex-1 min-w-0 relative z-10 flex flex-col">
-      <header class="sticky top-0 z-[100] flex items-center gap-4 px-6 py-4 bg-[#F8F9FD]/85 backdrop-blur-xl border-b border-gray-200">
-        <button class="lg:hidden p-2 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors" @click="sidebarOpen = !sidebarOpen" aria-label="Menu">
+    <div class="lg:ml-[260px] flex-1 min-w-0 flex flex-col">
+      <!-- Header -->
+      <header class="sticky top-0 z-[100] flex items-center gap-4 px-6 py-4 bg-white border-b border-gray-200">
+        <button class="lg:hidden p-2 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors" @click="sidebarOpen = !sidebarOpen" aria-label="Menu">
           <Bars3Icon class="w-5 h-5" />
         </button>
         <div class="flex-1">
-          <div class="flex items-center gap-2 mb-0.5">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-rose-500/20 bg-rose-500/[0.04] text-[0.625rem] font-bold tracking-wider uppercase text-rose-600">
-              <Squares2X2Icon class="w-3 h-3" />
-              Admin Overview
-            </span>
-          </div>
-          <h1 class="text-[1.0625rem] font-medium text-gray-900 m-0 tracking-tight mt-2">
+          <h1 class="text-lg font-semibold text-gray-900 m-0">
             System overview and quick metrics.
           </h1>
         </div>
       </header>
 
-      <main class="p-6 lg:p-8 flex flex-col gap-8">
+      <main class="p-6 lg:p-8 flex flex-col gap-6">
         <!-- Overview Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
-          <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 blur-[40px] rounded-full group-hover:bg-rose-500/10 transition-colors"></div>
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-                <UsersIcon class="w-5 h-5" />
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Stat Total Students -->
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Total Students</p>
+              <div class="w-8 h-8 rounded-lg bg-[#5530AB]/10 text-[#5530AB] flex items-center justify-center">
+                <UsersIcon class="w-4 h-4" />
               </div>
-              <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Students</h3>
             </div>
-            <p class="text-3xl font-black text-gray-900 tracking-tight">{{ totalStudents }}</p>
-            <div class="flex items-center gap-2 mt-2 text-[0.6875rem] font-bold text-emerald-600">
-              <span>Updated</span>
-            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ totalStudents }}</p>
+            <p class="text-xs text-gray-500 mt-1">Siswa terdaftar di platform</p>
           </div>
           
-          <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[40px] rounded-full group-hover:bg-indigo-500/10 transition-colors"></div>
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <AcademicCapIcon class="w-5 h-5" />
+          <!-- Stat Active Mentors -->
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Active Mentors</p>
+              <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-700 flex items-center justify-center">
+                <AcademicCapIcon class="w-4 h-4" />
               </div>
-              <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Active Mentors</h3>
             </div>
-            <p class="text-3xl font-black text-gray-900 tracking-tight">{{ totalMentors }}</p>
-            <div class="flex items-center gap-2 mt-2 text-[0.6875rem] font-bold text-emerald-600">
-              <span>Updated</span>
-            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ totalMentors }}</p>
+            <p class="text-xs text-gray-500 mt-1">Mentor aktif pembimbing</p>
           </div>
 
-          <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[40px] rounded-full group-hover:bg-emerald-500/10 transition-colors"></div>
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <BanknotesIcon class="w-5 h-5" />
+          <!-- Stat Saldo -->
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Saldo Bulan Ini</p>
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                <BanknotesIcon class="w-4 h-4" />
               </div>
-              <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Saldo Bulan Ini</h3>
             </div>
-            <p class="text-3xl font-black text-gray-900 tracking-tight">{{ formatCurrency(currentMonthBalance) }}</p>
-            <div class="flex items-center gap-2 mt-2 text-[0.6875rem] font-bold text-emerald-600">
-              <span>Updated</span>
-            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ formatCurrency(currentMonthBalance) }}</p>
+            <p class="text-xs text-emerald-700 font-semibold mt-1">Pembaruan bulan berjalan</p>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          <!-- Recent Activity Log -->
-          <div class="xl:col-span-2 flex flex-col gap-6">
+        <div class="grid gap-6">
+          <div class="flex flex-col gap-6">
             
             <!-- Upcoming Schedules -->
-            <div class="bg-white rounded-[2rem] border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-              <div class="p-6 lg:p-7 border-b border-gray-100 flex items-center justify-between">
-                <h2 class="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-2">
-                  <CalendarDaysIcon class="w-5 h-5 text-indigo-500" />
+            <div class="bg-white rounded-lg border border-gray-200 flex flex-col overflow-hidden">
+              <div class="p-5 border-b border-gray-200 flex items-center justify-between">
+                <h2 class="text-base font-semibold text-gray-900 flex items-center gap-2">
+                  <CalendarDaysIcon class="w-5 h-5 text-[#5530AB]" />
                   Upcoming Schedules
                 </h2>
-                <NuxtLink to="/schedules" class="text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors">Kelola Jadwal →</NuxtLink>
+                <NuxtLink to="/schedules" class="text-sm font-medium text-[#5530AB] hover:underline">Kelola Jadwal →</NuxtLink>
               </div>
-              <div class="p-6">
-                <div v-if="upcomingSchedules.length === 0" class="flex flex-col items-center justify-center py-10 text-center">
+              <div class="p-0">
+                <div v-if="upcomingSchedules.length === 0" class="flex flex-col items-center justify-center py-12 text-center">
                   <CalendarDaysIcon class="w-8 h-8 text-gray-300 mb-2" />
-                  <p class="text-sm text-gray-500 font-medium">Belum ada jadwal terdekat.</p>
+                  <p class="text-sm font-medium text-gray-500">Belum ada jadwal terdekat.</p>
                 </div>
-                <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div v-for="s in upcomingSchedules" :key="s.id" class="flex items-start gap-4 p-4 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group shadow-sm hover:shadow-md">
-                    <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex flex-col items-center justify-center shrink-0 border border-indigo-100 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
-                      <span class="text-sm font-black leading-none">{{ new Date(s.start_at).getDate() }}</span>
-                      <span class="text-[0.6rem] font-bold uppercase mt-0.5">{{ new Date(s.start_at).toLocaleString('id-ID', { month: 'short' }) }}</span>
+                <div v-else class="flex flex-col">
+                  <div v-for="s in upcomingSchedules" :key="s.id" class="flex items-start gap-4 p-5 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                    <div class="w-12 h-12 rounded-md bg-[#5530AB] text-white flex flex-col items-center justify-center shrink-0">
+                      <span class="text-base font-bold leading-none">{{ new Date(s.start_at).getDate() }}</span>
+                      <span class="text-[0.65rem] font-medium uppercase mt-1">{{ new Date(s.start_at).toLocaleString('id-ID', { month: 'short' }) }}</span>
                     </div>
                     <div class="min-w-0 flex-1">
-                      <h3 class="text-[0.9rem] font-bold text-gray-900 truncate">{{ s.title }}</h3>
-                      <p class="text-[0.75rem] text-gray-500 mt-0.5 flex items-center gap-1"><ClockIcon class="w-3 h-3"/> {{ formatTime(s.start_at) }} - {{ formatTime(s.end_at) }}</p>
-                      <div class="flex gap-1.5 mt-2 overflow-x-hidden">
-                        <span v-if="s.mentor_email" class="text-[0.65rem] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-md truncate max-w-full border border-emerald-100" title="Mentor">M: {{ s.mentor_email.split('@')[0] }}</span>
+                      <h3 class="text-sm font-bold text-gray-900 truncate">{{ s.title }}</h3>
+                      <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                        <ClockIcon class="w-3.5 h-3.5"/> 
+                        {{ formatTime(s.start_at) }} - {{ formatTime(s.end_at) }}
+                      </p>
+                      <div class="mt-2" v-if="s.mentor_email">
+                        <span class="text-xs font-medium px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md">
+                          Mentor: {{ s.mentor_email.split('@')[0] }}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -106,46 +99,46 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               <!-- New Students -->
-              <div class="bg-white rounded-[2rem] border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-gray-100 flex items-center justify-between">
-                  <h2 class="text-base font-bold text-gray-900 tracking-tight flex items-center gap-2">
-                    <AcademicCapIcon class="w-4 h-4 text-rose-500" />
+              <div class="bg-white rounded-lg border border-gray-200 flex flex-col overflow-hidden">
+                <div class="p-5 border-b border-gray-200 flex items-center justify-between">
+                  <h2 class="text-base font-semibold text-gray-900 flex items-center gap-2">
+                    <AcademicCapIcon class="w-5 h-5 text-[#5530AB]" />
                     Pendaftar Student
                   </h2>
-                  <NuxtLink to="/users" class="text-[0.8rem] font-bold text-rose-600 hover:underline">Semua</NuxtLink>
+                  <NuxtLink to="/users" class="text-sm font-medium text-[#5530AB] hover:underline">Semua</NuxtLink>
                 </div>
                 <div class="p-0">
-                  <div v-if="recentStudents.length === 0" class="py-10 text-center text-sm text-gray-500">Belum ada student.</div>
-                  <div v-for="u in recentStudents" :key="u.id" class="flex items-center gap-3 p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
-                    <div class="w-9 h-9 rounded-full bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center text-xs font-bold shrink-0">
+                  <div v-if="recentStudents.length === 0" class="py-8 text-center text-sm text-gray-500">Belum ada student.</div>
+                  <div v-for="u in recentStudents" :key="u.id" class="flex items-center gap-3 p-4 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                    <div class="w-10 h-10 rounded-md bg-[#5530AB] text-white flex items-center justify-center text-sm font-bold shrink-0">
                       {{ u.fullname.charAt(0).toUpperCase() }}
                     </div>
                     <div class="min-w-0 flex-1">
-                      <p class="text-[0.875rem] font-bold text-gray-900 truncate">{{ u.fullname }}</p>
-                      <p class="text-[0.7rem] text-gray-500 truncate">{{ u.email || u.username }}</p>
+                      <p class="text-sm font-semibold text-gray-900 truncate">{{ u.fullname }}</p>
+                      <p class="text-xs text-gray-500 truncate mt-0.5">{{ u.email || u.username }}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <!-- New Mentors -->
-              <div class="bg-white rounded-[2rem] border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-gray-100 flex items-center justify-between">
-                  <h2 class="text-base font-bold text-gray-900 tracking-tight flex items-center gap-2">
-                    <UserCircleIcon class="w-4 h-4 text-emerald-500" />
+              <div class="bg-white rounded-lg border border-gray-200 flex flex-col overflow-hidden">
+                <div class="p-5 border-b border-gray-200 flex items-center justify-between">
+                  <h2 class="text-base font-semibold text-gray-900 flex items-center gap-2">
+                    <UserCircleIcon class="w-5 h-5 text-[#5530AB]" />
                     Pendaftar Mentor
                   </h2>
-                  <NuxtLink to="/users" class="text-[0.8rem] font-bold text-emerald-600 hover:underline">Semua</NuxtLink>
+                  <NuxtLink to="/users" class="text-sm font-medium text-[#5530AB] hover:underline">Semua</NuxtLink>
                 </div>
                 <div class="p-0">
-                  <div v-if="recentMentors.length === 0" class="py-10 text-center text-sm text-gray-500">Belum ada mentor.</div>
-                  <div v-for="u in recentMentors" :key="u.id" class="flex items-center gap-3 p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
-                    <div class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center text-xs font-bold shrink-0">
+                  <div v-if="recentMentors.length === 0" class="py-8 text-center text-sm text-gray-500">Belum ada mentor.</div>
+                  <div v-for="u in recentMentors" :key="u.id" class="flex items-center gap-3 p-4 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                    <div class="w-10 h-10 rounded-md bg-[#5530AB] text-white flex items-center justify-center text-sm font-bold shrink-0">
                       {{ u.fullname.charAt(0).toUpperCase() }}
                     </div>
                     <div class="min-w-0 flex-1">
-                      <p class="text-[0.875rem] font-bold text-gray-900 truncate">{{ u.fullname }}</p>
-                      <p class="text-[0.7rem] text-gray-500 truncate">{{ u.email || u.username }}</p>
+                      <p class="text-sm font-semibold text-gray-900 truncate">{{ u.fullname }}</p>
+                      <p class="text-xs text-gray-500 truncate mt-0.5">{{ u.email || u.username }}</p>
                     </div>
                   </div>
                 </div>
@@ -167,12 +160,7 @@ import {
   Squares2X2Icon, 
   UsersIcon, 
   AcademicCapIcon, 
-  ShieldExclamationIcon, 
   BanknotesIcon,
-  UserPlusIcon,
-  ArrowPathIcon,
-  ExclamationCircleIcon,
-  ArrowRightIcon,
   CalendarDaysIcon,
   UserCircleIcon,
   ClockIcon
@@ -226,7 +214,7 @@ const fetchStats = async () => {
         .slice(0, 4)
     }
 
-    // 2. Fetch Financial Records from API
+    // 3. Fetch Financial Records from API
     const now = new Date()
     const { financial } = await $fetch<{ financial: any[] }>('/api/admin/financial')
     if (financial) {

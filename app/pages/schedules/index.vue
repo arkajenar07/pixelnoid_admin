@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-[#F7F7F9] text-gray-900 antialiased overflow-x-hidden" style="font-family: 'Instrument Sans', Inter, sans-serif">
+  <div class="flex min-h-screen bg-[#F7F7F9] text-gray-900 antialiased overflow-x-hidden">
     <AdminSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
     <div class="flex-1 w-full min-w-0 lg:ml-[260px]">
 
@@ -10,8 +10,7 @@
             <Bars3Icon class="w-5 h-5" />
           </button>
           <div>
-            <h1 class="text-base font-medium text-gray-900 leading-none">Jadwal Mengajar</h1>
-            <p class="text-xs text-gray-500 mt-0.5">Kelola jadwal dan sinkronisasi ke Google Calendar</p>
+            <h1 class="text-base font-bold text-gray-900 leading-none">Jadwal Mengajar</h1>
           </div>
         </div>
         <NuxtLink

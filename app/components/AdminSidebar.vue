@@ -132,7 +132,7 @@ watch(() => route.path, () => {
           <!-- Dropdown Header/Trigger -->
           <button
             @click="toggleGroup(group.title)"
-            class="flex items-center justify-between w-full px-3 py-2 text-xs font-bold tracking-wider text-gray-500 uppercase rounded-md hover:bg-gray-50 transition-colors"
+            class="flex items-center justify-between w-full px-3 py-2 text-xs font-bold tracking-wider text-gray-500 rounded-md hover:bg-gray-50 transition-colors"
           >
             <span>{{ group.title }}</span>
             <ChevronDownIcon

@@ -1,141 +1,136 @@
 <template>
-  <div class="flex min-h-screen bg-[#F7F7F9] antialiased font-['Instrument_Sans','Raleway',sans-serif]">
+  <div class="flex min-h-screen bg-gray-50 antialiased font-sans">
     <AdminSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
 
     <div class="flex-1 w-full min-w-0 lg:ml-[260px] flex flex-col">
-
       <!-- Topbar -->
-      <header class="sticky top-0 z-[100] flex items-center justify-between gap-4 px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
+      <header class="sticky top-0 z-[100] flex items-center justify-between gap-4 px-6 py-4 bg-white border-b border-gray-200">
         <div class="flex items-center gap-4">
-          <button class="lg:hidden p-2 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors" @click="sidebarOpen = !sidebarOpen">
+          <button class="lg:hidden p-2 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors" @click="sidebarOpen = !sidebarOpen">
             <Bars3Icon class="w-5 h-5" />
           </button>
           <div>
-            <div class="flex items-center gap-2 mb-0.5">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-violet-500/20 bg-violet-500/[0.04] text-[0.625rem] font-bold tracking-wider uppercase text-violet-600">
-                <AcademicCapIcon class="w-3 h-3" />
-                Registrasi
-              </span>
-            </div>
-            <h1 class="text-base font-semibold text-gray-900">Register Kelas</h1>
+            <h1 class="text-lg font-semibold text-gray-900 m-0">Register Kelas</h1>
           </div>
         </div>
 
         <button
           @click="openRegisterModal"
-          class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-violet-500/20"
+          class="flex items-center gap-2 px-4 py-2 rounded-md bg-[#5530AB] hover:bg-[#432687] text-white text-sm font-medium transition-colors"
         >
           <PlusIcon class="w-4 h-4" />
           Daftarkan Student
         </button>
       </header>
 
-      <main class="p-6 max-w-[960px] mx-auto w-full space-y-5">
-
+      <main class="p-6 mx-auto w-full flex flex-col gap-6">
         <!-- Stats Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
-              <UsersIcon class="w-5 h-5 text-violet-600" />
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Total Registrasi</p>
+              <div class="w-8 h-8 rounded-lg bg-[#5530AB]/10 text-[#5530AB] flex items-center justify-center">
+                <UsersIcon class="w-4 h-4" />
+              </div>
             </div>
-            <div>
-              <p class="text-2xl font-bold text-gray-900">{{ members.length }}</p>
-              <p class="text-xs text-gray-500 mt-0.5">Total Registrasi</p>
-            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ members.length }}</p>
+            <p class="text-xs text-gray-500 mt-1">Siswa terdaftar di seluruh kelas</p>
           </div>
-          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-              <AcademicCapIcon class="w-5 h-5 text-emerald-600" />
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Student Terdaftar</p>
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                <AcademicCapIcon class="w-4 h-4" />
+              </div>
             </div>
-            <div>
-              <p class="text-2xl font-bold text-gray-900">{{ uniqueStudents }}</p>
-              <p class="text-xs text-gray-500 mt-0.5">Student Terdaftar</p>
-            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ uniqueStudents }}</p>
+            <p class="text-xs text-emerald-700 font-semibold mt-1">Siswa unik</p>
           </div>
-          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex items-center gap-4 col-span-2 sm:col-span-1">
-            <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
-              <BookOpenIcon class="w-5 h-5 text-blue-600" />
+
+          <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">Kelas Tersedia</p>
+              <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+                <BookOpenIcon class="w-4 h-4" />
+              </div>
             </div>
-            <div>
-              <p class="text-2xl font-bold text-gray-900">{{ classes.length }}</p>
-              <p class="text-xs text-gray-500 mt-0.5">Kelas Tersedia</p>
-            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ classes.length }}</p>
+            <p class="text-xs text-gray-500 mt-1">Program & materi aktif</p>
           </div>
         </div>
 
         <!-- Filter + Search -->
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <div class="relative w-full sm:w-64">
-            <MagnifyingGlassIcon class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <div class="relative w-full sm:w-72">
+            <MagnifyingGlassIcon class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               v-model="search"
               type="text"
               placeholder="Cari nama atau email student..."
-              class="w-full pl-10 pr-4 h-10 rounded-xl border border-gray-200 text-sm outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/10 transition-all bg-white"
+              class="w-full pl-9 pr-4 h-10 rounded-md border border-gray-200 text-sm bg-white focus:border-[#5530AB] outline-none transition-colors"
             />
           </div>
-          <select v-model="filterClass" class="h-10 px-3.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-violet-500/50 transition-all bg-white cursor-pointer">
+          <select v-model="filterClass" class="h-10 px-3 rounded-md border border-gray-200 text-sm bg-white focus:border-[#5530AB] outline-none transition-colors cursor-pointer min-w-[180px]">
             <option value="">Semua Kelas</option>
             <option v-for="c in classes" :key="c.id" :value="c.id">{{ c.name }}</option>
           </select>
         </div>
 
         <!-- Table -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <!-- Loading -->
-          <div v-if="isLoading" class="flex items-center justify-center py-20">
-            <div class="w-8 h-8 border-2 border-gray-200 border-t-violet-500 rounded-full animate-spin" />
+          <div v-if="isLoading" class="flex flex-col items-center justify-center py-16">
+            <div class="w-8 h-8 border-2 border-gray-200 border-t-[#5530AB] rounded-full animate-spin"></div>
+            <p class="text-sm text-gray-500 mt-4">Memuat data...</p>
           </div>
 
           <!-- Empty -->
-          <div v-else-if="filteredMembers.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="w-14 h-14 rounded-2xl bg-violet-50 flex items-center justify-center mb-4">
-              <AcademicCapIcon class="w-7 h-7 text-violet-300" />
-            </div>
-            <p class="text-sm font-semibold text-gray-700 mb-1">Belum ada registrasi</p>
-            <p class="text-xs text-gray-400">Daftarkan student ke kelas menggunakan tombol di atas.</p>
+          <div v-else-if="filteredMembers.length === 0" class="flex flex-col items-center justify-center py-16 text-center px-4">
+            <AcademicCapIcon class="w-12 h-12 text-gray-300 mb-4" />
+            <p class="text-base font-medium text-gray-900">Belum ada registrasi</p>
+            <p class="text-sm text-gray-500 mt-1">Daftarkan student ke kelas menggunakan tombol di atas.</p>
           </div>
 
           <!-- Data Table -->
-          <table v-else class="w-full text-sm">
-            <thead class="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th class="px-5 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Student</th>
-                <th class="px-5 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kelas</th>
-                <th class="px-5 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Tanggal Daftar</th>
-                <th class="px-5 py-3.5 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
+          <table v-else class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="px-5 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wide">Student</th>
+                <th class="px-5 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wide">Kelas</th>
+                <th class="px-5 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wide hidden sm:table-cell">Tanggal Daftar</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wide">Aksi</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-50">
-              <tr v-for="m in filteredMembers" :key="m.id" class="hover:bg-gray-50/70 transition-colors group">
+            <tbody class="divide-y divide-gray-200 text-sm">
+              <tr v-for="m in filteredMembers" :key="m.id" class="hover:bg-gray-50 transition-colors">
                 <td class="px-5 py-4">
                   <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-white text-sm font-semibold shrink-0 shadow-sm">
+                    <div class="w-10 h-10 rounded-md bg-[#5530AB] flex items-center justify-center text-white text-sm font-bold shrink-0">
                       {{ getInitials(m.users?.fullname || m.users?.username || '?') }}
                     </div>
-                    <div class="min-w-0">
-                      <p class="font-semibold text-gray-900 truncate leading-tight">{{ m.users?.fullname || '—' }}</p>
-                      <p class="text-xs text-gray-400 truncate mt-0.5">@{{ m.users?.username || '—' }}</p>
+                    <div class="min-w-0 flex-1">
+                      <p class="font-semibold text-gray-900 truncate">{{ m.users?.fullname || '—' }}</p>
+                      <p class="text-xs text-gray-500 truncate mt-0.5">@{{ m.users?.username || '—' }}</p>
                     </div>
                   </div>
                 </td>
                 <td class="px-5 py-4">
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-100 text-blue-700 text-xs font-semibold">
-                    <BookOpenIcon class="w-3 h-3" />
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-200 text-gray-800 text-xs font-medium">
+                    <BookOpenIcon class="w-3.5 h-3.5 text-gray-500" />
                     {{ m.class?.name || '—' }}
                   </span>
                 </td>
                 <td class="px-5 py-4 hidden sm:table-cell">
-                  <p class="text-gray-500 text-xs">{{ formatDate(m.created_at) }}</p>
+                  <p class="text-gray-600 text-sm">{{ formatDate(m.created_at) }}</p>
                 </td>
                 <td class="px-5 py-4 text-right">
                   <button
                     @click="removeMember(m)"
-                    class="p-1.5 rounded-lg text-gray-300 group-hover:text-gray-400 hover:!text-rose-500 hover:bg-rose-50 transition-all"
+                    class="p-1.5 rounded-md text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors inline-flex"
                     title="Hapus registrasi"
                   >
-                    <TrashIcon class="w-4 h-4" />
+                    <TrashIcon class="w-5 h-5" />
                   </button>
                 </td>
               </tr>
@@ -147,35 +142,35 @@
 
     <!-- ═══════════════ Register Modal ═══════════════ -->
     <Teleport to="body">
-      <Transition name="modal">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95"
+      >
         <div v-if="modal.open" class="fixed inset-0 z-[500] flex items-center justify-center p-4">
-          <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" @click="modal.open = false" />
-          <div class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-
+          <div class="absolute inset-0 bg-gray-900/50" @click="modal.open = false" />
+          <div class="relative w-full max-w-md bg-white rounded-lg shadow-xl flex flex-col">
+            
             <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-violet-600 to-violet-500">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-                  <AcademicCapIcon class="w-4 h-4 text-white" />
-                </div>
-                <h2 class="text-base font-semibold text-white">Daftarkan Student ke Kelas</h2>
-              </div>
-              <button @click="modal.open = false" class="p-2 rounded-xl hover:bg-white/10 text-white/70 hover:text-white transition-colors">
-                <XMarkIcon class="w-4 h-4" />
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h2 class="text-lg font-semibold text-gray-900">Daftarkan Student</h2>
+              <button @click="modal.open = false" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <XMarkIcon class="w-6 h-6" />
               </button>
             </div>
 
             <!-- Modal Body -->
             <form @submit.prevent="submitRegister" class="p-6 space-y-5">
-
+              
               <!-- Student Picker -->
               <div>
-                <label class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 block">
-                  Pilih Student *
-                </label>
+                <label class="block text-sm font-semibold text-gray-900 mb-1.5">Pilih Student <span class="text-red-500">*</span></label>
                 <select v-model="form.user_id" required
-                  class="w-full h-10 px-3.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-violet-500/50 transition-all bg-white cursor-pointer">
-                  <option value="" disabled selected>Pilih Student</option>
+                  class="w-full h-10 px-3 rounded-md border border-gray-300 bg-white text-sm focus:border-[#5530AB] outline-none transition-colors">
+                  <option value="" disabled selected>-- Pilih Student --</option>
                   <option v-for="s in students" :key="s.id" :value="s.id">
                     {{ s.fullname || s.username || 'No Name' }}
                   </option>
@@ -184,12 +179,10 @@
 
               <!-- Class Picker -->
               <div>
-                <label class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 block">
-                  Pilih Kelas *
-                </label>
+                <label class="block text-sm font-semibold text-gray-900 mb-1.5">Pilih Kelas <span class="text-red-500">*</span></label>
                 <select v-model.number="form.class_id" required
-                  class="w-full h-10 px-3.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-violet-500/50 transition-all bg-white cursor-pointer">
-                  <option value="0" disabled selected>Pilih Kelas</option>
+                  class="w-full h-10 px-3 rounded-md border border-gray-300 bg-white text-sm focus:border-[#5530AB] outline-none transition-colors">
+                  <option value="0" disabled selected>-- Pilih Kelas --</option>
                   <option v-for="c in classes" :key="c.id" :value="c.id">
                     {{ c.name }}
                   </option>
@@ -197,21 +190,20 @@
               </div>
 
               <!-- Error message -->
-              <p v-if="modal.error" class="text-sm text-rose-500 bg-rose-50 border border-rose-100 px-4 py-3 rounded-xl">
+              <p v-if="modal.error" class="text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-md">
                 {{ modal.error }}
               </p>
 
               <!-- Actions -->
-              <div class="flex justify-end gap-3 pt-2 border-t border-gray-100">
+              <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                 <button type="button" @click="modal.open = false"
-                  class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                  class="px-4 py-2 rounded-md border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                   Batal
                 </button>
                 <button type="submit" :disabled="modal.saving || !form.user_id || !form.class_id"
-                  class="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                  class="flex items-center gap-2 px-5 py-2 rounded-md bg-[#5530AB] hover:bg-[#432687] text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                   <div v-if="modal.saving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <PlusIcon v-else class="w-4 h-4" />
-                  Daftarkan
+                  <span v-else>Daftarkan</span>
                 </button>
               </div>
             </form>
@@ -273,8 +265,7 @@ async function fetchAll() {
   try {
     const [membersData, studentsData, classesData] = await Promise.all([
       $fetch<{ members: Member[] }>('/api/admin/class-members'),
-      $fetch<{ students: Student[] }>('/api/admin/students'),
-      $fetch<{ classes: CourseClass[] }>('/api/admin/classes'),
+      $fetch<{ students: Student[] }>('/api/admin/students'),$fetch<{ classes: CourseClass[] }>('/api/admin/classes'),
     ])
     members.value = membersData.members
     students.value = studentsData.students
@@ -341,8 +332,3 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 </script>
-
-<style scoped>
-.modal-enter-active, .modal-leave-active { transition: all 0.2s ease; }
-.modal-enter-from, .modal-leave-to { opacity: 0; transform: scale(0.98); }
-</style>

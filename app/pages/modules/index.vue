@@ -10,12 +10,6 @@
             <Bars3Icon class="w-5 h-5" />
           </button>
           <div>
-            <div class="flex items-center gap-2 mb-1">
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-[#F4F1FA] text-[#5530AB]">
-                <BookOpenIcon class="w-3 h-3" />
-                Module Management
-              </span>
-            </div>
             <h1 class="text-base font-semibold text-gray-900">Kelola Modul & Lesson</h1>
           </div>
         </div>

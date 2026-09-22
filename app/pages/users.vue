@@ -10,7 +10,6 @@
           </button>
           <div>
             <h1 class="text-base font-medium text-gray-900 leading-none">User Management</h1>
-            <p class="text-xs text-gray-500 mt-0.5">Kelola semua pengguna platform</p>
           </div>
         </div>
         <button @click="openAddModal" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-[0.875rem] font-medium transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-rose-500/30">
@@ -22,9 +21,15 @@
       <main class="p-6 space-y-6 max-w-[1440px] mx-auto">
         <!-- Stats -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div v-for="stat in stats" :key="stat.label" class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <p class="text-[0.6875rem] font-medium text-gray-500 uppercase tracking-widest">{{ stat.label }}</p>
-            <p class="text-xl font-medium text-gray-900 mt-1">{{ stat.value }}</p>
+          <div v-for="stat in stats" :key="stat.label" class="bg-white border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+              <p class="text-[0.6875rem] font-bold text-gray-500 uppercase tracking-widest">{{ stat.label }}</p>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="stat.badgeClass">
+                <component :is="stat.icon" class="w-4 h-4" />
+              </div>
+            </div>
+            <p class="text-2xl font-bold text-gray-900 mt-2">{{ stat.value }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ stat.subtitle }}</p>
           </div>
         </div>
 
@@ -246,10 +251,34 @@ function getRoleColor(role: string) { const m:Record<string,string>={admin:'#F59
 function formatDate(d?: string) { if(!d)return'—'; return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) }
 
 const stats = computed(() => [
-  { label: 'Total User', value: users.value.length },
-  { label: 'Student',    value: users.value.filter(u=>u.roles?.includes('student')).length },
-  { label: 'Mentor',     value: users.value.filter(u=>u.roles?.includes('mentor')).length },
-  { label: 'Admin',      value: users.value.filter(u=>u.roles?.includes('admin')).length },
+  {
+    label: 'Total User',
+    value: users.value.length,
+    subtitle: 'Pengguna terdaftar',
+    icon: UsersIcon,
+    badgeClass: 'bg-[#5530AB]/10 text-[#5530AB]'
+  },
+  {
+    label: 'Student',
+    value: users.value.filter(u => u.roles?.includes('student')).length,
+    subtitle: 'Akun siswa',
+    icon: AcademicCapIcon,
+    badgeClass: 'bg-blue-100 text-blue-700'
+  },
+  {
+    label: 'Mentor',
+    value: users.value.filter(u => u.roles?.includes('mentor')).length,
+    subtitle: 'Instruktur & pengajar',
+    icon: UserCircleIcon,
+    badgeClass: 'bg-emerald-100 text-emerald-700'
+  },
+  {
+    label: 'Admin',
+    value: users.value.filter(u => u.roles?.includes('admin')).length,
+    subtitle: 'Pengelola sistem',
+    icon: ShieldCheckIcon,
+    badgeClass: 'bg-amber-100 text-amber-700'
+  },
 ])
 
 const filteredUsers = computed(() => {
