@@ -9,9 +9,7 @@
           <Bars3Icon class="w-5 h-5" />
         </button>
         <div class="flex-1">
-          <h1 class="text-lg font-semibold text-gray-900 m-0">
-            System overview and quick metrics.
-          </h1>
+          <h1 class="text-lg font-semibold text-gray-900 m-0">Dashboard</h1>
         </div>
       </header>
 
@@ -147,6 +145,132 @@
             </div>
           </div>
         </div>
+
+        <!-- Student Progress Widget -->
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <!-- Widget Header -->
+          <div class="p-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div class="flex items-center gap-2 flex-1">
+              <ChartBarIcon class="w-5 h-5 text-[#5530AB]" />
+              <h2 class="text-base font-semibold text-gray-900">Progress Belajar Siswa</h2>
+              <span class="text-[0.65rem] font-bold px-2 py-0.5 rounded-md bg-[#5530AB]/10 text-[#5530AB] uppercase tracking-wide">Kehadiran</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <!-- Class Filter -->
+              <select
+                v-model="selectedClassId"
+                @change="filterProgress"
+                class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#5530AB]/30"
+              >
+                <option :value="null">Semua Kelas</option>
+                <option v-for="cls in allClasses" :key="cls.id" :value="cls.id">{{ cls.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div v-if="progressLoading" class="flex items-center justify-center py-16">
+            <div class="w-8 h-8 border-4 border-[#5530AB]/20 border-t-[#5530AB] rounded-full animate-spin"></div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-else-if="filteredProgressData.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
+            <ChartBarIcon class="w-10 h-10 text-gray-200 mb-3" />
+            <p class="text-sm font-medium text-gray-400">Belum ada data progress.</p>
+          </div>
+
+          <!-- Progress Content -->
+          <div v-else class="p-5 flex flex-col gap-8">
+            <div v-for="cls in filteredProgressData" :key="cls.id">
+              <!-- Class Title -->
+              <div class="flex items-center gap-3 mb-4">
+                <div class="h-px flex-1 bg-gray-100"></div>
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">{{ cls.name }}</span>
+                <span class="text-xs text-gray-400">{{ cls.totalSessions }} sesi</span>
+                <div class="h-px flex-1 bg-gray-100"></div>
+              </div>
+
+              <!-- Avg Progress Badge -->
+              <div class="flex items-center gap-2 mb-4">
+                <div class="text-xs font-semibold text-gray-500">Rata-rata kelas:</div>
+                <div class="flex items-center gap-1.5">
+                  <div class="h-1.5 w-24 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-gray-300 rounded-full transition-all duration-700" :style="{ width: cls.avgProgress + '%' }"></div>
+                  </div>
+                  <span class="text-xs font-bold text-gray-600">{{ cls.avgProgress }}%</span>
+                </div>
+              </div>
+
+              <!-- Students -->
+              <div class="flex flex-col gap-2.5">
+                <div
+                  v-for="(student, idx) in cls.students"
+                  :key="student.id"
+                  class="flex items-center gap-3 group"
+                >
+                  <!-- Rank -->
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                    :class="[
+                      idx === 0 ? 'bg-yellow-400 text-yellow-900' :
+                      idx === 1 ? 'bg-gray-200 text-gray-600' :
+                      idx === 2 ? 'bg-orange-200 text-orange-700' :
+                      'bg-gray-100 text-gray-400'
+                    ]"
+                  >
+                    {{ idx + 1 }}
+                  </div>
+
+                  <!-- Name -->
+                  <div class="w-28 sm:w-36 shrink-0">
+                    <p class="text-sm font-semibold text-gray-800 truncate">{{ student.fullname }}</p>
+                    <p class="text-[0.65rem] text-gray-400">{{ student.attended }}/{{ student.totalSessions }} sesi</p>
+                  </div>
+
+                  <!-- Progress Bar -->
+                  <div class="flex-1 flex items-center gap-2">
+                    <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden relative">
+                      <!-- Class average marker -->
+                      <div
+                        v-if="cls.avgProgress > 0"
+                        class="absolute top-0 bottom-0 w-0.5 bg-gray-300 z-10"
+                        :style="{ left: cls.avgProgress + '%' }"
+                      ></div>
+                      <!-- Student bar -->
+                      <div
+                        class="h-full rounded-full transition-all duration-700 ease-out"
+                        :class="[
+                          student.progressPct >= cls.avgProgress ? 'bg-[#5530AB]' : 'bg-gray-300'
+                        ]"
+                        :style="{ width: student.progressPct + '%' }"
+                      ></div>
+                    </div>
+                    <span
+                      class="w-10 text-right text-xs font-bold"
+                      :class="student.progressPct >= cls.avgProgress ? 'text-[#5530AB]' : 'text-gray-400'"
+                    >{{ student.progressPct }}%</span>
+                  </div>
+
+                  <!-- Above/Below avg badge -->
+                  <div class="shrink-0 hidden sm:block">
+                    <span
+                      v-if="student.progressPct > cls.avgProgress"
+                      class="text-[0.6rem] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700"
+                    >↑ Atas rata-rata</span>
+                    <span
+                      v-else-if="student.progressPct < cls.avgProgress"
+                      class="text-[0.6rem] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-500"
+                    >↓ Bawah rata-rata</span>
+                    <span
+                      v-else
+                      class="text-[0.6rem] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500"
+                    >= Rata-rata</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   </div>
@@ -163,7 +287,8 @@ import {
   BanknotesIcon,
   CalendarDaysIcon,
   UserCircleIcon,
-  ClockIcon
+  ClockIcon,
+  ChartBarIcon
 } from '@heroicons/vue/24/outline'
 
 useSeoMeta({ title: 'Dashboard — Admin Panel' })
@@ -179,6 +304,35 @@ const currentMonthBalance = ref(0)
 const upcomingSchedules = ref<any[]>([])
 const recentStudents = ref<any[]>([])
 const recentMentors = ref<any[]>([])
+
+// Student Progress
+const progressData = ref<any[]>([])
+const filteredProgressData = ref<any[]>([])
+const allClasses = ref<any[]>([])
+const selectedClassId = ref<number | null>(null)
+const progressLoading = ref(false)
+
+function filterProgress() {
+  if (!selectedClassId.value) {
+    filteredProgressData.value = progressData.value
+  } else {
+    filteredProgressData.value = progressData.value.filter(c => c.id === selectedClassId.value)
+  }
+}
+
+const fetchProgress = async () => {
+  progressLoading.value = true
+  try {
+    const { classes } = await $fetch<{ classes: any[] }>('/api/admin/student-progress-overview')
+    progressData.value = classes ?? []
+    allClasses.value = classes?.map(c => ({ id: c.id, name: c.name })) ?? []
+    filterProgress()
+  } catch (e) {
+    console.error('Failed to fetch progress:', e)
+  } finally {
+    progressLoading.value = false
+  }
+}
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount || 0)
@@ -237,5 +391,6 @@ const fetchStats = async () => {
 
 onMounted(() => {
   fetchStats()
+  fetchProgress()
 })
 </script>

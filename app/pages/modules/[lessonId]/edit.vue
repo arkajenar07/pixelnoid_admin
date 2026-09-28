@@ -36,6 +36,58 @@
           <span class="md:hidden">Salin</span>
         </button>
 
+        <!-- Undo / Redo button group -->
+        <div
+          v-if="lessonForm.type === 'text'"
+          class="flex items-center rounded-lg border border-gray-200 divide-x divide-gray-200 overflow-hidden"
+        >
+          <button
+            type="button"
+            @click="undoBlocks"
+            :disabled="!blockEditorRef?.canUndo?.value"
+            class="inline-flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+            title="Undo (Ctrl+Z)"
+            aria-label="Undo"
+          >
+            <ArrowUturnLeftIcon class="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            @click="redoBlocks"
+            :disabled="!blockEditorRef?.canRedo?.value"
+            class="inline-flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+            title="Redo (Ctrl+Y)"
+            aria-label="Redo"
+          >
+            <ArrowUturnRightIcon class="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <!-- Hidden file input for .md import -->
+        <input
+          v-if="lessonForm.type === 'text'"
+          ref="mdFileInputRef"
+          type="file"
+          accept=".md,text/markdown,text/plain"
+          class="hidden"
+          aria-hidden="true"
+          @change="handleMdFileImport"
+        />
+
+        <!-- Import .md button -->
+        <button
+          v-if="lessonForm.type === 'text'"
+          type="button"
+          @click="triggerMdImport"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium transition-colors cursor-pointer"
+          title="Import konten dari file Markdown (.md)"
+          aria-label="Import dari file .md"
+        >
+          <ArrowUpTrayIcon class="w-3.5 h-3.5 text-gray-500" />
+          <span class="hidden md:inline">Import .md</span>
+          <span class="md:hidden">.md</span>
+        </button>
+
         <button
           v-if="lessonForm.type === 'text'"
           type="button"
@@ -173,7 +225,10 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
   Square2StackIcon,
-  ClipboardDocumentListIcon
+  ClipboardDocumentListIcon,
+  ArrowUpTrayIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
 } from '@heroicons/vue/24/outline'
 import BlockEditor from '~/components/admin/modules/BlockEditor.vue'
 import QuizEditor from '~/components/admin/modules/QuizEditor.vue'
@@ -190,6 +245,7 @@ const isLoading = ref(true)
 const saveStatus = ref<'idle' | 'saving' | 'saved' | 'error'>('idle')
 const canvasTitleRef = ref<HTMLElement | null>(null)
 const blockEditorRef = ref<any>(null)
+const mdFileInputRef = ref<HTMLInputElement | null>(null)
 
 function copyAllLessonBlocks() {
   if (blockEditorRef.value?.copyAllBlocks) {
@@ -204,6 +260,38 @@ function pasteLessonBlocks() {
       scheduleAutoSave()
     }
   }
+}
+
+function triggerMdImport() {
+  mdFileInputRef.value?.click()
+}
+
+function handleMdFileImport(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const mdText = e.target?.result as string
+    if (!mdText) return
+    if (blockEditorRef.value?.importFromMarkdown) {
+      blockEditorRef.value.importFromMarkdown(mdText)
+      scheduleAutoSave()
+    }
+  }
+  reader.readAsText(file, 'UTF-8')
+
+  // Reset input so the same file can be re-imported if needed
+  input.value = ''
+}
+
+function undoBlocks() {
+  blockEditorRef.value?.undo?.()
+}
+
+function redoBlocks() {
+  blockEditorRef.value?.redo?.()
 }
 
 const lessonTypes = [

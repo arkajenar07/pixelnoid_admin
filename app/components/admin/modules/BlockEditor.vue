@@ -1024,6 +1024,58 @@ const imageUrlInputs = reactive<Record<number, string>>({})
 const bookmarkUrlInputs = reactive<Record<number, string>>({})
 const canvaUrlInputs = reactive<Record<number, string>>({})
 
+// ── Undo/Redo History ──────────────────────────────────────────────
+const HISTORY_MAX = 100
+const historyStack = ref<Block[][]>([])
+const historyIndex = ref(-1)
+let isUndoRedoChange = false
+let historyPushTimer: ReturnType<typeof setTimeout> | null = null
+
+function pushHistory(snapshot: Block[]) {
+  if (isUndoRedoChange) return
+  // Debounce rapid typing into a single history entry (300ms window)
+  if (historyPushTimer) clearTimeout(historyPushTimer)
+  historyPushTimer = setTimeout(() => {
+    // Discard any "future" states if we branched
+    if (historyIndex.value < historyStack.value.length - 1) {
+      historyStack.value.splice(historyIndex.value + 1)
+    }
+    historyStack.value.push(clone(snapshot))
+    if (historyStack.value.length > HISTORY_MAX) historyStack.value.shift()
+    historyIndex.value = historyStack.value.length - 1
+  }, 300)
+}
+
+function undo() {
+  if (historyIndex.value <= 0) {
+    showEditorToast('Tidak ada lagi riwayat untuk di-undo.', 'error')
+    return
+  }
+  if (historyPushTimer) { clearTimeout(historyPushTimer); historyPushTimer = null }
+  historyIndex.value--
+  const snapshot = clone(historyStack.value[historyIndex.value])
+  isUndoRedoChange = true
+  blocks.value = snapshot
+  emit('update:modelValue', clone(snapshot))
+  nextTick(() => { isUndoRedoChange = false })
+  showEditorToast('↩ Undo')
+}
+
+function redo() {
+  if (historyIndex.value >= historyStack.value.length - 1) {
+    showEditorToast('Tidak ada lagi riwayat untuk di-redo.', 'error')
+    return
+  }
+  if (historyPushTimer) { clearTimeout(historyPushTimer); historyPushTimer = null }
+  historyIndex.value++
+  const snapshot = clone(historyStack.value[historyIndex.value])
+  isUndoRedoChange = true
+  blocks.value = snapshot
+  emit('update:modelValue', clone(snapshot))
+  nextTick(() => { isUndoRedoChange = false })
+  showEditorToast('↪ Redo')
+}
+
 // Multi-block selection state
 const selectedBlockIndices = ref<Set<number>>(new Set())
 
@@ -1257,6 +1309,7 @@ watch(
 function emitChanges() {
   isInternalChange = true
   emit('update:modelValue', clone(blocks.value))
+  pushHistory(blocks.value)
   nextTick(() => { isInternalChange = false })
 }
 
@@ -1453,6 +1506,221 @@ function copyCurrentBlock(index: number) {
 
 function copyAllBlocks() {
   copyBlocksToClipboard(blocks.value)
+}
+
+// ── Markdown Import ────────────────────────────────────────────────
+/**
+ * Converts inline markdown syntax to HTML for use inside block content.
+ * Handles: **bold**, *italic*, `code`, [link](url), ~~strikethrough~~
+ */
+function inlineMarkdownToHtml(text: string): string {
+  // Escape HTML entities first to prevent XSS
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+
+  // Inline code (must come before bold/italic to avoid conflicts)
+  html = html.replace(/`([^`]+)`/g, '<code class="px-inline-code">$1</code>')
+
+  // Bold+italic: ***text*** or ___text___
+  html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+  html = html.replace(/___(.+?)___/g, '<strong><em>$1</em></strong>')
+
+  // Bold: **text** or __text__
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  html = html.replace(/__(.+?)__/g, '<strong>$1</strong>')
+
+  // Italic: *text* or _text_
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>')
+  html = html.replace(/_([^_]+)_/g, '<em>$1</em>')
+
+  // Strikethrough: ~~text~~
+  html = html.replace(/~~(.+?)~~/g, '<s>$1</s>')
+
+  // Links: [text](url)
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+
+  return html
+}
+
+/**
+ * Parses a markdown string into an array of Blocks.
+ * Supports: headings, bullet/numbered lists, blockquote, fenced code, divider, paragraphs.
+ */
+function parseMarkdownToBlocks(md: string): Block[] {
+  const result: Block[] = []
+  const lines = md.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n')
+  let i = 0
+
+  while (i < lines.length) {
+    const line = lines[i]
+
+    // ── Fenced code block ── (``` or ~~~)
+    const fenceMatch = line.match(/^(`{3,}|~{3,})\s*(\w*)\s*$/)
+    if (fenceMatch) {
+      const fence = fenceMatch[1]
+      const lang = fenceMatch[2] || 'plaintext'
+      const codeLines: string[] = []
+      i++
+      while (i < lines.length && !lines[i].startsWith(fence)) {
+        codeLines.push(lines[i])
+        i++
+      }
+      i++ // consume closing fence
+      result.push({ id: genId(), type: 'code', content: codeLines.join('\n'), language: lang })
+      continue
+    }
+
+    // ── Heading ──
+    const h1Match = line.match(/^#\s+(.+)$/)
+    if (h1Match) {
+      result.push({ id: genId(), type: 'heading1', content: inlineMarkdownToHtml(h1Match[1].trim()) })
+      i++
+      continue
+    }
+    const h2Match = line.match(/^##\s+(.+)$/)
+    if (h2Match) {
+      result.push({ id: genId(), type: 'heading2', content: inlineMarkdownToHtml(h2Match[1].trim()) })
+      i++
+      continue
+    }
+    const h3Match = line.match(/^#{3,6}\s+(.+)$/)
+    if (h3Match) {
+      result.push({ id: genId(), type: 'heading3', content: inlineMarkdownToHtml(h3Match[1].trim()) })
+      i++
+      continue
+    }
+
+    // ── Horizontal rule ──
+    if (/^(---+|\*\*\*+|___+)\s*$/.test(line.trim())) {
+      result.push({ id: genId(), type: 'divider' })
+      i++
+      continue
+    }
+
+    // ── Blockquote ── (consume consecutive > lines)
+    if (line.match(/^>\s?/)) {
+      const quoteLines: string[] = []
+      while (i < lines.length && lines[i].match(/^>\s?/)) {
+        quoteLines.push(lines[i].replace(/^>\s?/, '').trim())
+        i++
+      }
+      result.push({ id: genId(), type: 'quote', content: inlineMarkdownToHtml(quoteLines.join('<br>')) })
+      continue
+    }
+
+    // ── Bullet list ── (consume consecutive - / * / + items)
+    const bulletMatch = line.match(/^[\-\*\+]\s+(.+)$/)
+    if (bulletMatch) {
+      const items: string[] = []
+      while (i < lines.length && lines[i].match(/^[\-\*\+]\s+/)) {
+        const itemText = lines[i].replace(/^[\-\*\+]\s+/, '').trim()
+        items.push(inlineMarkdownToHtml(itemText))
+        i++
+      }
+      result.push({ id: genId(), type: 'bulletList', items })
+      continue
+    }
+
+    // ── Numbered list ── (consume consecutive 1. 2. items)
+    const numberedMatch = line.match(/^\d+\.\s+(.+)$/)
+    if (numberedMatch) {
+      const items: string[] = []
+      while (i < lines.length && lines[i].match(/^\d+\.\s+/)) {
+        const itemText = lines[i].replace(/^\d+\.\s+/, '').trim()
+        items.push(inlineMarkdownToHtml(itemText))
+        i++
+      }
+      result.push({ id: genId(), type: 'numberedList', items })
+      continue
+    }
+
+    // ── Markdown Table ── detect `| col |` row pattern
+    if (/^\|(.+\|)+\s*$/.test(line.trim())) {
+      const tableRows: string[][] = []
+      let hasHeader = false
+
+      while (i < lines.length && /^\|(.+\|)+\s*$/.test(lines[i].trim())) {
+        const rawLine = lines[i].trim()
+        // Separator row like |---|---|  — marks the row before as a header
+        if (/^\|[\s\-:\|]+\|$/.test(rawLine)) {
+          hasHeader = tableRows.length > 0
+          i++
+          continue
+        }
+        const cells = rawLine
+          .split('|')
+          .slice(1, -1) // remove leading and trailing empty strings from split
+          .map(c => c.trim())
+        tableRows.push(cells)
+        i++
+      }
+
+      if (tableRows.length > 0) {
+        const colCount = Math.max(...tableRows.map(r => r.length))
+        // Pad all rows to same column count
+        const normalizedRows = tableRows.map(r => {
+          while (r.length < colCount) r.push('')
+          return r
+        })
+        result.push({
+          id: genId(),
+          type: 'table',
+          tableData: {
+            withHeadings: hasHeader,
+            colWidths: Array(colCount).fill(160),
+            rows: normalizedRows
+          }
+        })
+      }
+      continue
+    }
+
+    // ── Blank line ── (skip)
+    if (line.trim() === '') {
+      i++
+      continue
+    }
+
+    // ── Paragraph ── (consume consecutive non-empty, non-special lines)
+    const paragraphLines: string[] = []
+    while (
+      i < lines.length &&
+      lines[i].trim() !== '' &&
+      !lines[i].match(/^#{1,6}\s/) &&
+      !lines[i].match(/^[\-\*\+]\s/) &&
+      !lines[i].match(/^\d+\.\s/) &&
+      !lines[i].match(/^>/) &&
+      !lines[i].match(/^(`{3,}|~{3,})/) &&
+      !/^(---+|\*\*\*+|___+)\s*$/.test(lines[i].trim()) &&
+      !/^\|(.+\|)+\s*$/.test(lines[i].trim())
+    ) {
+      paragraphLines.push(lines[i])
+      i++
+    }
+    if (paragraphLines.length > 0) {
+      result.push({
+        id: genId(),
+        type: 'paragraph',
+        content: inlineMarkdownToHtml(paragraphLines.join('<br>'))
+      })
+    }
+  }
+
+  return result.length > 0 ? result : [createEmptyBlock('paragraph')]
+}
+
+/**
+ * Public method exposed to parent: imports markdown text, parses it into
+ * blocks, replaces current content, and emits changes.
+ */
+function importFromMarkdown(markdownText: string) {
+  const parsedBlocks = parseMarkdownToBlocks(markdownText)
+  blocks.value = parsedBlocks
+  emitChanges()
+  showEditorToast(`✅ Berhasil mengimpor ${parsedBlocks.length} blok dari file .md!`)
+  nextTick(() => focusBlock(0))
 }
 
 function pasteStoredBlocks(targetIndex?: number): boolean {
@@ -1692,10 +1960,42 @@ function handleKeyDown(ev: KeyboardEvent, index: number) {
 }
 
 function handleGlobalKeyDown(ev: KeyboardEvent) {
+  const ctrl = ev.ctrlKey || ev.metaKey
+
+  // ── Undo: Ctrl+Z ──
+  if (ctrl && !ev.shiftKey && ev.key.toLowerCase() === 'z') {
+    // Only intercept if no native text input is focused OR when blocks are selected
+    const active = document.activeElement as HTMLElement | null
+    const isInInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')
+    if (!isInInput || selectedBlockIndices.value.size > 0) {
+      ev.preventDefault()
+      undo()
+      return
+    }
+  }
+
+  // ── Redo: Ctrl+Y or Ctrl+Shift+Z ──
+  if (ctrl && (ev.key.toLowerCase() === 'y' || (ev.shiftKey && ev.key.toLowerCase() === 'z'))) {
+    const active = document.activeElement as HTMLElement | null
+    const isInInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')
+    if (!isInInput || selectedBlockIndices.value.size > 0) {
+      ev.preventDefault()
+      redo()
+      return
+    }
+  }
+
   if (selectedBlockIndices.value.size > 0) {
     if (ev.key === 'Backspace' || ev.key === 'Delete') { ev.preventDefault(); deleteSelectedBlocks(); return }
     if (ev.key === 'Escape') { ev.preventDefault(); clearBlockSelection(); return }
-    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'c') { copySelectedBlocks(); return }
+    if (ctrl && ev.key.toLowerCase() === 'c') { copySelectedBlocks(); return }
+    // ── Cut: Ctrl+X (copy then delete selected blocks) ──
+    if (ctrl && ev.key.toLowerCase() === 'x') {
+      ev.preventDefault()
+      copySelectedBlocks()
+      deleteSelectedBlocks()
+      return
+    }
   }
 }
 
@@ -2596,6 +2896,11 @@ function handleCanvasClick(ev: MouseEvent) {
 defineExpose({
   copyAllBlocks,
   pasteStoredBlocks,
+  importFromMarkdown,
+  undo,
+  redo,
   blocks,
+  canUndo: computed(() => historyIndex.value > 0),
+  canRedo: computed(() => historyIndex.value < historyStack.value.length - 1),
 })
 </script>
