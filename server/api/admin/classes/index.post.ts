@@ -11,16 +11,28 @@ function makeAdminClient() {
 }
 
 export default defineEventHandler(async (event) => {
+  const body = await readBody(event)
+  const { name, group_price, private_price } = body
+
+  if (!name?.trim()) {
+    throw createError({ statusCode: 400, statusMessage: 'Nama kelas wajib diisi.' })
+  }
+
   const client = makeAdminClient()
 
   const { data, error } = await client
     .from('class')
-    .select('id, created_at, name, group_price, private_price')
-    .order('id', { ascending: true })
+    .insert([{
+      name: name.trim(),
+      group_price: Number(group_price) || 0,
+      private_price: Number(private_price) || 0,
+    }])
+    .select()
+    .single()
 
   if (error) {
-    throw createError({ statusCode: 500, statusMessage: `Gagal mengambil data kelas: ${error.message}` })
+    throw createError({ statusCode: 500, statusMessage: `Gagal membuat kelas: ${error.message}` })
   }
 
-  return { classes: data ?? [] }
+  return { class: data }
 })
