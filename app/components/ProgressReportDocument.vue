@@ -1,161 +1,151 @@
 <template>
-  <div class="report-doc">
+  <div class="font-[Arial,sans-serif] bg-white text-[#111] text-[13px] leading-[1.5]">
 
     <!-- KOP LAPORAN -->
-    <div class="rpt-header">
+    <div class="flex items-start justify-between mb-1.5">
       <div>
-        <div class="rpt-brand-row">
-          <span class="rpt-dots">
-            <span></span><span></span>
-            <span></span><span></span>
+        <div class="flex items-center gap-2 mb-0.5">
+          <span class="inline-grid grid-cols-2 gap-[2px] opacity-35 mt-0.5">
+            <span class="block w-[5px] h-[5px] bg-[#111] rounded-[1px]"></span>
+            <span class="block w-[5px] h-[5px] bg-[#111] rounded-[1px]"></span>
+            <span class="block w-[5px] h-[5px] bg-[#111] rounded-[1px]"></span>
+            <span class="block w-[5px] h-[5px] bg-[#111] rounded-[1px]"></span>
           </span>
-          <h1 class="rpt-title">PIXELNOID DIGI ACADEMY</h1>
+          <h1 class="text-[20px] font-black text-[#111] m-0 tracking-[0.3px]">PIXELNOID DIGI ACADEMY</h1>
         </div>
-        <p class="rpt-subtitle">Laporan Perkembangan Siswa Bulanan</p>
+        <p class="text-[12px] text-[#666] m-0 ml-[26px]">Laporan Perkembangan Siswa Bulanan</p>
       </div>
-      <div class="rpt-period">{{ report?.student_info?.period || '-' }}</div>
+      <div class="text-[17px] font-bold text-[#111] pt-1 whitespace-nowrap">{{ report?.student_info?.period || '-' }}</div>
     </div>
 
-    <div class="rpt-line-thick"></div>
+    <div class="border-0 border-t-2 border-[#1a237e] my-2"></div>
 
     <!-- INFORMASI SISWA -->
-    <div class="rpt-section">
-      <p class="rpt-section-title">INFORMASI SISWA</p>
-      <div class="rpt-line-thin"></div>
-      <table class="rpt-table-plain">
+    <div class="mb-5">
+      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">INFORMASI SISWA</p>
+      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
+      <table class="w-full border-collapse">
         <tbody>
           <tr>
-            <td class="rpt-label">Nama Siswa</td>
-            <td class="rpt-value">{{ report?.student_info?.name || '-' }}</td>
+            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-middle">Nama Siswa</td>
+            <td class="text-[13px] font-bold text-[#111] py-[3px] align-middle">{{ report?.student_info?.name || '-' }}</td>
           </tr>
           <tr>
-            <td class="rpt-label">Program</td>
-            <td class="rpt-value">{{ report?.student_info?.program || '-' }}</td>
+            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-middle">Program</td>
+            <td class="text-[13px] font-bold text-[#111] py-[3px] align-middle">{{ report?.student_info?.program || '-' }}</td>
           </tr>
           <tr>
-            <td class="rpt-label">Pengajar / Mentor</td>
-            <td class="rpt-value">{{ report?.student_info?.mentor || '-' }}</td>
+            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-middle">Pengajar / Mentor</td>
+            <td class="text-[13px] font-bold text-[#111] py-[3px] align-middle">{{ report?.student_info?.mentor || '-' }}</td>
           </tr>
           <tr>
-            <td class="rpt-label">Periode Laporan</td>
-            <td class="rpt-value">{{ report?.student_info?.period || '-' }}</td>
+            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-middle">Periode Laporan</td>
+            <td class="text-[13px] font-bold text-[#111] py-[3px] align-middle">{{ report?.student_info?.period || '-' }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- REKAP KEHADIRAN -->
-    <div class="rpt-section">
-      <p class="rpt-section-title">REKAP KEHADIRAN</p>
-      <div class="rpt-line-thin"></div>
-      <table class="rpt-table-bordered">
+    <div class="mb-5">
+      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">REKAP KEHADIRAN</p>
+      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
+      <table class="w-full border-collapse border border-[#ccc]">
         <thead>
           <tr>
-            <th class="rpt-th">Total Pertemuan</th>
-            <th class="rpt-th">Hadir</th>
-            <th class="rpt-th">Izin / Sakit</th>
-            <th class="rpt-th">Tidak Hadir</th>
+            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center">Total Pertemuan</th>
+            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center">Hadir</th>
+            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center">Izin / Sakit</th>
+            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center">Tidak Hadir</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="rpt-td-num">{{ report?.attendance?.total_sessions ?? 0 }}</td>
-            <td class="rpt-td-num">{{ report?.attendance?.attended ?? 0 }}</td>
-            <td class="rpt-td-num">{{ report?.attendance?.excused ?? 0 }}</td>
-            <td class="rpt-td-num">{{ report?.attendance?.absent ?? 0 }}</td>
+            <td class="text-[22px] font-bold text-[#111] text-center py-3 px-2.5 border border-[#ccc] align-middle">{{ report?.attendance?.total_sessions ?? 0 }}</td>
+            <td class="text-[22px] font-bold text-[#111] text-center py-3 px-2.5 border border-[#ccc] align-middle">{{ report?.attendance?.attended ?? 0 }}</td>
+            <td class="text-[22px] font-bold text-[#111] text-center py-3 px-2.5 border border-[#ccc] align-middle">{{ report?.attendance?.excused ?? 0 }}</td>
+            <td class="text-[22px] font-bold text-[#111] text-center py-3 px-2.5 border border-[#ccc] align-middle">{{ report?.attendance?.absent ?? 0 }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- PENILAIAN MODUL PELAJARAN -->
-    <div class="rpt-section">
-      <p class="rpt-section-title">PENILAIAN MODUL PELAJARAN</p>
-      <div class="rpt-line-thin"></div>
-      <table class="rpt-table-bordered">
+    <div class="mb-5">
+      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">PENILAIAN MODUL PELAJARAN</p>
+      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
+      <table class="w-full border-collapse border border-[#ccc]">
         <thead>
           <tr>
-            <th class="rpt-th" style="width: 30%; text-align: left;">Modul</th>
-            <th class="rpt-th" style="width: 10%;">Nilai</th>
-            <th class="rpt-th" style="text-align: left;">Catatan</th>
+            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-left">Modul</th>
+            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center w-[10%]">Nilai</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(mod, i) in (report?.module_reports || [])" :key="i">
-            <td class="rpt-td" style="font-weight: 700;">{{ mod.name }}</td>
-            <td class="rpt-td" style="text-align: center; font-weight: 700; font-size: 14px;">{{ mod.score }}</td>
-            <td class="rpt-td rpt-notes">
-              <span v-if="mod.notes?.study_notes">
-                <strong>Catatan belajar:</strong>
-                {{ mod.notes.study_notes.replace(/^Catatan belajar:\s*/i, '') }}
-              </span>
-              <span v-if="mod.notes?.study_notes && mod.notes?.performance"> </span>
-              <span v-if="mod.notes?.performance">
-                <strong>Performa:</strong>
-                {{ mod.notes.performance.replace(/^Performa:\s*/i, '') }}
-              </span>
-            </td>
+            <td class="text-[13px] text-[#111] py-[9px] px-2.5 border border-[#ccc] align-top font-bold">{{ mod.name }}</td>
+            <td class="text-[14px] text-[#111] py-[9px] px-2.5 border border-[#ccc] align-top text-center font-bold">{{ mod.score }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- PENCAPAIAN KOMPETENSI -->
-    <div v-if="report?.competencies?.length" class="rpt-section">
-      <p class="rpt-section-title">PENCAPAIAN KOMPETENSI</p>
-      <div class="rpt-line-thin"></div>
-      <table class="rpt-table-bordered">
+    <div v-if="report?.competencies?.length" class="mb-5">
+      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">PENCAPAIAN KOMPETENSI</p>
+      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
+      <table class="w-full border-collapse border border-[#ccc]">
         <thead>
           <tr>
-            <th class="rpt-th" style="text-align: left; width: 70%;">Kompetensi</th>
-            <th class="rpt-th" style="width: 30%;">Level</th>
+            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-left w-[70%]">Kompetensi</th>
+            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center w-[30%]">Level</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(comp, i) in (report?.competencies || [])" :key="i">
-            <td class="rpt-td">{{ comp.description }}</td>
-            <td class="rpt-td" style="text-align: center; font-weight: 700;">{{ comp.level }}</td>
+            <td class="text-[13px] text-[#111] py-[9px] px-2.5 border border-[#ccc] align-top">{{ comp.description }}</td>
+            <td class="text-[13px] text-[#111] py-[9px] px-2.5 border border-[#ccc] align-top text-center font-bold">{{ comp.level }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- CATATAN PENGAJAR & REKOMENDASI -->
-    <div v-if="report?.teacher_notes" class="rpt-section">
-      <p class="rpt-section-title">CATATAN PENGAJAR &amp; REKOMENDASI</p>
-      <div class="rpt-line-thin"></div>
-      <table class="rpt-table-plain">
+    <div v-if="report?.teacher_notes" class="mb-5">
+      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">CATATAN PENGAJAR &amp; REKOMENDASI</p>
+      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
+      <table class="w-full border-collapse">
         <tbody>
           <tr v-if="report?.teacher_notes?.development">
-            <td class="rpt-label" style="vertical-align: top;">Perkembangan Siswa</td>
-            <td class="rpt-notes" style="vertical-align: top; padding: 4px 0;">{{ report.teacher_notes.development }}</td>
+            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-top">Perkembangan Siswa</td>
+            <td class="text-[13px] text-[#111] leading-[1.65] align-top py-1">{{ report.teacher_notes.development }}</td>
           </tr>
           <tr v-if="report?.teacher_notes?.evaluation">
-            <td class="rpt-label" style="vertical-align: top;">Evaluasi &amp; Peningkatan</td>
-            <td class="rpt-notes" style="vertical-align: top; padding: 4px 0;">{{ report.teacher_notes.evaluation }}</td>
+            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-top">Evaluasi &amp; Peningkatan</td>
+            <td class="text-[13px] text-[#111] leading-[1.65] align-top py-1">{{ report.teacher_notes.evaluation }}</td>
           </tr>
           <tr v-if="report?.teacher_notes?.recommendation">
-            <td class="rpt-label" style="vertical-align: top;">Rekomendasi</td>
-            <td class="rpt-notes" style="vertical-align: top; padding: 4px 0;">{{ report.teacher_notes.recommendation }}</td>
+            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-top">Rekomendasi</td>
+            <td class="text-[13px] text-[#111] leading-[1.65] align-top py-1">{{ report.teacher_notes.recommendation }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- TANDA TANGAN -->
-    <div class="rpt-signature">
-      <div class="rpt-sign-box">
-        <p class="rpt-sign-label">Mentor Pembimbing,</p>
-        <div class="rpt-sign-line">
-          <p class="rpt-sign-name">{{ report?.student_info?.mentor || 'Mentor Pixelnoid' }}</p>
-          <p class="rpt-sign-org">Pixelnoid Academic Team</p>
+    <div class="flex justify-end mt-9">
+      <div class="text-center min-w-[180px]">
+        <p class="text-[12px] text-[#666] mb-[50px]">Mentor Pembimbing,</p>
+        <div class="border-t border-[#111] pt-1">
+          <p class="text-[13px] font-bold text-[#111] m-0">{{ report?.student_info?.mentor || 'Mentor Pixelnoid' }}</p>
+          <p class="text-[11px] text-[#666] m-0">Pixelnoid Academic Team</p>
         </div>
       </div>
     </div>
 
     <!-- FOOTER -->
-    <div class="rpt-footer-line"></div>
-    <p class="rpt-footer-text">
+    <div class="border-0 border-t border-[#ddd] my-5 mt-6"></div>
+    <p class="text-[10px] text-[#aaa] text-center m-0">
       Diterbitkan oleh Pixelnoid Learning System &bull; Verifikasi dokumen melalui sistem akademik Pixelnoid
     </p>
 
@@ -167,202 +157,3 @@ defineProps<{
   report: any
 }>()
 </script>
-
-<style scoped>
-.report-doc {
-  font-family: Arial, sans-serif;
-  background: #ffffff;
-  color: #111111;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-/* ── HEADER ── */
-.rpt-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-.rpt-brand-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 2px;
-}
-.rpt-dots {
-  display: inline-grid;
-  grid-template-columns: repeat(2, 5px);
-  gap: 2px;
-  opacity: 0.35;
-  margin-top: 2px;
-}
-.rpt-dots span {
-  display: block;
-  width: 5px;
-  height: 5px;
-  background: #111;
-  border-radius: 1px;
-}
-.rpt-title {
-  font-family: Arial, sans-serif;
-  font-size: 20px;
-  font-weight: 900;
-  color: #111;
-  margin: 0;
-  letter-spacing: 0.3px;
-}
-.rpt-subtitle {
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  color: #666;
-  margin: 0 0 0 26px;
-}
-.rpt-period {
-  font-family: Arial, sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  color: #111;
-  padding-top: 4px;
-  white-space: nowrap;
-}
-
-/* ── LINES ── */
-.rpt-line-thick {
-  border: none;
-  border-top: 2px solid #1a237e;
-  margin: 8px 0 18px 0;
-}
-.rpt-line-thin {
-  border: none;
-  border-top: 1px solid #1a237e;
-  margin: 3px 0 11px 0;
-}
-
-/* ── SECTIONS ── */
-.rpt-section {
-  margin-bottom: 20px;
-}
-.rpt-section-title {
-  font-family: Arial, sans-serif;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #1a237e;
-  letter-spacing: 0.9px;
-  text-transform: uppercase;
-  margin: 0 0 3px 0;
-}
-
-/* ── TABLE: PLAIN (no outer border) ── */
-.rpt-table-plain {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: Arial, sans-serif;
-}
-.rpt-label {
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-  color: #666;
-  padding: 3px 0;
-  width: 36%;
-  vertical-align: middle;
-}
-.rpt-value {
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: #111;
-  padding: 3px 0;
-  vertical-align: middle;
-}
-
-/* ── TABLE: BORDERED ── */
-.rpt-table-bordered {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: Arial, sans-serif;
-  border: 1px solid #ccc;
-}
-.rpt-th {
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: #1a237e;
-  background: #f7f7fc;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  text-align: center;
-}
-.rpt-td {
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-  color: #111;
-  padding: 9px 10px;
-  border: 1px solid #ccc;
-  vertical-align: top;
-}
-.rpt-td-num {
-  font-family: Arial, sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: #111;
-  text-align: center;
-  padding: 12px 10px;
-  border: 1px solid #ccc;
-  vertical-align: middle;
-}
-.rpt-notes {
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-  color: #111;
-  line-height: 1.65;
-}
-
-/* ── SIGNATURE ── */
-.rpt-signature {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 36px;
-}
-.rpt-sign-box {
-  text-align: center;
-  min-width: 180px;
-}
-.rpt-sign-label {
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  color: #666;
-  margin: 0 0 50px 0;
-}
-.rpt-sign-line {
-  border-top: 1px solid #111;
-  padding-top: 4px;
-}
-.rpt-sign-name {
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: #111;
-  margin: 0;
-}
-.rpt-sign-org {
-  font-family: Arial, sans-serif;
-  font-size: 11px;
-  color: #666;
-  margin: 0;
-}
-
-/* ── FOOTER ── */
-.rpt-footer-line {
-  border: none;
-  border-top: 1px solid #ddd;
-  margin: 22px 0 7px 0;
-}
-.rpt-footer-text {
-  font-family: Arial, sans-serif;
-  font-size: 10px;
-  color: #aaa;
-  text-align: center;
-  margin: 0;
-}
-</style>

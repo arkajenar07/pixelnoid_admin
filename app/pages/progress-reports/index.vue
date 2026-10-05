@@ -1349,18 +1349,6 @@ onMounted(() => {
                   </div>
                 </div>
 
-                <!-- Komentar Tambahan (Opsional) -->
-                <div>
-                  <label class="block text-[0.6875rem] font-bold text-gray-800 mb-1.5 uppercase tracking-wide">
-                    Catatan Tambahan Mentor (Opsional)
-                  </label>
-                  <textarea
-                    v-model="form.period_observation.additional_comment"
-                    rows="2"
-                    placeholder="Tulis catatan personal atau konteks khusus lainnya..."
-                    class="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors bg-gray-50 focus:bg-white resize-none"
-                  ></textarea>
-                </div>
               </div>
             </div>
 

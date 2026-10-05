@@ -56,6 +56,7 @@ const navigationGroups = [
   {
     title: 'Materi & Pembelajaran',
     items: [
+      { name: 'List Kelas ', href: '/classes', icon: AcademicCapIcon },
       { name: 'Module Management', href: '/modules', icon: BookOpenIcon },
       { name: 'Resources', href: '/resources', icon: FolderIcon },
     ]

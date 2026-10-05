@@ -69,11 +69,7 @@ Keluarkan HANYA JSON valid tanpa teks markdown pembungkus dengan struktur:
   "module_reports": [
     {
       "name": "string (nama modul sesuai input)",
-      "score": number (nilai persis sesuai input),
-      "notes": {
-        "study_notes": "string (uraian materi yang dipelajari siswa secara ringkas dan relevan)",
-        "performance": "string (uraian performa siswa, kekuatan, dan hal yang perlu ditingkatkan jika ada)"
-      }
+      "score": number (nilai persis sesuai input)
     }
   ],
   "competencies": [
@@ -83,9 +79,9 @@ Keluarkan HANYA JSON valid tanpa teks markdown pembungkus dengan struktur:
     }
   ],
   "teacher_notes": {
-    "development": "string (narasi perkembangan siswa selama periode)",
-    "evaluation": "string (evaluasi area yang perlu ditingkatkan/dilatih lebih lanjut)",
-    "recommendation": "string (rekomendasi konkret fokus belajar ke depan)"
+    "development": "string (MAKS 2 kalimat ringkas tentang perkembangan siswa selama periode, tidak lebih dari 250 karakter)",
+    "evaluation": "string (MAKS 2 kalimat, area yang perlu ditingkatkan, tidak lebih dari 200 karakter)",
+    "recommendation": "string (MAKS 2 kalimat rekomendasi fokus belajar ke depan, tidak lebih dari 200 karakter)"
   }
 }`
 
