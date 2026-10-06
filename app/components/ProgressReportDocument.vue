@@ -1,151 +1,142 @@
 <template>
-  <div class="font-[Arial,sans-serif] bg-white text-[#111] text-[13px] leading-[1.5]">
+  <div :style="s.root">
 
     <!-- KOP LAPORAN -->
-    <div class="flex items-start justify-between mb-1.5">
-      <div>
-        <div class="flex items-center gap-2 mb-0.5">
-          <span class="inline-grid grid-cols-2 gap-[2px] opacity-35 mt-0.5">
-            <span class="block w-[5px] h-[5px] bg-[#111] rounded-[1px]"></span>
-            <span class="block w-[5px] h-[5px] bg-[#111] rounded-[1px]"></span>
-            <span class="block w-[5px] h-[5px] bg-[#111] rounded-[1px]"></span>
-            <span class="block w-[5px] h-[5px] bg-[#111] rounded-[1px]"></span>
-          </span>
-          <h1 class="text-[20px] font-black text-[#111] m-0 tracking-[0.3px]">PIXELNOID DIGI ACADEMY</h1>
-        </div>
-        <p class="text-[12px] text-[#666] m-0 ml-[26px]">Laporan Perkembangan Siswa Bulanan</p>
+    <div :style="s.header">
+      <div :style="s.headerLeft">
+        <img src="/logo-pc.png" alt="Pixelnoid Logo" :style="s.logo" />
       </div>
-      <div class="text-[17px] font-bold text-[#111] pt-1 whitespace-nowrap">{{ report?.student_info?.period || '-' }}</div>
+      <div :style="s.headerPeriod">{{ report?.student_info?.period || '-' }}</div>
     </div>
 
-    <div class="border-0 border-t-2 border-[#1a237e] my-2"></div>
+    <div :style="s.dividerThick"></div>
 
     <!-- INFORMASI SISWA -->
-    <div class="mb-5">
-      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">INFORMASI SISWA</p>
-      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
-      <table class="w-full border-collapse">
+    <div :style="s.section">
+      <p :style="s.sectionTitle">INFORMASI SISWA</p>
+      <div :style="s.dividerThin"></div>
+      <table :style="s.plainTable">
         <tbody>
           <tr>
-            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-middle">Nama Siswa</td>
-            <td class="text-[13px] font-bold text-[#111] py-[3px] align-middle">{{ report?.student_info?.name || '-' }}</td>
+            <td :style="s.infoLabel">Nama Siswa</td>
+            <td :style="s.infoValue">{{ report?.student_info?.name || '-' }}</td>
           </tr>
           <tr>
-            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-middle">Program</td>
-            <td class="text-[13px] font-bold text-[#111] py-[3px] align-middle">{{ report?.student_info?.program || '-' }}</td>
+            <td :style="s.infoLabel">Program</td>
+            <td :style="s.infoValue">{{ report?.student_info?.program || '-' }}</td>
           </tr>
           <tr>
-            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-middle">Pengajar / Mentor</td>
-            <td class="text-[13px] font-bold text-[#111] py-[3px] align-middle">{{ report?.student_info?.mentor || '-' }}</td>
+            <td :style="s.infoLabel">Pengajar / Mentor</td>
+            <td :style="s.infoValue">{{ report?.student_info?.mentor || '-' }}</td>
           </tr>
           <tr>
-            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-middle">Periode Laporan</td>
-            <td class="text-[13px] font-bold text-[#111] py-[3px] align-middle">{{ report?.student_info?.period || '-' }}</td>
+            <td :style="s.infoLabel">Periode Laporan</td>
+            <td :style="s.infoValue">{{ report?.student_info?.period || '-' }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- REKAP KEHADIRAN -->
-    <div class="mb-5">
-      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">REKAP KEHADIRAN</p>
-      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
-      <table class="w-full border-collapse border border-[#ccc]">
+    <div :style="s.section">
+      <p :style="s.sectionTitle">REKAP KEHADIRAN</p>
+      <div :style="s.dividerThin"></div>
+      <table :style="s.borderedTable">
         <thead>
           <tr>
-            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center">Total Pertemuan</th>
-            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center">Hadir</th>
-            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center">Izin / Sakit</th>
-            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center">Tidak Hadir</th>
+            <th :style="s.th">Total Pertemuan</th>
+            <th :style="s.th">Hadir</th>
+            <th :style="s.th">Izin / Sakit</th>
+            <th :style="s.th">Tidak Hadir</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="text-[22px] font-bold text-[#111] text-center py-3 px-2.5 border border-[#ccc] align-middle">{{ report?.attendance?.total_sessions ?? 0 }}</td>
-            <td class="text-[22px] font-bold text-[#111] text-center py-3 px-2.5 border border-[#ccc] align-middle">{{ report?.attendance?.attended ?? 0 }}</td>
-            <td class="text-[22px] font-bold text-[#111] text-center py-3 px-2.5 border border-[#ccc] align-middle">{{ report?.attendance?.excused ?? 0 }}</td>
-            <td class="text-[22px] font-bold text-[#111] text-center py-3 px-2.5 border border-[#ccc] align-middle">{{ report?.attendance?.absent ?? 0 }}</td>
+            <td :style="s.tdBig">{{ report?.attendance?.total_sessions ?? 0 }}</td>
+            <td :style="s.tdBig">{{ report?.attendance?.attended ?? 0 }}</td>
+            <td :style="s.tdBig">{{ report?.attendance?.excused ?? 0 }}</td>
+            <td :style="s.tdBig">{{ report?.attendance?.absent ?? 0 }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- PENILAIAN MODUL PELAJARAN -->
-    <div class="mb-5">
-      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">PENILAIAN MODUL PELAJARAN</p>
-      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
-      <table class="w-full border-collapse border border-[#ccc]">
+    <div :style="s.section">
+      <p :style="s.sectionTitle">PENILAIAN MODUL PELAJARAN</p>
+      <div :style="s.dividerThin"></div>
+      <table :style="s.borderedTable">
         <thead>
           <tr>
-            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-left">Modul</th>
-            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center w-[10%]">Nilai</th>
+            <th :style="{ ...s.th, textAlign: 'left' }">Modul</th>
+            <th :style="{ ...s.th, width: '12%' }">Nilai</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(mod, i) in (report?.module_reports || [])" :key="i">
-            <td class="text-[13px] text-[#111] py-[9px] px-2.5 border border-[#ccc] align-top font-bold">{{ mod.name }}</td>
-            <td class="text-[14px] text-[#111] py-[9px] px-2.5 border border-[#ccc] align-top text-center font-bold">{{ mod.score }}</td>
+            <td :style="{ ...s.td, fontWeight: 'bold' }">{{ mod.name }}</td>
+            <td :style="{ ...s.td, textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }">{{ mod.score }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- PENCAPAIAN KOMPETENSI -->
-    <div v-if="report?.competencies?.length" class="mb-5">
-      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">PENCAPAIAN KOMPETENSI</p>
-      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
-      <table class="w-full border-collapse border border-[#ccc]">
+    <div v-if="report?.competencies?.length" :style="s.section">
+      <p :style="s.sectionTitle">PENCAPAIAN KOMPETENSI</p>
+      <div :style="s.dividerThin"></div>
+      <table :style="s.borderedTable">
         <thead>
           <tr>
-            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-left w-[70%]">Kompetensi</th>
-            <th class="text-[12px] font-bold text-[#1a237e] bg-[#f7f7fc] py-2 px-2.5 border border-[#ccc] text-center w-[30%]">Level</th>
+            <th :style="{ ...s.th, textAlign: 'left', width: '70%' }">Kompetensi</th>
+            <th :style="{ ...s.th, width: '30%' }">Level</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(comp, i) in (report?.competencies || [])" :key="i">
-            <td class="text-[13px] text-[#111] py-[9px] px-2.5 border border-[#ccc] align-top">{{ comp.description }}</td>
-            <td class="text-[13px] text-[#111] py-[9px] px-2.5 border border-[#ccc] align-top text-center font-bold">{{ comp.level }}</td>
+            <td :style="s.td">{{ comp.description }}</td>
+            <td :style="{ ...s.td, textAlign: 'center', fontWeight: 'bold' }">{{ comp.level }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- CATATAN PENGAJAR & REKOMENDASI -->
-    <div v-if="report?.teacher_notes" class="mb-5">
-      <p class="text-[11.5px] font-bold text-[#1a237e] tracking-[0.9px] uppercase m-0 mb-0.5">CATATAN PENGAJAR &amp; REKOMENDASI</p>
-      <div class="border-0 border-t border-[#1a237e] mb-2.5"></div>
-      <table class="w-full border-collapse">
+    <div v-if="report?.teacher_notes" :style="s.section">
+      <p :style="s.sectionTitle">CATATAN PENGAJAR &amp; REKOMENDASI</p>
+      <div :style="s.dividerThin"></div>
+      <table :style="s.plainTable">
         <tbody>
           <tr v-if="report?.teacher_notes?.development">
-            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-top">Perkembangan Siswa</td>
-            <td class="text-[13px] text-[#111] leading-[1.65] align-top py-1">{{ report.teacher_notes.development }}</td>
+            <td :style="s.noteLabel">Perkembangan Siswa</td>
+            <td :style="s.noteValue">{{ report.teacher_notes.development }}</td>
           </tr>
           <tr v-if="report?.teacher_notes?.evaluation">
-            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-top">Evaluasi &amp; Peningkatan</td>
-            <td class="text-[13px] text-[#111] leading-[1.65] align-top py-1">{{ report.teacher_notes.evaluation }}</td>
+            <td :style="s.noteLabel">Evaluasi &amp; Peningkatan</td>
+            <td :style="s.noteValue">{{ report.teacher_notes.evaluation }}</td>
           </tr>
           <tr v-if="report?.teacher_notes?.recommendation">
-            <td class="text-[13px] text-[#666] py-[3px] w-[36%] align-top">Rekomendasi</td>
-            <td class="text-[13px] text-[#111] leading-[1.65] align-top py-1">{{ report.teacher_notes.recommendation }}</td>
+            <td :style="s.noteLabel">Rekomendasi</td>
+            <td :style="s.noteValue">{{ report.teacher_notes.recommendation }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- TANDA TANGAN -->
-    <div class="flex justify-end mt-9">
-      <div class="text-center min-w-[180px]">
-        <p class="text-[12px] text-[#666] mb-[50px]">Mentor Pembimbing,</p>
-        <div class="border-t border-[#111] pt-1">
-          <p class="text-[13px] font-bold text-[#111] m-0">{{ report?.student_info?.mentor || 'Mentor Pixelnoid' }}</p>
-          <p class="text-[11px] text-[#666] m-0">Pixelnoid Academic Team</p>
+    <div :style="s.signatureRow">
+      <div :style="s.signatureBox">
+        <p :style="s.signatureLabel">Mentor Pembimbing,</p>
+        <div :style="s.signatureLine">
+          <p :style="s.signatureName">{{ report?.student_info?.mentor || 'Mentor Pixelnoid' }}</p>
+          <p :style="s.signatureRole">Pixelnoid Academic Team</p>
         </div>
       </div>
     </div>
 
     <!-- FOOTER -->
-    <div class="border-0 border-t border-[#ddd] my-5 mt-6"></div>
-    <p class="text-[10px] text-[#aaa] text-center m-0">
+    <div :style="s.footerDivider"></div>
+    <p :style="s.footerText">
       Diterbitkan oleh Pixelnoid Learning System &bull; Verifikasi dokumen melalui sistem akademik Pixelnoid
     </p>
 
@@ -156,4 +147,175 @@
 defineProps<{
   report: any
 }>()
+
+const s = {
+  root: {
+    fontFamily: 'Arial, sans-serif',
+    background: '#ffffff',
+    color: '#111111',
+    fontSize: '13px',
+    lineHeight: '1.5',
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '12px',
+  },
+  headerLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+  },
+  logo: {
+    height: '36px',
+    width: 'auto',
+    display: 'block',
+    objectFit: 'contain',
+  },
+  headerTitle: {
+    fontSize: '20px',
+    fontWeight: '900',
+    color: '#111111',
+    margin: '0',
+    letterSpacing: '0.3px',
+    lineHeight: '1.2',
+  },
+  headerSubtitle: {
+    fontSize: '12px',
+    color: '#666666',
+    margin: '3px 0 0 0',
+  },
+  headerPeriod: {
+    fontSize: '17px',
+    fontWeight: 'bold',
+    color: '#111111',
+    whiteSpace: 'nowrap',
+  },
+  dividerThick: {
+    borderTop: '3.5px solid #1a3a53',
+    margin: '12px 0 18px 0',
+  },
+  dividerThin: {
+    borderTop: '1.5px solid #1a3a53',
+    margin: '6px 0 12px 0',
+  },
+  section: {
+    marginBottom: '22px',
+  },
+  sectionTitle: {
+    fontSize: '11.5px',
+    fontWeight: 'bold',
+    color: '#1a3a53',
+    letterSpacing: '0.9px',
+    textTransform: 'uppercase',
+    margin: '0 0 4px 0',
+  },
+  plainTable: {
+    width: '100%',
+    borderCollapse: 'collapse',
+  },
+  borderedTable: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    border: '1px solid #555555',
+  },
+  infoLabel: {
+    fontSize: '13px',
+    color: '#666666',
+    padding: '4px 0',
+    width: '32%',
+    verticalAlign: 'middle',
+  },
+  infoValue: {
+    fontSize: '13px',
+    fontWeight: 'bold',
+    color: '#111111',
+    padding: '4px 0',
+    verticalAlign: 'middle',
+  },
+  th: {
+    fontSize: '12px',
+    fontWeight: 'bold',
+    color: '#1a3a53',
+    backgroundColor: '#f0f2f4',
+    padding: '10px 12px',
+    border: '1px solid #555555',
+    textAlign: 'center',
+    verticalAlign: 'middle',
+    lineHeight: '1.3',
+  },
+  tdBig: {
+    fontSize: '22px',
+    fontWeight: 'bold',
+    color: '#111111',
+    textAlign: 'center',
+    padding: '14px 10px',
+    border: '1px solid #555555',
+    verticalAlign: 'middle',
+    lineHeight: '1.2',
+  },
+  td: {
+    fontSize: '13px',
+    color: '#111111',
+    padding: '10px 12px',
+    border: '1px solid #555555',
+    verticalAlign: 'middle',
+    lineHeight: '1.4',
+  },
+  noteLabel: {
+    fontSize: '13px',
+    color: '#666666',
+    padding: '4px 0',
+    width: '36%',
+    verticalAlign: 'top',
+  },
+  noteValue: {
+    fontSize: '13px',
+    color: '#111111',
+    lineHeight: '1.65',
+    verticalAlign: 'top',
+    padding: '4px 0',
+  },
+  signatureRow: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginTop: '36px',
+  },
+  signatureBox: {
+    textAlign: 'center',
+    minWidth: '180px',
+  },
+  signatureLabel: {
+    fontSize: '12px',
+    color: '#666666',
+    marginBottom: '50px',
+    marginTop: '0',
+  },
+  signatureLine: {
+    borderTop: '1px solid #111111',
+    paddingTop: '4px',
+  },
+  signatureName: {
+    fontSize: '13px',
+    fontWeight: 'bold',
+    color: '#111111',
+    margin: '0',
+  },
+  signatureRole: {
+    fontSize: '11px',
+    color: '#666666',
+    margin: '0',
+  },
+  footerDivider: {
+    borderTop: '1px solid #dddddd',
+    margin: '24px 0 10px 0',
+  },
+  footerText: {
+    fontSize: '10px',
+    color: '#aaaaaa',
+    textAlign: 'center',
+    margin: '0',
+  },
+} as const
 </script>

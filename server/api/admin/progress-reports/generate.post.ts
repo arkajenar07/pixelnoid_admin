@@ -40,13 +40,11 @@ ATURAN GENERASI (WAJIB DIPATUHI):
 7. Keyword mentor harus diterjemahkan menjadi kalimat yang mengalir, padu, dan kontekstual.
 8. Jika keyword improvement kosong, jangan memaksakan kekurangan atau mencari-cari kelemahan.
 9. Jika komentar tambahan kosong, abaikan bagian tersebut.
-10. Petakan kompetensi berdasarkan modul, nilai, dan keyword dengan pedoman:
-    - 90–100 -> Mahir
-    - 80–89  -> Berkembang menuju Mahir
-    - 70–79  -> Berkembang
-    - 60–69  -> Perlu Penguatan
-    - <60    -> Perlu Pendampingan
-    (Tingkat kompetensi boleh disesuaikan berdasarkan keyword kekuatan/kendala dari mentor).
+10. Untuk setiap modul di module_reports, identifikasi kompetensi spesifik apa saja yang tercakup (satu modul bisa menghasilkan beberapa kompetensi berbeda). Gunakan field "topics" (daftar materi/topik yang diajarkan) sebagai acuan utama — setiap topik dapat menjadi satu kompetensi. WAJIB:
+    - Setiap deskripsi kompetensi harus secara eksplisit menyebut nama modul asalnya (misal: "Pada modul [Nama Modul], siswa mampu...").
+    - Deskripsi harus spesifik merujuk pada topik dari field "topics", bukan narasi generik.
+    - Sertakan field "module_name" berisi nama modul asal persis dari input.
+    - Sertakan field "module_score" berisi nilai (score) modul asal persis dari input — sistem akan hitung level otomatis, JANGAN isi field "level".
 11. Gunakan Bahasa Indonesia yang jelas, hangat, edukatif, dan tidak terlalu kaku.
 12. Jangan menggunakan klaim berlebihan seperti 'menguasai seluruh materi' kecuali didukung fakta input.
 13. Prioritaskan narasi perkembangan siswa, bukan hanya mendeskripsikan ulang topik materi.
@@ -74,8 +72,9 @@ Keluarkan HANYA JSON valid tanpa teks markdown pembungkus dengan struktur:
   ],
   "competencies": [
     {
-      "description": "string (deskripsi kompetensi spesifik)",
-      "level": "Mahir | Berkembang menuju Mahir | Berkembang | Perlu Penguatan | Perlu Pendampingan"
+      "module_name": "string (nama modul asal, persis sesuai input)",
+      "module_score": number (nilai modul asal, persis sesuai input),
+      "description": "string — wajib menyebut nama modul secara eksplisit, contoh: 'Pada modul [Nama Modul], siswa mampu [kompetensi spesifik]...'"
     }
   ],
   "teacher_notes": {
@@ -149,6 +148,14 @@ Keluarkan HANYA JSON valid tanpa teks markdown pembungkus dengan struktur:
     })
   }
 
+  // Fungsi pemetaan level deterministik dari nilai modul
+  function getCompetencyLevel(score: number): string {
+    if (score >= 90) return 'Mahir'
+    if (score >= 80) return 'Berkembang menuju Mahir'
+    if (score >= 70) return 'Berkembang'
+    return 'Perlu Perbaikan'
+  }
+
   // Validasi & normalisasi data
   parsedOutput.student_info = {
     name: body.student.name || parsedOutput.student_info?.name || '',
@@ -162,6 +169,17 @@ Keluarkan HANYA JSON valid tanpa teks markdown pembungkus dengan struktur:
     attended: Number(body.attendance.attended ?? parsedOutput.attendance?.attended ?? 0),
     excused: Number(body.attendance.excused ?? parsedOutput.attendance?.excused ?? 0),
     absent: Number(body.attendance.absent ?? parsedOutput.attendance?.absent ?? 0)
+  }
+
+  // Assign level secara deterministik dari module_score, lalu buang field internal (module_score, module_name)
+  if (Array.isArray(parsedOutput.competencies)) {
+    parsedOutput.competencies = parsedOutput.competencies.map((comp: any) => {
+      const score = Number(comp.module_score ?? 0)
+      return {
+        description: comp.description || '',
+        level: getCompetencyLevel(score)
+      }
+    })
   }
 
   // Susun human-readable plain text format sesuai Section 3 di README

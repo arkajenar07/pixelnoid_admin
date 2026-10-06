@@ -22,6 +22,7 @@ import {
   ExclamationTriangleIcon,
   ArrowTopRightOnSquareIcon
 } from '@heroicons/vue/24/outline'
+import { exportProgressReportPdf } from '~/utils/exportProgressReportPdf'
 
 // State Sidebar Mobile
 const sidebarOpen = ref(false)
@@ -60,6 +61,7 @@ const form = reactive({
     {
       name: '',
       score: 85,
+      topics: '',
       strengths: [] as string[],
       improvements: [] as string[],
       strengthInput: '',
@@ -177,6 +179,7 @@ const addModule = () => {
   form.modules.push({
     name: '',
     score: 80,
+    topics: '',
     strengths: [],
     improvements: [],
     strengthInput: '',
@@ -206,6 +209,7 @@ const loadSampleData = () => {
     {
       name: 'Python Final Project - Table Relation System',
       score: 90,
+      topics: 'relasi antar tabel, foreign key, normalisasi database, query JOIN',
       strengths: ['memahami konsep relasi data', 'implementasi tepat', 'struktur data baik'],
       improvements: [],
       strengthInput: '',
@@ -214,6 +218,7 @@ const loadSampleData = () => {
     {
       name: 'Python Final Project - Final Application System',
       score: 80,
+      topics: 'integrasi modul, alur aplikasi end-to-end, pengelolaan state, validasi input',
       strengths: ['integrasi fitur', 'memahami alur program', 'implementasi cukup baik'],
       improvements: ['error handling', 'testing', 'struktur kode'],
       strengthInput: '',
@@ -261,6 +266,7 @@ const resetForm = () => {
     {
       name: '',
       score: 85,
+      topics: '',
       strengths: [],
       improvements: [],
       strengthInput: '',
@@ -348,6 +354,7 @@ const generateReport = async () => {
       modules: form.modules.map(m => ({
         name: m.name.trim(),
         score: Number(m.score) || 0,
+        topics: m.topics.trim() ? m.topics.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
         strengths: m.strengths,
         improvements: m.improvements
       })),
@@ -386,36 +393,6 @@ const generateReport = async () => {
 // State PDF Export
 const isDownloadingPdf = ref(false)
 
-// Dynamic loader helper untuk html2pdf.js agar kompatibel dengan Nuxt & SSR
-let html2pdfInstance: any = null
-const getHtml2Pdf = async () => {
-  if (!import.meta.client) return null
-  if (html2pdfInstance) return html2pdfInstance
-
-  try {
-    const mod = await import('html2pdf.js')
-    html2pdfInstance = mod.default || mod
-    return html2pdfInstance
-  } catch (e) {
-    console.warn('Dynamic import html2pdf.js failed, loading CDN fallback...', e)
-  }
-
-  return new Promise((resolve, reject) => {
-    if ((window as any).html2pdf) {
-      html2pdfInstance = (window as any).html2pdf
-      return resolve(html2pdfInstance)
-    }
-    const script = document.createElement('script')
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'
-    script.onload = () => {
-      html2pdfInstance = (window as any).html2pdf
-      resolve(html2pdfInstance)
-    }
-    script.onerror = (err) => reject(err)
-    document.head.appendChild(script)
-  })
-}
-
 // Download Laporan sebagai file PDF langsung ke komputer / HP
 const downloadPdf = async () => {
   if (!reportResult.value || !import.meta.client) return
@@ -424,55 +401,17 @@ const downloadPdf = async () => {
   showToast('Sedang menyiapkan dokumen PDF...')
 
   try {
-    if (activeResultTab.value !== 'visual') {
-      activeResultTab.value = 'visual'
-      await nextTick()
-    }
-
-    const element = document.getElementById('printable-report-card')
-    if (!element) {
-      throw new Error('Elemen dokumen tidak ditemukan.')
-    }
-
     const rawStudent = form.student.name || reportResult.value.student_info?.name || 'Siswa'
     const rawPeriod = form.student.period || reportResult.value.student_info?.period || 'Periode'
     const safeStudent = rawStudent.trim().replace(/[^a-zA-Z0-9_-]/g, '_')
     const safePeriod = rawPeriod.trim().replace(/[^a-zA-Z0-9_-]/g, '_')
     const fileName = `Laporan_Perkembangan_${safeStudent}_${safePeriod}.pdf`
 
-    const html2pdf = await getHtml2Pdf()
-    if (!html2pdf) {
-      throw new Error('Library PDF generator tidak dapat dimuat.')
-    }
-
-    const opt = {
-      margin: [10, 10, 10, 10], // mm
-      filename: fileName,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        letterRendering: true,
-        scrollY: 0
-      },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait'
-      },
-      pagebreak: {
-        mode: ['avoid-all', 'css', 'legacy']
-      }
-    }
-
-    await html2pdf().set(opt).from(element).save()
+    await exportProgressReportPdf(reportResult.value, fileName)
     showToast(`Dokumen ${fileName} berhasil diunduh!`)
   } catch (err: any) {
     console.error('PDF download error:', err)
-    showToast(`Gagal generate PDF langsung: ${err.message || 'Error'}. Mengalihkan ke cetak browser...`)
-    setTimeout(() => {
-      window.print()
-    }, 800)
+    showToast(`Gagal generate PDF: ${err.message || 'Error'}`)
   } finally {
     isDownloadingPdf.value = false
   }
@@ -480,11 +419,27 @@ const downloadPdf = async () => {
 
 // Download PDF langsung dari item riwayat tersimpan
 const downloadSavedReportPdf = async (item: any) => {
-  loadSavedReportToView(item)
-  await nextTick()
-  setTimeout(() => {
-    downloadPdf()
-  }, 300)
+  if (!item || !import.meta.client) return
+
+  isDownloadingPdf.value = true
+  showToast('Sedang menyiapkan dokumen PDF...')
+
+  try {
+    const reportData = item.generated_report || item
+    const rawStudent = item.student_name || reportData.student_info?.name || 'Siswa'
+    const rawPeriod = item.period || reportData.student_info?.period || 'Periode'
+    const safeStudent = rawStudent.trim().replace(/[^a-zA-Z0-9_-]/g, '_')
+    const safePeriod = rawPeriod.trim().replace(/[^a-zA-Z0-9_-]/g, '_')
+    const fileName = `Laporan_Perkembangan_${safeStudent}_${safePeriod}.pdf`
+
+    await exportProgressReportPdf(reportData, fileName)
+    showToast(`Dokumen ${fileName} berhasil diunduh!`)
+  } catch (err: any) {
+    console.error('PDF download error:', err)
+    showToast(`Gagal generate PDF: ${err.message || 'Error'}`)
+  } finally {
+    isDownloadingPdf.value = false
+  }
 }
 
 // Modal Setup SQL & Status Sinkronisasi
@@ -1075,6 +1030,18 @@ onMounted(() => {
                         placeholder="Contoh: Python Final Project"
                         class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors"
                       />
+                      <div class="mt-2">
+                        <label class="block text-[0.6875rem] font-bold text-gray-500 uppercase tracking-wide mb-1">
+                          Materi / Topik yang Dipelajari
+                          <span class="normal-case font-normal text-gray-400 ml-1">(pisahkan dengan koma)</span>
+                        </label>
+                        <textarea
+                          v-model="mod.topics"
+                          rows="2"
+                          placeholder="Contoh: variabel & tipe data, kondisional if-else, perulangan for & while, fungsi dasar"
+                          class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors resize-none"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -1104,83 +1071,6 @@ onMounted(() => {
                     </div>
                   </div>
 
-                  <!-- Keyword Kekuatan -->
-                  <div>
-                    <label class="block text-[0.6875rem] font-bold text-gray-800 mb-1.5 uppercase">
-                      Keyword Kekuatan (Enter / Koma)
-                    </label>
-                    <div class="flex flex-wrap gap-1.5 p-2 bg-white border border-gray-300 min-h-[38px]">
-                      <span
-                        v-for="(st, sIdx) in mod.strengths"
-                        :key="sIdx"
-                        class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-gray-100 text-gray-800 font-medium"
-                      >
-                        {{ st }}
-                        <button type="button" @click="removeTag(mod.strengths, sIdx)" class="hover:text-red-600 cursor-pointer">
-                          <XMarkIcon class="w-3 h-3" />
-                        </button>
-                      </span>
-                      <input
-                        v-model="mod.strengthInput"
-                        @keydown.enter.prevent="addTag(mod.strengths, { value: mod.strengthInput })"
-                        @keydown.comma.prevent="addTag(mod.strengths, { value: mod.strengthInput })"
-                        type="text"
-                        placeholder="Tambah keyword..."
-                        class="flex-1 min-w-[120px] text-xs outline-none bg-transparent"
-                      />
-                    </div>
-                    <!-- Suggestion Chips -->
-                    <div class="flex flex-wrap gap-1 mt-2">
-                      <button
-                        v-for="(sug, sugIdx) in suggestionPills.moduleStrengths.slice(0, 3)"
-                        :key="sugIdx"
-                        type="button"
-                        @click="addSuggestion(mod.strengths, sug)"
-                        class="text-[0.625rem] px-2 py-0.5 bg-gray-100 hover:bg-[#5530AB]/10 hover:text-[#5530AB] text-gray-600 border border-gray-200 transition-colors cursor-pointer"
-                      >
-                        + {{ sug }}
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Keyword Improvement -->
-                  <div>
-                    <label class="block text-[0.6875rem] font-bold text-gray-800 mb-1.5 uppercase">
-                      Keyword Ditingkatkan (Opsional)
-                    </label>
-                    <div class="flex flex-wrap gap-1.5 p-2 bg-white border border-gray-300 min-h-[38px]">
-                      <span
-                        v-for="(imp, iIdx) in mod.improvements"
-                        :key="iIdx"
-                        class="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-gray-100 text-gray-800 font-medium"
-                      >
-                        {{ imp }}
-                        <button type="button" @click="removeTag(mod.improvements, iIdx)" class="hover:text-red-600 cursor-pointer">
-                          <XMarkIcon class="w-3 h-3" />
-                        </button>
-                      </span>
-                      <input
-                        v-model="mod.improvementInput"
-                        @keydown.enter.prevent="addTag(mod.improvements, { value: mod.improvementInput })"
-                        @keydown.comma.prevent="addTag(mod.improvements, { value: mod.improvementInput })"
-                        type="text"
-                        placeholder="Tambah keyword..."
-                        class="flex-1 min-w-[120px] text-xs outline-none bg-transparent"
-                      />
-                    </div>
-                    <!-- Suggestion Chips -->
-                    <div class="flex flex-wrap gap-1 mt-2">
-                      <button
-                        v-for="(sug, sugIdx) in suggestionPills.moduleImprovements.slice(0, 3)"
-                        :key="sugIdx"
-                        type="button"
-                        @click="addSuggestion(mod.improvements, sug)"
-                        class="text-[0.625rem] px-2 py-0.5 bg-gray-100 hover:bg-[#5530AB]/10 hover:text-[#5530AB] text-gray-600 border border-gray-200 transition-colors cursor-pointer"
-                      >
-                        + {{ sug }}
-                      </button>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
