@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
       class_id, created_at,
       module_lessons (
         id, title, slug, type, video_url, sort_order, created_at,
-        content, xp_reward
+        xp_reward
       )
     `)
     .order('sort_order', { ascending: true })

@@ -5,7 +5,7 @@
     <header class="sticky top-0 z-50 flex items-center justify-between gap-4 px-6 py-4 bg-white border-b border-gray-200">
       <div class="flex items-center gap-3.5 min-w-0">
         <NuxtLink
-          to="/modules"
+          :to="backUrl"
           class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 text-gray-500 hover:text-[#5530AB] hover:bg-[#5530AB]/10 transition-colors shrink-0 cursor-pointer"
           title="Kembali ke Modul"
         >
@@ -115,7 +115,6 @@
           <CheckCircleIcon v-else-if="saveStatus === 'saved'" class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
           <ExclamationTriangleIcon v-else-if="saveStatus === 'error'" class="w-3.5 h-3.5 text-rose-600 shrink-0" />
           <span v-else class="w-2 h-2 rounded-full bg-gray-300 shrink-0" />
-
           <span class="hidden sm:inline">
             {{ saveStatus === 'saving' ? 'Menyimpan...' : saveStatus === 'saved' ? 'Tersimpan otomatis' : saveStatus === 'error' ? 'Gagal menyimpan' : 'Semua tersimpan' }}
           </span>
@@ -139,8 +138,6 @@
 
     <!-- ── Main Area ── -->
     <div class="flex flex-1 min-h-0">
-
-      <!-- Right: Block Editor Area -->
       <div class="flex-1 overflow-y-auto bg-gray-50">
         <!-- Loading lesson data -->
         <div v-if="isLoading" class="flex flex-col items-center justify-center py-32 gap-3">
@@ -239,6 +236,10 @@ definePageMeta({ layout: false })
 
 const route = useRoute()
 const lessonId = route.params.lessonId as string
+const classId = route.params.classId as string
+
+// Back button always goes to the class modules page
+const backUrl = computed(() => `/classes/${classId}`)
 
 // ── State ──────────────────────────────────────────────────────
 const isLoading = ref(true)
@@ -281,8 +282,6 @@ function handleMdFileImport(event: Event) {
     }
   }
   reader.readAsText(file, 'UTF-8')
-
-  // Reset input so the same file can be re-imported if needed
   input.value = ''
 }
 
@@ -315,7 +314,6 @@ const activeTypeInfo = computed(() => {
   return lessonTypes.find(t => t.value === lessonForm.type) || lessonTypes[0]
 })
 
-// Disederhanakan menjadi warna solid, menghapus border
 const activeTypeBadgeClass = computed(() => {
   if (lessonForm.type === 'video') return 'bg-blue-100 text-blue-700'
   if (lessonForm.type === 'quiz') return 'bg-amber-100 text-amber-700'
@@ -331,6 +329,10 @@ interface LessonData {
   sort_order: number
   xp_reward?: number
   content: any[] | null
+  class_modules?: {
+    id: number
+    class_id: number
+  } | null
 }
 
 async function fetchLesson() {
@@ -420,6 +422,12 @@ async function saveNow() {
         content: blocks.value,
       },
     })
+    // Invalidate modules cache for this class so modules page re-fetches latest lesson data
+    const modulesCache = useState<Record<number, any[]>>('admin_modules_cache_by_class', () => ({}))
+    const numericClassId = Number(classId)
+    if (numericClassId && modulesCache.value[numericClassId]) {
+      delete modulesCache.value[numericClassId]
+    }
     saveStatus.value = 'saved'
     setTimeout(() => { if (saveStatus.value === 'saved') saveStatus.value = 'idle' }, 3000)
   } catch (e) {

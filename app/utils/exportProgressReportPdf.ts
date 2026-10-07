@@ -69,10 +69,10 @@ export async function exportProgressReportPdf(
   let y = 14
 
   // --- 1. HEADER (KOP LAPORAN) ---
-  const logoBase64 = await getBase64ImageFromUrl('/logo-pc.png')
+  const logoBase64 = await getBase64ImageFromUrl('/logo-pc.webp')
   if (logoBase64) {
     // Logo kecil di pojok kiri
-    doc.addImage(logoBase64, 'PNG', left, y, 24, 8)
+    doc.addImage(logoBase64, 'WEBP', left, y, 24, 8)
   }
 
   // Period on the far right

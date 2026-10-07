@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   supabase: {
     redirect: false,
   },
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' }
+  },
   runtimeConfig: {
     googleClientId: process.env.GOOGLE_CLIENT_ID,
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,

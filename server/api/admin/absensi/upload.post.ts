@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Buat nama file unik
-  const extension = file.filename ? file.filename.split('.').pop() || 'jpg' : 'jpg'
+  const extension = file.filename ? file.filename.split('.').pop() || 'webp' : 'webp'
   const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${extension}`
   const filePath = `proofs/${cleanName}`
 
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
   const { data: uploadData, error: uploadError } = await client.storage
     .from(bucketName)
     .upload(filePath, file.data, {
-      contentType: file.type || 'image/jpeg',
+      contentType: file.type || 'image/webp',
       upsert: true
     })
 

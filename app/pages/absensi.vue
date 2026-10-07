@@ -332,12 +332,20 @@
           <div>
             <label class="block text-sm font-semibold text-gray-900 mb-1.5">Bukti Foto</label>
             <div class="flex items-center gap-4">
-               <button type="button" @click="triggerFileInput" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md border border-gray-300 transition-colors">
+               <button
+                 type="button"
+                 @click="triggerFileInput"
+                 :disabled="isUploadingPhoto"
+                 class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md border border-gray-300 transition-colors disabled:opacity-50"
+               >
                  Unggah Foto
                </button>
-               <span v-if="isUploadingPhoto" class="text-sm text-gray-500">Mengunggah...</span>
+               <span v-if="isUploadingPhoto" class="text-sm text-[#5530AB] font-medium flex items-center gap-2">
+                 <span class="w-3.5 h-3.5 border-2 border-[#5530AB] border-t-transparent rounded-full animate-spin" />
+                 {{ uploadStatusText || 'Mengunggah...' }}
+               </span>
                <span v-else-if="form.bukti_foto" class="text-sm text-green-600 font-medium flex items-center gap-2">
-                 Foto terunggah <button type="button" @click="form.bukti_foto = ''" class="text-red-600 hover:underline">Hapus</button>
+                 Foto terunggah (WebP) <button type="button" @click="form.bukti_foto = ''" class="text-red-600 hover:underline">Hapus</button>
                </span>
                <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="handleFileUpload" />
             </div>
@@ -439,6 +447,7 @@ const sidebarOpen = ref(false)
 const isLoading = ref(true)
 const isSubmitting = ref(false)
 const isUploadingPhoto = ref(false)
+const uploadStatusText = ref('')
 
 const absensiList = ref<any[]>([])
 const mentors = ref<any[]>([])
@@ -534,16 +543,30 @@ const triggerFileInput = () => { fileInputRef.value?.click() }
 const handleFileUpload = async (e: Event) => {
   const target = e.target as HTMLInputElement
   if (!target.files?.length) return
-  const formData = new FormData()
-  formData.append('file', target.files[0])
+  const rawFile = target.files[0]
+
   isUploadingPhoto.value = true
+  uploadStatusText.value = 'Mengonversi gambar ke WebP...'
+
   try {
+    // Konversi gambar ke WebP (kualitas 0.82, maxDimension 1920px)
+    const webpFile = await convertImageToWebp(rawFile, { quality: 0.82, maxDimension: 1920 })
+
+    uploadStatusText.value = 'Mengunggah ke Supabase...'
+    const formData = new FormData()
+    formData.append('file', webpFile)
+
     const res: any = await $fetch('/api/admin/absensi/upload', { method: 'POST', body: formData })
-    if (res.url) form.value.bukti_foto = res.url
-  } catch {
+    if (res.url) {
+      form.value.bukti_foto = res.url
+    }
+  } catch (err: any) {
+    console.error('Error saat konversi / unggah foto absensi:', err)
     alert('Gagal mengunggah foto.')
   } finally {
     isUploadingPhoto.value = false
+    uploadStatusText.value = ''
+    if (target) target.value = ''
   }
 }
 

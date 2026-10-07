@@ -12,10 +12,16 @@
             <h1 class="text-base font-semibold text-gray-900 leading-none">Financial Tracker</h1>
           </div>
         </div>
-        <button @click="openAddModal" class="flex items-center gap-2 px-4 py-2 rounded-md bg-[#5530AB] hover:bg-[#432687] text-white text-sm font-medium transition-colors">
-          <PlusIcon class="w-4 h-4" />
-          Tambah Transaksi
-        </button>
+        <div class="flex items-center gap-2.5">
+          <button @click="openExportModal" class="flex items-center gap-2 px-3.5 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors shadow-sm">
+            <ArrowDownTrayIcon class="w-4 h-4 text-[#1a3a53]" />
+            <span>Unduh Laporan PDF</span>
+          </button>
+          <button @click="openAddModal" class="flex items-center gap-2 px-4 py-2 rounded-md bg-[#5530AB] hover:bg-[#432687] text-white text-sm font-medium transition-colors">
+            <PlusIcon class="w-4 h-4" />
+            Tambah Transaksi
+          </button>
+        </div>
       </header>
 
       <main class="p-6 space-y-6 max-w-[1440px] mx-auto">
@@ -140,6 +146,10 @@
                   </td>
                   <td class="px-5 py-4 text-right">
                     <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button @click="handlePrintInvoice(r)" :disabled="printingInvoiceId === r.id" class="p-1.5 rounded-md text-gray-500 hover:text-[#1a3a53] hover:bg-gray-100 transition-colors disabled:opacity-50" title="Cetak Invoice">
+                        <div v-if="printingInvoiceId === r.id" class="w-4 h-4 border-2 border-gray-400 border-t-[#1a3a53] rounded-full animate-spin"></div>
+                        <PrinterIcon v-else class="w-4 h-4" />
+                      </button>
                       <button @click="openEditModal(r)" class="p-1.5 rounded-md text-gray-500 hover:text-[#5530AB] hover:bg-[#F4F1FA] transition-colors" title="Edit">
                         <PencilSquareIcon class="w-4 h-4" />
                       </button>
@@ -246,12 +256,171 @@
         </div>
       </div>
     </Transition>
+
+    <!-- Export PDF Modal -->
+    <Transition enter-active-class="transition duration-150 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
+      <div v-if="showExportModal" class="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-gray-900/50" @click.self="closeExportModal">
+        <div class="relative w-full max-w-xl bg-white border border-gray-200 rounded-md overflow-hidden flex flex-col max-h-[90vh]">
+          <!-- Modal Header -->
+          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 shrink-0">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-md bg-[#1a3a53]/10 text-[#1a3a53] flex items-center justify-center">
+                <DocumentArrowDownIcon class="w-4 h-4" />
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Cetak Laporan Keuangan PDF</h2>
+                <p class="text-xs text-gray-500">Konfigurasi filter & parameter sebelum mengunduh PDF</p>
+              </div>
+            </div>
+            <button @click="closeExportModal" class="p-1.5 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-200 transition-colors">
+              <XMarkIcon class="w-4 h-4" />
+            </button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="px-6 py-5 space-y-4 overflow-y-auto text-sm">
+            <!-- Cakupan Data (Scope) -->
+            <div class="space-y-2">
+              <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Cakupan Data yang Diekspor</label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <label
+                  class="flex flex-col p-3 rounded-md border cursor-pointer transition-all"
+                  :class="exportForm.scope === 'current' ? 'border-[#1a3a53] bg-[#1a3a53]/5 ring-1 ring-[#1a3a53]' : 'border-gray-200 hover:border-gray-300 bg-white'"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-gray-900">Filter Aktif</span>
+                    <input type="radio" v-model="exportForm.scope" value="current" @change="updateDefaultPeriodLabel" class="text-[#1a3a53] focus:ring-[#1a3a53]" />
+                  </div>
+                  <span class="text-[11px] text-gray-500 mt-1">{{ filteredRecords.length }} transaksi saat ini</span>
+                </label>
+
+                <label
+                  class="flex flex-col p-3 rounded-md border cursor-pointer transition-all"
+                  :class="exportForm.scope === 'all' ? 'border-[#1a3a53] bg-[#1a3a53]/5 ring-1 ring-[#1a3a53]' : 'border-gray-200 hover:border-gray-300 bg-white'"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-gray-900">Semua Data</span>
+                    <input type="radio" v-model="exportForm.scope" value="all" @change="updateDefaultPeriodLabel" class="text-[#1a3a53] focus:ring-[#1a3a53]" />
+                  </div>
+                  <span class="text-[11px] text-gray-500 mt-1">{{ records.length }} seluruh mutasi</span>
+                </label>
+
+                <label
+                  class="flex flex-col p-3 rounded-md border cursor-pointer transition-all"
+                  :class="exportForm.scope === 'custom_date' ? 'border-[#1a3a53] bg-[#1a3a53]/5 ring-1 ring-[#1a3a53]' : 'border-gray-200 hover:border-gray-300 bg-white'"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-gray-900">Rentang Tanggal</span>
+                    <input type="radio" v-model="exportForm.scope" value="custom_date" @change="updateDefaultPeriodLabel" class="text-[#1a3a53] focus:ring-[#1a3a53]" />
+                  </div>
+                  <span class="text-[11px] text-gray-500 mt-1">Pilih tanggal awal & akhir</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Tanggal Mulai & Selesai (Jika Rentang Tanggal) -->
+            <div v-if="exportForm.scope === 'custom_date'" class="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded-md border border-gray-200">
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Dari Tanggal</label>
+                <input v-model="exportForm.startDate" @change="updateDefaultPeriodLabel" type="date" class="w-full h-9 px-3 rounded-md border border-gray-300 text-xs outline-none focus:border-[#1a3a53] focus:ring-1 focus:ring-[#1a3a53] bg-white" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Sampai Tanggal</label>
+                <input v-model="exportForm.endDate" @change="updateDefaultPeriodLabel" type="date" class="w-full h-9 px-3 rounded-md border border-gray-300 text-xs outline-none focus:border-[#1a3a53] focus:ring-1 focus:ring-[#1a3a53] bg-white" />
+              </div>
+            </div>
+
+            <!-- Metadata Form -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Judul Dokumen</label>
+                <input v-model="exportForm.customTitle" type="text" placeholder="Laporan Keuangan Pixelnoid" class="w-full h-10 px-3 rounded-md border border-gray-300 text-sm outline-none focus:border-[#1a3a53] focus:ring-1 focus:ring-[#1a3a53] transition-colors" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Label Periode</label>
+                <input v-model="exportForm.periodLabel" type="text" placeholder="Contoh: Oktober 2026" class="w-full h-10 px-3 rounded-md border border-gray-300 text-sm outline-none focus:border-[#1a3a53] focus:ring-1 focus:ring-[#1a3a53] transition-colors" />
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Disahkan / Dicetak Oleh</label>
+              <input v-model="exportForm.generatedBy" type="text" placeholder="Admin Keuangan" class="w-full h-10 px-3 rounded-md border border-gray-300 text-sm outline-none focus:border-[#1a3a53] focus:ring-1 focus:ring-[#1a3a53] transition-colors" />
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Catatan Tambahan (Opsional)</label>
+              <textarea v-model="exportForm.notes" rows="2" placeholder="Catatan atau pengantar singkat yang akan dicetak di dalam PDF..." class="w-full p-3 rounded-md border border-gray-300 text-sm outline-none focus:border-[#1a3a53] focus:ring-1 focus:ring-[#1a3a53] transition-colors resize-none"></textarea>
+            </div>
+
+            <!-- Live Summary Preview Box -->
+            <div class="bg-gray-50 border border-gray-200 rounded-md p-3.5 space-y-2">
+              <div class="flex items-center justify-between text-xs font-semibold text-gray-700">
+                <span>Pratinjau Data Laporan</span>
+                <span class="text-gray-500 font-normal">{{ exportTargetRecords.length }} Transaksi Termasuk</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 pt-1 text-center">
+                <div class="bg-white p-2 rounded border border-gray-100">
+                  <p class="text-[10px] text-gray-500 uppercase font-semibold">Pemasukan</p>
+                  <p class="text-xs font-bold text-emerald-600 truncate mt-0.5">{{ formatCurrency(exportSummary.income) }}</p>
+                </div>
+                <div class="bg-white p-2 rounded border border-gray-100">
+                  <p class="text-[10px] text-gray-500 uppercase font-semibold">Pengeluaran</p>
+                  <p class="text-xs font-bold text-rose-600 truncate mt-0.5">{{ formatCurrency(exportSummary.expense) }}</p>
+                </div>
+                <div class="bg-white p-2 rounded border border-gray-100">
+                  <p class="text-[10px] text-gray-500 uppercase font-semibold">Saldo Bersih</p>
+                  <p class="text-xs font-bold truncate mt-0.5" :class="exportSummary.balance >= 0 ? 'text-[#1a3a53]' : 'text-rose-600'">
+                    {{ formatCurrency(exportSummary.balance) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50 shrink-0">
+            <button type="button" @click="closeExportModal" class="px-4 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors">Batal</button>
+            <button
+              type="button"
+              @click="handleGeneratePdf"
+              :disabled="isExportingPdf || exportTargetRecords.length === 0"
+              class="flex items-center gap-2 px-4 py-2 rounded-md bg-[#1a3a53] hover:bg-[#12283a] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors shadow-sm"
+            >
+              <div v-if="isExportingPdf" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <template v-else>
+                <ArrowDownTrayIcon class="w-4 h-4" />
+                <span>Unduh PDF Sekarang</span>
+              </template>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </Teleport>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
-import { Bars3Icon, PlusIcon, MagnifyingGlassIcon, BanknotesIcon, PencilSquareIcon, XMarkIcon, CheckIcon, ExclamationCircleIcon, TrashIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon, ScaleIcon, ReceiptPercentIcon } from '@heroicons/vue/24/outline'
+import {
+  Bars3Icon,
+  PlusIcon,
+  MagnifyingGlassIcon,
+  BanknotesIcon,
+  PencilSquareIcon,
+  XMarkIcon,
+  CheckIcon,
+  ExclamationCircleIcon,
+  TrashIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  ScaleIcon,
+  ReceiptPercentIcon,
+  ArrowDownTrayIcon,
+  DocumentArrowDownIcon,
+  PrinterIcon
+} from '@heroicons/vue/24/outline'
+import { exportFinancialReportPdf } from '~/utils/exportFinancialReportPdf'
+import { exportFinancialInvoicePdf } from '~/utils/exportFinancialInvoicePdf'
 
 useSeoMeta({ title: 'Financial Tracker — Admin Pixelnoid' })
 definePageMeta({ layout: false })
@@ -275,6 +444,20 @@ const isLoading = ref(true)
 const search = ref('')
 const filterType = ref('')
 const filterStatus = ref('')
+
+// Export PDF state
+const showExportModal = ref(false)
+const isExportingPdf = ref(false)
+
+const exportForm = reactive({
+  scope: 'current', // 'current' | 'all' | 'custom_date'
+  startDate: '',
+  endDate: '',
+  periodLabel: '',
+  customTitle: 'Laporan Keuangan Pixelnoid',
+  generatedBy: 'Admin Keuangan',
+  notes: ''
+})
 
 const showModal = ref(false)
 const isEditing = ref(false)
@@ -310,6 +493,119 @@ const filteredRecords = computed(() => {
   if (filterStatus.value) list = list.filter(r => r.status === filterStatus.value)
   return list
 })
+
+const exportTargetRecords = computed(() => {
+  if (exportForm.scope === 'current') {
+    return filteredRecords.value
+  }
+  if (exportForm.scope === 'all') {
+    return records.value
+  }
+  if (exportForm.scope === 'custom_date') {
+    return records.value.filter(r => {
+      if (!r.created_at) return false
+      const d = new Date(r.created_at).toISOString().split('T')[0]
+      if (exportForm.startDate && d < exportForm.startDate) return false
+      if (exportForm.endDate && d > exportForm.endDate) return false
+      return true
+    })
+  }
+  return filteredRecords.value
+})
+
+const exportSummary = computed(() => {
+  const recs = exportTargetRecords.value
+  const inc = recs
+    .filter(r => r.type === 'income' && (r.status === 'lunas' || r.status === 'completed'))
+    .reduce((sum, r) => sum + (Number(r.amount) || 0), 0)
+  const exp = recs
+    .filter(r => r.type === 'expense' && (r.status === 'lunas' || r.status === 'completed'))
+    .reduce((sum, r) => sum + (Number(r.amount) || 0), 0)
+  return {
+    count: recs.length,
+    income: inc,
+    expense: exp,
+    balance: inc - exp
+  }
+})
+
+function updateDefaultPeriodLabel() {
+  if (exportForm.scope === 'all') {
+    exportForm.periodLabel = 'Semua Periode (Keseluruhan)'
+  } else if (exportForm.scope === 'custom_date') {
+    if (exportForm.startDate && exportForm.endDate) {
+      exportForm.periodLabel = `${exportForm.startDate} s/d ${exportForm.endDate}`
+    } else {
+      exportForm.periodLabel = 'Rentang Tanggal Khusus'
+    }
+  } else {
+    const activeMonth = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+    if (filterType.value || filterStatus.value || search.value) {
+      exportForm.periodLabel = `Filter Aktif (${activeMonth})`
+    } else {
+      exportForm.periodLabel = activeMonth
+    }
+  }
+}
+
+function openExportModal() {
+  exportForm.scope = 'current'
+  exportForm.customTitle = 'Laporan Keuangan Pixelnoid'
+  exportForm.generatedBy = 'Admin Keuangan'
+  exportForm.notes = ''
+
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  exportForm.startDate = `${year}-${month}-01`
+  exportForm.endDate = `${year}-${month}-${day}`
+
+  updateDefaultPeriodLabel()
+  showExportModal.value = true
+}
+
+function closeExportModal() {
+  showExportModal.value = false
+}
+
+async function handleGeneratePdf() {
+  if (exportTargetRecords.value.length === 0) {
+    alert('Tidak ada transaksi yang dapat diekspor pada pilihan ini.')
+    return
+  }
+
+  isExportingPdf.value = true
+  try {
+    await exportFinancialReportPdf({
+      customTitle: exportForm.customTitle.trim() || 'Laporan Keuangan Pixelnoid',
+      periodLabel: exportForm.periodLabel.trim() || 'Semua Periode',
+      generatedBy: exportForm.generatedBy.trim() || 'Admin Keuangan',
+      notes: exportForm.notes,
+      records: exportTargetRecords.value
+    })
+    closeExportModal()
+  } catch (err: any) {
+    console.error('[handleGeneratePdf] Error:', err)
+    alert('Gagal mengekspor PDF: ' + (err?.message || 'Terjadi kesalahan sistem saat membuat PDF.'))
+  } finally {
+    isExportingPdf.value = false
+  }
+}
+
+const printingInvoiceId = ref<number | null>(null)
+
+async function handlePrintInvoice(r: FinancialRecord) {
+  printingInvoiceId.value = r.id
+  try {
+    await exportFinancialInvoicePdf(r)
+  } catch (err: any) {
+    console.error('[handlePrintInvoice] Error:', err)
+    alert('Gagal mencetak invoice: ' + (err?.message || 'Terjadi kesalahan sistem saat membuat file invoice.'))
+  } finally {
+    printingInvoiceId.value = null
+  }
+}
 
 function formatCurrency(val: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val)

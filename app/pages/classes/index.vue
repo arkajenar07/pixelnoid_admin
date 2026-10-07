@@ -135,6 +135,13 @@
                 </td>
                 <td class="px-5 py-4">
                   <div class="flex items-center justify-end gap-1">
+                    <NuxtLink
+                      :to="`/classes/${cls.id}`"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[#5530AB] bg-[#5530AB]/10 hover:bg-[#5530AB]/20 transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <BookOpenIcon class="w-3.5 h-3.5" />
+                      Lihat Modul
+                    </NuxtLink>
                     <button
                       @click="openEditModal(cls)"
                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-[#5530AB] hover:bg-[#5530AB]/10 transition-all opacity-0 group-hover:opacity-100"
@@ -360,9 +367,10 @@ import {
   AcademicCapIcon,
   UserIcon,
   CurrencyDollarIcon,
+  BookOpenIcon,
 } from '@heroicons/vue/24/outline'
 
-useSeoMeta({ title: 'Class Management — Admin Pixelnoid', description: 'Kelola semua kelas di platform Pixelnoid.' })
+useSeoMeta({ title: 'Daftar Kelas — Admin Pixelnoid', description: 'Kelola semua kelas di platform Pixelnoid.' })
 definePageMeta({ layout: false })
 
 interface ClassItem {

@@ -18,7 +18,13 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await client
     .from('module_lessons')
-    .select('*')
+    .select(`
+      *,
+      class_modules (
+        id,
+        class_id
+      )
+    `)
     .eq('id', id)
     .single()
 

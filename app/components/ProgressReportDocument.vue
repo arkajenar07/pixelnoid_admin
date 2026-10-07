@@ -4,7 +4,7 @@
     <!-- KOP LAPORAN -->
     <div :style="s.header">
       <div :style="s.headerLeft">
-        <img src="/logo-pc.png" alt="Pixelnoid Logo" :style="s.logo" />
+        <img src="/logo-pc.webp" alt="Pixelnoid Logo" :style="s.logo" />
       </div>
       <div :style="s.headerPeriod">{{ report?.student_info?.period || '-' }}</div>
     </div>
