@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
       *,
       class_modules (
         id,
+        title,
         class_id
       )
     `)

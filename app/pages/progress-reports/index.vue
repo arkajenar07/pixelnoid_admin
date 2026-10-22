@@ -995,14 +995,6 @@ onMounted(() => {
                     <h3 class="text-sm font-bold text-gray-900">3. Penilaian Modul Pelajaran</h3>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  @click="addModule"
-                  class="flex items-center gap-1 text-xs font-bold px-2 py-1 bg-[#121212] text-white hover:bg-black transition-colors cursor-pointer"
-                >
-                  <PlusIcon class="w-3.5 h-3.5" />
-                  Modul
-                </button>
               </div>
 
               <div class="space-y-4">
@@ -1040,7 +1032,7 @@ onMounted(() => {
                           rows="2"
                           placeholder="Contoh: variabel & tipe data, kondisional if-else, perulangan for & while, fungsi dasar"
                           class="w-full px-3 py-2 border border-gray-300 text-sm bg-white focus:outline-none focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-colors resize-none"
-                        />
+                        ></textarea>
                       </div>
                     </div>
                   </div>
@@ -1072,6 +1064,14 @@ onMounted(() => {
                   </div>
 
                 </div>
+                <button
+                  type="button"
+                  @click="addModule"
+                  class="flex w-full items-center justify-center gap-1 text-xs font-bold px-4 py-3 bg-[#121212] text-white hover:bg-black transition-colors cursor-pointer"
+                >
+                  <PlusIcon class="w-3.5 h-3.5" />
+                  Tambah Modul
+                </button>
               </div>
             </div>
 

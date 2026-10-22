@@ -16,14 +16,26 @@ export interface InvoiceFinancialRecord {
 
 async function getBase64ImageFromUrl(url: string): Promise<string | null> {
   try {
-    const res = await fetch(url)
-    if (!res.ok) return null
-    const blob = await res.blob()
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onloadend = () => resolve(reader.result as string)
-      reader.onerror = () => resolve(null)
-      reader.readAsDataURL(blob)
+    // Load image via canvas, resize to a small fixed size, then export as PNG.
+    // - Browser decodes WEBP natively (jsPDF cannot).
+    // - We cap the canvas at 240px wide so the PNG stays tiny in the PDF
+    //   (logo is only displayed at ~24mm wide anyway).
+    return await new Promise((resolve) => {
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => {
+        const MAX_W = 240
+        const scale = Math.min(1, MAX_W / img.naturalWidth)
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.round(img.naturalWidth * scale)
+        canvas.height = Math.round(img.naturalHeight * scale)
+        const ctx = canvas.getContext('2d')
+        if (!ctx) { resolve(null); return }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL('image/png'))
+      }
+      img.onerror = () => resolve(null)
+      img.src = url
     })
   } catch (e) {
     console.warn('Could not load logo as base64:', e)
@@ -113,8 +125,8 @@ export async function exportFinancialInvoicePdf(record: InvoiceFinancialRecord):
   // --- 1. HEADER (KOP INVOICE) ---
   const logoBase64 = await getBase64ImageFromUrl('/logo-pc.webp')
   if (logoBase64) {
-    // Logo kecil di kiri atas
-    doc.addImage(logoBase64, 'WEBP', left, y, 24, 8)
+    // Logo kecil di kiri atas — format PNG karena sudah dikonversi via canvas
+    doc.addImage(logoBase64, 'PNG', left, y, 24, 8)
   }
 
   // Header Title & No on right

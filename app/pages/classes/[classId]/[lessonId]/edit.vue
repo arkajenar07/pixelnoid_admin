@@ -101,6 +101,21 @@
           <span class="md:hidden">Tempel</span>
         </button>
 
+        <!-- Export PDF button -->
+        <button
+          type="button"
+          @click="openExportModal"
+          :disabled="isExportingPdf || isLoading"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Export materi lesson ini ke format PDF"
+          aria-label="Export materi ke PDF"
+        >
+          <DocumentArrowDownIcon v-if="!isExportingPdf" class="w-3.5 h-3.5 text-gray-500" />
+          <span v-else class="w-3.5 h-3.5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin shrink-0" />
+          <span class="hidden md:inline">Export PDF</span>
+          <span class="md:hidden">PDF</span>
+        </button>
+
         <!-- Auto-save status pill -->
         <div
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
@@ -201,6 +216,245 @@
         </div>
       </div>
     </div>
+
+    <!-- ── Export PDF Modal ── -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="showExportModal"
+          class="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-[2px]"
+          @click.self="closeExportModal"
+        >
+          <Transition
+            enter-active-class="transition duration-200 ease-out"
+            enter-from-class="opacity-0 scale-95 translate-y-2"
+            enter-to-class="opacity-100 scale-100 translate-y-0"
+            leave-active-class="transition duration-150 ease-in"
+            leave-from-class="opacity-100 scale-100 translate-y-0"
+            leave-to-class="opacity-0 scale-95 translate-y-2"
+          >
+            <div
+              v-if="showExportModal"
+              class="relative w-full max-w-lg bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[92vh]"
+            >
+              <!-- Modal Header -->
+              <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white shrink-0">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-[#5530AB]/10 flex items-center justify-center shrink-0">
+                    <DocumentArrowDownIcon class="w-4.5 h-4.5 text-[#5530AB]" />
+                  </div>
+                  <div>
+                    <h2 class="text-sm font-bold text-gray-900">Export Materi ke PDF</h2>
+                    <p class="text-xs text-gray-500 mt-0.5">Konfigurasi opsi ekspor sebelum mengunduh</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  @click="closeExportModal"
+                  class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                  aria-label="Tutup modal"
+                >
+                  <XMarkIcon class="w-4 h-4" />
+                </button>
+              </div>
+
+              <!-- Modal Body -->
+              <div class="px-6 py-5 overflow-y-auto space-y-5 text-sm">
+
+                <!-- Lesson Type Info Banner -->
+                <div
+                  class="flex items-center gap-3 p-3 rounded-lg text-xs font-medium"
+                  :class="{
+                    'bg-[#5530AB]/8 text-[#5530AB] border border-[#5530AB]/20': lessonForm.type === 'text',
+                    'bg-blue-50 text-blue-700 border border-blue-200': lessonForm.type === 'video',
+                    'bg-amber-50 text-amber-700 border border-amber-200': lessonForm.type === 'quiz',
+                  }"
+                >
+                  <component :is="activeTypeInfo.icon" class="w-4 h-4 shrink-0" />
+                  <div>
+                    <span class="font-semibold">Tipe Lesson: {{ activeTypeInfo.label }}</span>
+                    <span class="ml-2 opacity-75">
+                      {{ lessonForm.type === 'text'
+                        ? '— PDF akan memuat semua blok teks, heading, gambar, tabel, dll.'
+                        : lessonForm.type === 'video'
+                          ? '— PDF akan memuat tautan video, kode QR, dan catatan materi.'
+                          : '— PDF berupa lembar soal kuis.'
+                      }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Quiz-specific option: include answer key -->
+                <div v-if="lessonForm.type === 'quiz'" class="space-y-2">
+                  <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Mode Lembar Kuis</label>
+                  <div class="grid grid-cols-2 gap-2.5">
+                    <label
+                      class="flex items-start gap-2.5 p-3 rounded-lg border cursor-pointer transition-all"
+                      :class="exportOptions.includeAnswers
+                        ? 'border-[#5530AB] bg-[#5530AB]/5 ring-1 ring-[#5530AB]'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'"
+                    >
+                      <input
+                        type="radio"
+                        v-model="exportOptions.includeAnswers"
+                        :value="true"
+                        class="mt-0.5 text-[#5530AB] focus:ring-[#5530AB]"
+                      />
+                      <div>
+                        <p class="text-xs font-semibold text-gray-900">Panduan Pengajar</p>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Menyertakan kunci jawaban dan pembahasan</p>
+                      </div>
+                    </label>
+                    <label
+                      class="flex items-start gap-2.5 p-3 rounded-lg border cursor-pointer transition-all"
+                      :class="!exportOptions.includeAnswers
+                        ? 'border-[#5530AB] bg-[#5530AB]/5 ring-1 ring-[#5530AB]'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'"
+                    >
+                      <input
+                        type="radio"
+                        v-model="exportOptions.includeAnswers"
+                        :value="false"
+                        class="mt-0.5 text-[#5530AB] focus:ring-[#5530AB]"
+                      />
+                      <div>
+                        <p class="text-xs font-semibold text-gray-900">Lembar Siswa</p>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Tanpa kunci jawaban, siap dibagikan</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- PDF Options -->
+                <div class="space-y-3">
+                  <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider">Opsi Dokumen</label>
+
+                  <!-- Include Header Logo -->
+                  <label class="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors">
+                    <div>
+                      <p class="text-xs font-semibold text-gray-800">Logo & Header Pixelnoid</p>
+                      <p class="text-[11px] text-gray-500 mt-0.5">Tampilkan kop dokumen resmi dengan logo institusi</p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      :aria-checked="exportOptions.includeHeaderLogo"
+                      @click="exportOptions.includeHeaderLogo = !exportOptions.includeHeaderLogo"
+                      class="relative inline-flex w-10 h-5.5 shrink-0 rounded-full transition-colors duration-200 focus:outline-none cursor-pointer"
+                      :class="exportOptions.includeHeaderLogo ? 'bg-[#5530AB]' : 'bg-gray-300'"
+                    >
+                      <span
+                        class="pointer-events-none inline-block w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-200 mt-0.75 ml-0.5"
+                        :class="exportOptions.includeHeaderLogo ? 'translate-x-4.5' : 'translate-x-0'"
+                      />
+                    </button>
+                  </label>
+
+                  <!-- Include Class Info -->
+                  <label class="flex items-center justify-between gap-3 p-3 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors">
+                    <div>
+                      <p class="text-xs font-semibold text-gray-800">Info Kelas & Modul</p>
+                      <p class="text-[11px] text-gray-500 mt-0.5">Tampilkan nama kelas dan modul pada dokumen PDF</p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      :aria-checked="exportOptions.includeClassInfo"
+                      @click="exportOptions.includeClassInfo = !exportOptions.includeClassInfo"
+                      class="relative inline-flex w-10 h-5.5 shrink-0 rounded-full transition-colors duration-200 focus:outline-none cursor-pointer"
+                      :class="exportOptions.includeClassInfo ? 'bg-[#5530AB]' : 'bg-gray-300'"
+                    >
+                      <span
+                        class="pointer-events-none inline-block w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform duration-200 mt-0.75 ml-0.5"
+                        :class="exportOptions.includeClassInfo ? 'translate-x-4.5' : 'translate-x-0'"
+                      />
+                    </button>
+                  </label>
+                </div>
+
+                <!-- Custom file name -->
+                <div class="space-y-1.5">
+                  <label class="text-xs font-semibold text-gray-700 uppercase tracking-wider" for="pdf-filename">
+                    Nama File PDF <span class="text-gray-400 font-normal normal-case">(opsional)</span>
+                  </label>
+                  <div class="flex items-center gap-2">
+                    <input
+                      id="pdf-filename"
+                      v-model="exportOptions.customFileName"
+                      type="text"
+                      placeholder="Materi_NamaLesson_2026.pdf"
+                      class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-800 outline-none focus:border-[#5530AB] focus:ring-1 focus:ring-[#5530AB] transition-all placeholder:text-gray-400"
+                    />
+                  </div>
+                  <p class="text-[11px] text-gray-400">Kosongkan untuk nama otomatis berdasarkan judul lesson.</p>
+                </div>
+
+                <!-- Preview summary -->
+                <div class="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                  <p class="text-[11px] font-semibold text-gray-600 mb-1.5 uppercase tracking-wider">Ringkasan Dokumen</p>
+                  <ul class="space-y-1 text-[11px] text-gray-600">
+                    <li class="flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#5530AB] shrink-0"></span>
+                      <span>Judul: <strong class="text-gray-800">{{ lessonForm.title || 'Lesson Tanpa Judul' }}</strong></span>
+                    </li>
+                    <li class="flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#5530AB] shrink-0"></span>
+                      <span>Tipe: <strong class="text-gray-800">{{ activeTypeInfo.label }}</strong></span>
+                    </li>
+                    <li v-if="moduleName" class="flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#5530AB] shrink-0"></span>
+                      <span>Modul: <strong class="text-gray-800">{{ moduleName }}</strong></span>
+                    </li>
+                    <li v-if="className" class="flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#5530AB] shrink-0"></span>
+                      <span>Kelas: <strong class="text-gray-800">{{ className }}</strong></span>
+                    </li>
+                    <li v-if="lessonForm.xp_reward" class="flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                      <span>XP Reward: <strong class="text-amber-700">+{{ lessonForm.xp_reward }} XP</strong></span>
+                    </li>
+                    <li v-if="lessonForm.type === 'text'" class="flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#5530AB] shrink-0"></span>
+                      <span>Total blok: <strong class="text-gray-800">{{ blocks.length }} blok</strong></span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Modal Footer -->
+              <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end gap-3 shrink-0">
+                <button
+                  type="button"
+                  @click="closeExportModal"
+                  :disabled="isExportingPdf"
+                  class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  @click="handleExportPdf"
+                  :disabled="isExportingPdf"
+                  class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#5530AB] hover:bg-[#43238d] text-white text-sm font-semibold transition-colors active:scale-[0.98] disabled:opacity-60 cursor-pointer"
+                >
+                  <span v-if="isExportingPdf" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <DocumentArrowDownIcon v-else class="w-4 h-4" />
+                  <span>{{ isExportingPdf ? 'Membuat PDF...' : 'Unduh PDF' }}</span>
+                </button>
+              </div>
+            </div>
+          </Transition>
+        </div>
+      </Transition>
+    </Teleport>
+
   </div>
 </template>
 
@@ -226,10 +480,13 @@ import {
   ArrowUpTrayIcon,
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
+  DocumentArrowDownIcon,
+  XMarkIcon,
 } from '@heroicons/vue/24/outline'
 import BlockEditor from '~/components/admin/modules/BlockEditor.vue'
 import QuizEditor from '~/components/admin/modules/QuizEditor.vue'
 import VideoEditor from '~/components/admin/modules/VideoEditor.vue'
+import { exportLessonPdf } from '~/utils/exportLessonPdf'
 
 useSeoMeta({ title: 'Edit Lesson — Admin Panel' })
 definePageMeta({ layout: false })
@@ -247,6 +504,67 @@ const saveStatus = ref<'idle' | 'saving' | 'saved' | 'error'>('idle')
 const canvasTitleRef = ref<HTMLElement | null>(null)
 const blockEditorRef = ref<any>(null)
 const mdFileInputRef = ref<HTMLInputElement | null>(null)
+
+// Lesson metadata (populated after fetchLesson)
+const moduleName = ref('')
+const className = ref('')
+
+// ── Export PDF State ───────────────────────────────────────────
+const showExportModal = ref(false)
+const isExportingPdf = ref(false)
+const exportOptions = reactive({
+  includeHeaderLogo: true,
+  includeClassInfo: true,
+  includeAnswers: true, // For quiz: teacher guide by default
+  customFileName: '',
+})
+
+function openExportModal() {
+  exportOptions.customFileName = ''
+  showExportModal.value = true
+}
+
+function closeExportModal() {
+  if (!isExportingPdf.value) {
+    showExportModal.value = false
+  }
+}
+
+async function handleExportPdf() {
+  if (isExportingPdf.value) return
+  isExportingPdf.value = true
+  try {
+    const safeTitle = (lessonForm.title || 'Lesson').trim().replace(/[^a-zA-Z0-9_\- ]/g, '_').replace(/\s+/g, '_')
+    const dateStamp = new Date().toISOString().split('T')[0]
+
+    const modeLabel = lessonForm.type === 'quiz'
+      ? (exportOptions.includeAnswers ? '_PanduanPengajar' : '_LembarSiswa')
+      : ''
+
+    const autoFileName = `Materi_${safeTitle}${modeLabel}_${dateStamp}.pdf`
+
+    await exportLessonPdf({
+      lessonTitle: lessonForm.title || 'Lesson Tanpa Judul',
+      lessonType: lessonForm.type,
+      className: className.value || undefined,
+      moduleName: moduleName.value || undefined,
+      xpReward: lessonForm.xp_reward || 0,
+      videoUrl: lessonForm.video_url || undefined,
+      blocks: blocks.value,
+      includeHeaderLogo: exportOptions.includeHeaderLogo,
+      includeClassInfo: exportOptions.includeClassInfo,
+      includeAnswers: exportOptions.includeAnswers,
+      customFileName: exportOptions.customFileName.trim() || autoFileName,
+    })
+
+    closeExportModal()
+  } catch (err: any) {
+    console.error('[handleExportPdf] Error:', err)
+    alert('Gagal membuat PDF: ' + (err?.message || 'Terjadi kesalahan tidak terduga.'))
+  } finally {
+    isExportingPdf.value = false
+  }
+}
 
 function copyAllLessonBlocks() {
   if (blockEditorRef.value?.copyAllBlocks) {
@@ -331,6 +649,7 @@ interface LessonData {
   content: any[] | null
   class_modules?: {
     id: number
+    title?: string
     class_id: number
   } | null
 }
@@ -345,6 +664,27 @@ async function fetchLesson() {
     lessonForm.video_url = lesson.video_url || ''
     lessonForm.sort_order = lesson.sort_order || 0
     lessonForm.xp_reward = lesson.xp_reward || 0
+
+    // Capture module name for PDF metadata
+    moduleName.value = lesson.class_modules?.title || ''
+
+    // Resolve class name from global cache
+    const numericClassId = Number(classId)
+    const classesCache = useState<{ id: number; name: string }[]>('admin_classes_cache', () => [])
+    const cachedClass = classesCache.value.find(c => c.id === numericClassId)
+    if (cachedClass) {
+      className.value = cachedClass.name
+    } else if (numericClassId) {
+      // Fetch class list if cache is empty
+      try {
+        const classData = await $fetch<{ classes: { id: number; name: string }[] }>('/api/admin/classes')
+        classesCache.value = classData.classes
+        className.value = classData.classes.find(c => c.id === numericClassId)?.name || ''
+      } catch (classErr) {
+        console.warn('Could not fetch class name for PDF metadata:', classErr)
+      }
+    }
+
     let parsedContent: any = lesson.content
     if (typeof parsedContent === 'string') {
       try {
