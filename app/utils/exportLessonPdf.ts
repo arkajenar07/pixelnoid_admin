@@ -586,7 +586,9 @@ export async function exportLessonPdf(options: ExportLessonPdfOptions): Promise<
 
         // 5. Bullet List
         else if (bType === 'bulletList') {
-          const items: string[] = Array.isArray(block.items) ? block.items : []
+          const items: string[] = block.content
+            ? [block.content]
+            : (Array.isArray(block.items) ? block.items : [])
           for (const item of items) {
             const text = cleanHtml(item)
             if (!text) continue
@@ -612,30 +614,62 @@ export async function exportLessonPdf(options: ExportLessonPdfOptions): Promise<
 
         // 6. Numbered List
         else if (bType === 'numberedList') {
-          const items: string[] = Array.isArray(block.items) ? block.items : []
-          items.forEach((item, numIdx) => {
-            const text = cleanHtml(item)
-            if (!text) return
-            const lines = doc.splitTextToSize(text, contentWidth - 9)
-            ensureSpace(lines.length * 4.6 + 2)
-
-            // Number prefix
-            doc.setFont('helvetica', 'bold')
-            doc.setFontSize(9)
-            doc.setTextColor(85, 48, 171)
-            doc.text(`${numIdx + 1}.`, left + 1.5, y + 3.2)
-
-            doc.setFont('helvetica', 'normal')
-            doc.setFontSize(9.5)
-            doc.setTextColor(31, 41, 55)
-            for (const l of lines) {
-              ensureSpace(5)
-              doc.text(l, left + 8, y + 3.2)
-              y += 4.6
+          if (block.content) {
+            let numSeq = 1
+            for (let pi = bIndex - 1; pi >= 0; pi--) {
+              if (rawBlocks[pi]?.type === 'numberedList') {
+                numSeq++
+              } else {
+                break
+              }
             }
-            y += 0.5
-          })
-          y += 2
+
+            const text = cleanHtml(block.content)
+            if (text) {
+              const lines = doc.splitTextToSize(text, contentWidth - 9)
+              ensureSpace(lines.length * 4.6 + 2)
+
+              doc.setFont('helvetica', 'bold')
+              doc.setFontSize(9)
+              doc.setTextColor(85, 48, 171)
+              doc.text(`${numSeq}.`, left + 1.5, y + 3.2)
+
+              doc.setFont('helvetica', 'normal')
+              doc.setFontSize(9.5)
+              doc.setTextColor(31, 41, 55)
+              for (const l of lines) {
+                ensureSpace(5)
+                doc.text(l, left + 8, y + 3.2)
+                y += 4.6
+              }
+              y += 1
+            }
+          } else {
+            const items: string[] = Array.isArray(block.items) ? block.items : []
+            items.forEach((item, numIdx) => {
+              const text = cleanHtml(item)
+              if (!text) return
+              const lines = doc.splitTextToSize(text, contentWidth - 9)
+              ensureSpace(lines.length * 4.6 + 2)
+
+              // Number prefix
+              doc.setFont('helvetica', 'bold')
+              doc.setFontSize(9)
+              doc.setTextColor(85, 48, 171)
+              doc.text(`${numIdx + 1}.`, left + 1.5, y + 3.2)
+
+              doc.setFont('helvetica', 'normal')
+              doc.setFontSize(9.5)
+              doc.setTextColor(31, 41, 55)
+              for (const l of lines) {
+                ensureSpace(5)
+                doc.text(l, left + 8, y + 3.2)
+                y += 4.6
+              }
+              y += 0.5
+            })
+            y += 2
+          }
         }
 
         // 7. Quote Block

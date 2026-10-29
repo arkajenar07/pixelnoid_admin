@@ -43,14 +43,11 @@ onMounted(() => {
   }
 })
 
-// Synchronize external changes ONLY when the element is not currently being edited by user
+// Synchronize changes when modelValue differs from innerHTML (e.g. on Undo, Redo, or Turn Into)
 watch(
   () => props.modelValue,
   (newVal) => {
     if (!elRef.value) return
-    // If user is currently focused/typing in this element, NEVER overwrite DOM innerHTML!
-    if (document.activeElement === elRef.value) return
-
     const safeVal = newVal || ''
     if (elRef.value.innerHTML !== safeVal) {
       elRef.value.innerHTML = safeVal
@@ -103,10 +100,74 @@ function focusStart() {
   sel.addRange(range)
 }
 
+function isAtStart(): boolean {
+  if (!elRef.value) return false
+  const sel = window.getSelection()
+  if (!sel || sel.rangeCount === 0) return false
+  const range = sel.getRangeAt(0)
+  if (!range.collapsed) return false
+  if (!elRef.value.contains(range.startContainer)) return false
+
+  const preRange = document.createRange()
+  preRange.selectNodeContents(elRef.value)
+  preRange.setEnd(range.startContainer, range.startOffset)
+  return preRange.toString().replace(/\u200B/g, '').length === 0
+}
+
+function isAtEnd(): boolean {
+  if (!elRef.value) return false
+  const sel = window.getSelection()
+  if (!sel || sel.rangeCount === 0) return false
+  const range = sel.getRangeAt(0)
+  if (!range.collapsed) return false
+  if (!elRef.value.contains(range.endContainer)) return false
+
+  const postRange = document.createRange()
+  postRange.selectNodeContents(elRef.value)
+  postRange.setStart(range.endContainer, range.endOffset)
+  return postRange.toString().replace(/\u200B/g, '').length === 0
+}
+
+function splitAtCaret(): { beforeHtml: string; afterHtml: string } {
+  if (!elRef.value) return { beforeHtml: '', afterHtml: '' }
+  const sel = window.getSelection()
+  if (!sel || sel.rangeCount === 0) {
+    return { beforeHtml: elRef.value.innerHTML, afterHtml: '' }
+  }
+  const range = sel.getRangeAt(0)
+
+  if (!elRef.value.contains(range.startContainer)) {
+    return { beforeHtml: elRef.value.innerHTML, afterHtml: '' }
+  }
+
+  // Pre-caret range
+  const preRange = document.createRange()
+  preRange.selectNodeContents(elRef.value)
+  preRange.setEnd(range.startContainer, range.startOffset)
+  const preFrag = preRange.cloneContents()
+  const preDiv = document.createElement('div')
+  preDiv.appendChild(preFrag)
+  const beforeHtml = preDiv.innerHTML
+
+  // Post-caret range
+  const postRange = document.createRange()
+  postRange.selectNodeContents(elRef.value)
+  postRange.setStart(range.endContainer, range.endOffset)
+  const postFrag = postRange.cloneContents()
+  const postDiv = document.createElement('div')
+  postDiv.appendChild(postFrag)
+  const afterHtml = postDiv.innerHTML
+
+  return { beforeHtml, afterHtml }
+}
+
 defineExpose({
   elRef,
   focusEnd,
   focusStart,
+  isAtStart,
+  isAtEnd,
+  splitAtCaret,
 })
 </script>
 

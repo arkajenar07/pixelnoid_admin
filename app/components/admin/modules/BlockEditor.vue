@@ -15,6 +15,7 @@
           block.type === 'heading1' ? 'mt-4 mb-2' :
           block.type === 'heading2' ? 'mt-4 mb-2' :
           block.type === 'heading3' ? 'mt-3 mb-1' :
+          (block.type === 'bulletList' || block.type === 'numberedList') ? 'my-0.5' :
           block.type === 'paragraph' ? 'my-1' : 'my-3',
           {
             'opacity-40 scale-[0.99]': draggingIndex === index,
@@ -131,46 +132,36 @@
             @focus="setActiveBlock(index)"
           />
 
-          <!-- Bullet List -->
-          <div v-if="block.type === 'bulletList'" class="space-y-1">
-            <div
-              v-for="(item, itemIdx) in (block.items || [''])"
-              :key="itemIdx"
-              class="flex items-start gap-2.5"
-            >
-              <span class="text-[#121212] font-bold text-lg leading-[1.65] select-none shrink-0">•</span>
-              <EditableArea
-                :ref="(el) => setListEditableRef(el, index, itemIdx)"
-                :model-value="item"
-                placeholder="Poin daftar..."
-                custom-class="flex-1 text-[1rem] text-[#121212] leading-[1.75] min-h-[1.75rem] py-0.5"
-                @update:model-value="updateListItem(index, itemIdx, $event)"
-                @keydown="handleListKeyDown($event, index, itemIdx)"
-                @paste="handlePaste($event, index)"
-                @focus="setActiveBlock(index)"
-              />
-            </div>
+          <!-- Bullet List (Single block item) -->
+          <div v-if="block.type === 'bulletList'" class="flex items-start gap-2.5">
+            <span class="text-[#121212] font-bold text-lg leading-[1.65] select-none shrink-0">•</span>
+            <EditableArea
+              :ref="(el) => setEditableRef(el, index)"
+              v-model="block.content"
+              placeholder="Poin daftar..."
+              custom-class="flex-1 text-[1rem] text-[#121212] leading-[1.75] min-h-[1.75rem] py-0.5"
+              @input="handleInput(index)"
+              @keydown="handleKeyDown($event, index)"
+              @paste="handlePaste($event, index)"
+              @focus="setActiveBlock(index)"
+            />
           </div>
 
-          <!-- Numbered List -->
-          <div v-if="block.type === 'numberedList'" class="space-y-1">
-            <div
-              v-for="(item, itemIdx) in (block.items || [''])"
-              :key="itemIdx"
-              class="flex items-start gap-2.5"
-            >
-              <span class="text-[#121212] font-semibold text-[0.95rem] leading-[1.75] min-w-[20px] select-none shrink-0">{{ itemIdx + 1 }}.</span>
-              <EditableArea
-                :ref="(el) => setListEditableRef(el, index, itemIdx)"
-                :model-value="item"
-                placeholder="Poin nomor..."
-                custom-class="flex-1 text-[1rem] text-[#121212] leading-[1.75] min-h-[1.75rem] py-0.5"
-                @update:model-value="updateListItem(index, itemIdx, $event)"
-                @keydown="handleListKeyDown($event, index, itemIdx)"
-                @paste="handlePaste($event, index)"
-                @focus="setActiveBlock(index)"
-              />
-            </div>
+          <!-- Numbered List (Single block item with dynamic sequence numbering) -->
+          <div v-if="block.type === 'numberedList'" class="flex items-start gap-2.5">
+            <span class="text-[#121212] font-semibold text-[0.95rem] leading-[1.75] min-w-[22px] select-none shrink-0 text-right pr-0.5">
+              {{ getListNumber(index) }}.
+            </span>
+            <EditableArea
+              :ref="(el) => setEditableRef(el, index)"
+              v-model="block.content"
+              placeholder="Poin nomor..."
+              custom-class="flex-1 text-[1rem] text-[#121212] leading-[1.75] min-h-[1.75rem] py-0.5"
+              @input="handleInput(index)"
+              @keydown="handleKeyDown($event, index)"
+              @paste="handlePaste($event, index)"
+              @focus="setActiveBlock(index)"
+            />
           </div>
 
           <!-- Quote -->
@@ -891,10 +882,55 @@
         v-if="inlineToolbar.show"
         role="toolbar"
         aria-label="Toolbar format teks"
-        class="fixed z-[9999] flex items-center gap-1 p-1 bg-white border border-gray-300 shadow-md rounded-md select-none"
+        class="fixed z-[9999] flex items-center gap-1 p-1 bg-white border border-gray-300 shadow-xl rounded-lg select-none text-xs text-[#121212]"
         :style="{ top: inlineToolbar.top + 'px', left: inlineToolbar.left + 'px' }"
         @mousedown.prevent
       >
+        <!-- Quick Turn-into Block Type Buttons -->
+        <div class="flex items-center gap-0.5 pr-1 border-r border-gray-200">
+          <button
+            type="button"
+            class="px-1.5 py-1 text-xs font-semibold hover:bg-gray-100 rounded cursor-pointer"
+            title="Ubah ke Teks Biasa"
+            @click="turnActiveBlockInto('paragraph')"
+          >
+            ¶
+          </button>
+          <button
+            type="button"
+            class="px-1.5 py-1 text-xs font-bold hover:bg-gray-100 rounded cursor-pointer"
+            title="Ubah ke Heading 1"
+            @click="turnActiveBlockInto('heading1')"
+          >
+            H1
+          </button>
+          <button
+            type="button"
+            class="px-1.5 py-1 text-xs font-bold hover:bg-gray-100 rounded cursor-pointer"
+            title="Ubah ke Heading 2"
+            @click="turnActiveBlockInto('heading2')"
+          >
+            H2
+          </button>
+          <button
+            type="button"
+            class="px-1.5 py-1 text-xs font-bold hover:bg-gray-100 rounded cursor-pointer"
+            title="Ubah ke Bullet List"
+            @click="turnActiveBlockInto('bulletList')"
+          >
+            • List
+          </button>
+          <button
+            type="button"
+            class="px-1.5 py-1 text-xs font-semibold hover:bg-gray-100 rounded cursor-pointer"
+            title="Ubah ke Numbered List"
+            @click="turnActiveBlockInto('numberedList')"
+          >
+            1. List
+          </button>
+        </div>
+
+        <!-- Inline Text Styles -->
         <button
           type="button"
           class="px-2 py-1 text-xs font-bold text-[#121212] hover:bg-gray-100 rounded cursor-pointer"
@@ -931,7 +967,7 @@
         >
           S
         </button>
-        <div class="w-px h-4 bg-gray-300 mx-1" />
+        <div class="w-px h-4 bg-gray-300 mx-0.5" />
         <button
           type="button"
           class="px-2 py-1 text-xs font-mono text-gray-600 hover:text-[#121212] hover:bg-gray-100 rounded cursor-pointer"
@@ -1025,55 +1061,66 @@ const bookmarkUrlInputs = reactive<Record<number, string>>({})
 const canvaUrlInputs = reactive<Record<number, string>>({})
 
 // ── Undo/Redo History ──────────────────────────────────────────────
-const HISTORY_MAX = 100
+const HISTORY_MAX = 50
 const historyStack = ref<Block[][]>([])
 const historyIndex = ref(-1)
 let isUndoRedoChange = false
-let historyPushTimer: ReturnType<typeof setTimeout> | null = null
+let historyTimer: ReturnType<typeof setTimeout> | null = null
 
-function pushHistory(snapshot: Block[]) {
+function recordHistoryImmediately() {
   if (isUndoRedoChange) return
-  // Debounce rapid typing into a single history entry (300ms window)
-  if (historyPushTimer) clearTimeout(historyPushTimer)
-  historyPushTimer = setTimeout(() => {
-    // Discard any "future" states if we branched
-    if (historyIndex.value < historyStack.value.length - 1) {
-      historyStack.value.splice(historyIndex.value + 1)
-    }
-    historyStack.value.push(clone(snapshot))
-    if (historyStack.value.length > HISTORY_MAX) historyStack.value.shift()
-    historyIndex.value = historyStack.value.length - 1
-  }, 300)
+  if (historyTimer) {
+    clearTimeout(historyTimer)
+    historyTimer = null
+  }
+  if (historyIndex.value < historyStack.value.length - 1) {
+    historyStack.value.splice(historyIndex.value + 1)
+  }
+  historyStack.value.push(clone(blocks.value))
+  if (historyStack.value.length > HISTORY_MAX) {
+    historyStack.value.shift()
+  }
+  historyIndex.value = historyStack.value.length - 1
+}
+
+function pushHistoryDebounced() {
+  if (isUndoRedoChange) return
+  if (historyTimer) clearTimeout(historyTimer)
+  historyTimer = setTimeout(() => {
+    recordHistoryImmediately()
+  }, 400)
 }
 
 function undo() {
-  if (historyIndex.value <= 0) {
-    showEditorToast('Tidak ada lagi riwayat untuk di-undo.', 'error')
-    return
+  if (historyIndex.value <= 0) return
+  if (historyTimer) {
+    clearTimeout(historyTimer)
+    historyTimer = null
   }
-  if (historyPushTimer) { clearTimeout(historyPushTimer); historyPushTimer = null }
   historyIndex.value--
   const snapshot = clone(historyStack.value[historyIndex.value])
   isUndoRedoChange = true
   blocks.value = snapshot
   emit('update:modelValue', clone(snapshot))
-  nextTick(() => { isUndoRedoChange = false })
-  showEditorToast('↩ Undo')
+  nextTick(() => {
+    isUndoRedoChange = false
+  })
 }
 
 function redo() {
-  if (historyIndex.value >= historyStack.value.length - 1) {
-    showEditorToast('Tidak ada lagi riwayat untuk di-redo.', 'error')
-    return
+  if (historyIndex.value >= historyStack.value.length - 1) return
+  if (historyTimer) {
+    clearTimeout(historyTimer)
+    historyTimer = null
   }
-  if (historyPushTimer) { clearTimeout(historyPushTimer); historyPushTimer = null }
   historyIndex.value++
   const snapshot = clone(historyStack.value[historyIndex.value])
   isUndoRedoChange = true
   blocks.value = snapshot
   emit('update:modelValue', clone(snapshot))
-  nextTick(() => { isUndoRedoChange = false })
-  showEditorToast('↪ Redo')
+  nextTick(() => {
+    isUndoRedoChange = false
+  })
 }
 
 // Multi-block selection state
@@ -1231,9 +1278,41 @@ function genId(): string {
   return 'b_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36)
 }
 
+function getListNumber(index: number): number {
+  const block = blocks.value[index]
+  if (block?.type !== 'numberedList') return 1
+  let count = 1
+  for (let i = index - 1; i >= 0; i--) {
+    const prev = blocks.value[i]
+    if (prev?.type === 'numberedList') {
+      count++
+    } else {
+      break
+    }
+  }
+  return count
+}
+
+function normalizeBlocks(blockList: Block[]): Block[] {
+  const normalized: Block[] = []
+  for (const b of blockList) {
+    if ((b.type === 'bulletList' || b.type === 'numberedList') && Array.isArray(b.items) && b.items.length > 0) {
+      for (const itemText of b.items) {
+        normalized.push({
+          id: genId(),
+          type: b.type,
+          content: itemText
+        })
+      }
+    } else {
+      normalized.push(b)
+    }
+  }
+  return normalized.length > 0 ? normalized : [createEmptyBlock('paragraph')]
+}
+
 function createEmptyBlock(type: Block['type'] = 'paragraph'): Block {
   const b: Block = { id: genId(), type, content: '' }
-  if (type === 'bulletList' || type === 'numberedList') b.items = ['']
   if (type === 'code') { b.language = 'javascript'; b.content = '' }
   if (type === 'table') {
     b.tableData = {
@@ -1263,12 +1342,16 @@ function clone(data: any): any {
 // ── Lifecycle & Sync ───────────────────────────────────────────────
 onMounted(() => {
   if (props.modelValue && props.modelValue.length > 0) {
-    blocks.value = clone(props.modelValue)
+    blocks.value = normalizeBlocks(clone(props.modelValue))
     const converted = migrateTablesFromContent(blocks.value)
     if (converted) emitChanges()
   } else {
     blocks.value = [createEmptyBlock('paragraph')]
   }
+
+  // Inisialisasi riwayat awal
+  historyStack.value = [clone(blocks.value)]
+  historyIndex.value = 0
 
   document.addEventListener('selectionchange', handleSelectionChange)
   document.addEventListener('click', handleGlobalClick)
@@ -1299,17 +1382,21 @@ watch(
     const currentIds = blocks.value.map(b => b.id).join(',')
     const newIds = newVal.map(b => b.id).join(',')
     if (currentIds !== newIds) {
-      blocks.value = clone(newVal)
+      blocks.value = normalizeBlocks(clone(newVal))
       migrateTablesFromContent(blocks.value)
     }
   },
   { deep: false }
 )
 
-function emitChanges() {
+function emitChanges(immediateHistory = false) {
   isInternalChange = true
   emit('update:modelValue', clone(blocks.value))
-  pushHistory(blocks.value)
+  if (immediateHistory) {
+    recordHistoryImmediately()
+  } else {
+    pushHistoryDebounced()
+  }
   nextTick(() => { isInternalChange = false })
 }
 
@@ -1613,26 +1700,22 @@ function parseMarkdownToBlocks(md: string): Block[] {
     // ── Bullet list ── (consume consecutive - / * / + items)
     const bulletMatch = line.match(/^[\-\*\+]\s+(.+)$/)
     if (bulletMatch) {
-      const items: string[] = []
       while (i < lines.length && lines[i].match(/^[\-\*\+]\s+/)) {
         const itemText = lines[i].replace(/^[\-\*\+]\s+/, '').trim()
-        items.push(inlineMarkdownToHtml(itemText))
+        result.push({ id: genId(), type: 'bulletList', content: inlineMarkdownToHtml(itemText) })
         i++
       }
-      result.push({ id: genId(), type: 'bulletList', items })
       continue
     }
 
     // ── Numbered list ── (consume consecutive 1. 2. items)
     const numberedMatch = line.match(/^\d+\.\s+(.+)$/)
     if (numberedMatch) {
-      const items: string[] = []
       while (i < lines.length && lines[i].match(/^\d+\.\s+/)) {
         const itemText = lines[i].replace(/^\d+\.\s+/, '').trim()
-        items.push(inlineMarkdownToHtml(itemText))
+        result.push({ id: genId(), type: 'numberedList', content: inlineMarkdownToHtml(itemText) })
         i++
       }
-      result.push({ id: genId(), type: 'numberedList', items })
       continue
     }
 
@@ -1847,13 +1930,8 @@ function focusBlock(index: number) {
   const block = blocks.value[index]
   if (!block) return
   setActiveBlock(index)
-  if (block.type === 'bulletList' || block.type === 'numberedList') {
-    const listRef = listEditableRefs.value[`${index}-0`]
-    listRef?.focusEnd?.()
-  } else {
-    const el = editableRefs.value[index]
-    el?.focusEnd?.()
-  }
+  const el = editableRefs.value[index]
+  el?.focusEnd?.()
 }
 
 // ── Typing & Keyboard Handlers ─────────────────────────────────────
@@ -1865,11 +1943,66 @@ function handleInput(index: number) {
   const plainText = (block.content || '').replace(/<[^>]*>/g, '').trim()
   if (plainText === '/') {
     triggerSlashCommand(index)
+    return
   } else if (blockMenu.open && blockMenu.mode === 'slashCommand') {
     if (plainText.startsWith('/')) {
       blockMenu.search = plainText.substring(1)
     } else {
       closeBlockMenu()
+    }
+    return
+  }
+
+  // Notion-style markdown auto-conversions saat mengetik di paragraph:
+  if (block.type === 'paragraph') {
+    const raw = block.content || ''
+    if (raw === '-&nbsp;' || raw === '- ' || raw === '*&nbsp;' || raw === '* ') {
+      block.type = 'bulletList'
+      block.content = ''
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => focusBlock(index))
+      return
+    }
+    if (raw === '1.&nbsp;' || raw === '1. ') {
+      block.type = 'numberedList'
+      block.content = ''
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => focusBlock(index))
+      return
+    }
+    if (raw === '#&nbsp;' || raw === '# ') {
+      block.type = 'heading1'
+      block.content = ''
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => focusBlock(index))
+      return
+    }
+    if (raw === '##&nbsp;' || raw === '## ') {
+      block.type = 'heading2'
+      block.content = ''
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => focusBlock(index))
+      return
+    }
+    if (raw === '###&nbsp;' || raw === '### ') {
+      block.type = 'heading3'
+      block.content = ''
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => focusBlock(index))
+      return
+    }
+    if (raw === '>&nbsp;' || raw === '> ') {
+      block.type = 'quote'
+      block.content = ''
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => focusBlock(index))
+      return
     }
   }
 }
@@ -1920,24 +2053,131 @@ function handleKeyDown(ev: KeyboardEvent, index: number) {
     }
   }
 
+  // ── ENTER: Memecah blok teks (Split at caret) atau lanjut list baru ──
   if (ev.key === 'Enter' && !ev.shiftKey) {
     ev.preventDefault()
     if (blockMenu.open) { selectCurrentMenuItem(); return }
-    insertNewBlockAfter(index)
+
+    const el = editableRefs.value[index]
+    let beforeHtml = block.content || ''
+    let afterHtml = ''
+
+    if (el?.splitAtCaret) {
+      const split = el.splitAtCaret()
+      beforeHtml = split.beforeHtml
+      afterHtml = split.afterHtml
+    }
+
+    // Jika user menekan Enter di list yang KOSONG -> KELUAR DARI LIST jadi teks biasa (paragraph)!
+    if (
+      (block.type === 'bulletList' || block.type === 'numberedList') &&
+      !beforeHtml.replace(/<[^>]*>/g, '').trim() &&
+      !afterHtml.replace(/<[^>]*>/g, '').trim()
+    ) {
+      block.type = 'paragraph'
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => focusBlock(index))
+      return
+    }
+
+    // Tipe blok berikutnya:
+    // - Heading -> paragraph
+    // - bulletList -> bulletList (poin baru otomatis!)
+    // - numberedList -> numberedList (nomor berikutnya otomatis bersambung!)
+    // - paragraph / quote / callout -> paragraph
+    const isHeading = block.type === 'heading1' || block.type === 'heading2' || block.type === 'heading3'
+    const nextType: Block['type'] = isHeading
+      ? 'paragraph'
+      : (block.type === 'bulletList' || block.type === 'numberedList' ? block.type : 'paragraph')
+
+    block.content = beforeHtml
+
+    const newBlock: Block = {
+      id: genId(),
+      type: nextType,
+      content: afterHtml
+    }
+
+    blocks.value.splice(index + 1, 0, newBlock)
+    recordHistoryImmediately()
+    emitChanges()
+
+    nextTick(() => {
+      focusBlock(index + 1)
+      const nextEl = editableRefs.value[index + 1]
+      nextEl?.focusStart?.()
+    })
     return
   }
 
+  // ── BACKSPACE: Keluar dari list, hapus baris kosong, atau merge ke blok sebelumnya ──
   if (ev.key === 'Backspace') {
+    const el = editableRefs.value[index]
     const plainText = (block.content || '').replace(/<[^>]*>/g, '').trim()
-    if (plainText === '' || plainText === '\n') {
+    const atStart = el?.isAtStart ? el.isAtStart() : false
+
+    // 1. Jika blok adalah list (bulletList atau numberedList) dan teks kosong ATAU kursor di offset 0:
+    // KELUAR DARI LIST menjadi teks biasa (paragraph), teks tetap aman!
+    if ((block.type === 'bulletList' || block.type === 'numberedList') && (plainText === '' || atStart)) {
       ev.preventDefault()
-      if (block.type !== 'paragraph') {
-        block.type = 'paragraph'
-        emitChanges()
-        return
-      }
+      block.type = 'paragraph'
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => {
+        const pEl = editableRefs.value[index]
+        pEl?.focusStart?.()
+      })
+      return
+    }
+
+    // 2. Jika blok heading / quote / callout dan kursor di paling awal atau konten kosong: ubah jadi paragraph
+    if (block.type !== 'paragraph' && (plainText === '' || atStart)) {
+      ev.preventDefault()
+      block.type = 'paragraph'
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => {
+        const pEl = editableRefs.value[index]
+        pEl?.focusStart?.()
+      })
+      return
+    }
+
+    // 3. Jika blok paragraph kosong: hapus blok
+    if (plainText === '') {
+      ev.preventDefault()
       deleteBlock(index)
       return
+    }
+
+    // 4. Jika kursor di awal blok (offset 0) dan ada blok sebelumnya: merge ke blok sebelumnya
+    if (atStart && index > 0) {
+      const prevBlock = blocks.value[index - 1]
+      if (prevBlock) {
+        if (
+          prevBlock.type === 'paragraph' ||
+          prevBlock.type === 'heading1' ||
+          prevBlock.type === 'heading2' ||
+          prevBlock.type === 'heading3' ||
+          prevBlock.type === 'quote' ||
+          prevBlock.type === 'callout' ||
+          prevBlock.type === 'bulletList' ||
+          prevBlock.type === 'numberedList'
+        ) {
+          ev.preventDefault()
+          const prevContent = prevBlock.content || ''
+          const currContent = block.content || ''
+          prevBlock.content = prevContent + currContent
+          blocks.value.splice(index, 1)
+          recordHistoryImmediately()
+          emitChanges()
+          nextTick(() => {
+            focusBlock(index - 1)
+          })
+          return
+        }
+      }
     }
   }
 
@@ -1962,12 +2202,16 @@ function handleKeyDown(ev: KeyboardEvent, index: number) {
 function handleGlobalKeyDown(ev: KeyboardEvent) {
   const ctrl = ev.ctrlKey || ev.metaKey
 
+  const active = document.activeElement as HTMLElement | null
+  const isInputModal = active && (
+    active.closest('.editor-metadata-sidebar') ||
+    active.classList.contains('canvas-title-input') ||
+    (active.tagName === 'INPUT' && !active.closest('.px-table-wrapper'))
+  )
+
   // ── Undo: Ctrl+Z ──
   if (ctrl && !ev.shiftKey && ev.key.toLowerCase() === 'z') {
-    // Only intercept if no native text input is focused OR when blocks are selected
-    const active = document.activeElement as HTMLElement | null
-    const isInInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')
-    if (!isInInput || selectedBlockIndices.value.size > 0) {
+    if (!isInputModal || selectedBlockIndices.value.size > 0) {
       ev.preventDefault()
       undo()
       return
@@ -1976,9 +2220,7 @@ function handleGlobalKeyDown(ev: KeyboardEvent) {
 
   // ── Redo: Ctrl+Y or Ctrl+Shift+Z ──
   if (ctrl && (ev.key.toLowerCase() === 'y' || (ev.shiftKey && ev.key.toLowerCase() === 'z'))) {
-    const active = document.activeElement as HTMLElement | null
-    const isInInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')
-    if (!isInInput || selectedBlockIndices.value.size > 0) {
+    if (!isInputModal || selectedBlockIndices.value.size > 0) {
       ev.preventDefault()
       redo()
       return
@@ -1995,57 +2237,6 @@ function handleGlobalKeyDown(ev: KeyboardEvent) {
       copySelectedBlocks()
       deleteSelectedBlocks()
       return
-    }
-  }
-}
-
-// ── List Item Handlers ─────────────────────────────────────────────
-function updateListItem(blockIndex: number, itemIndex: number, newVal: string) {
-  const block = blocks.value[blockIndex]
-  if (!block || !block.items) return
-  block.items[itemIndex] = newVal
-  emitChanges()
-}
-
-function handleListKeyDown(ev: KeyboardEvent, blockIndex: number, itemIndex: number) {
-  const block = blocks.value[blockIndex]
-  if (!block || !block.items) return
-
-  if (ev.key === 'Enter' && !ev.shiftKey) {
-    ev.preventDefault()
-    const currentText = block.items[itemIndex]?.replace(/<[^>]*>/g, '').trim()
-    if (!currentText) {
-      if (block.items.length > 1) {
-        block.items.splice(itemIndex, 1)
-      } else {
-        block.type = 'paragraph'
-        block.content = ''
-        block.items = undefined
-      }
-      insertNewBlockAfter(blockIndex, 'paragraph')
-      emitChanges()
-      return
-    }
-    block.items.splice(itemIndex + 1, 0, '')
-    emitChanges()
-    nextTick(() => { listEditableRefs.value[`${blockIndex}-${itemIndex + 1}`]?.focusStart?.() })
-    return
-  }
-
-  if (ev.key === 'Backspace') {
-    const currentText = block.items[itemIndex]?.replace(/<[^>]*>/g, '').trim()
-    if (!currentText) {
-      ev.preventDefault()
-      if (block.items.length > 1) {
-        block.items.splice(itemIndex, 1)
-        emitChanges()
-        nextTick(() => listEditableRefs.value[`${blockIndex}-${Math.max(0, itemIndex - 1)}`]?.focusEnd?.())
-      } else {
-        block.type = 'paragraph'
-        block.content = ''
-        block.items = undefined
-        emitChanges()
-      }
     }
   }
 }
@@ -2516,10 +2707,14 @@ function handlePaste(ev: ClipboardEvent, blockIndex: number) {
       else if (tag === 'h3' || tag === 'h4' || tag === 'h5' || tag === 'h6') extractedBlocks.push({ id: genId(), type: 'heading3', content: el.innerHTML })
       else if (tag === 'ul') {
         const lis = Array.from(el.querySelectorAll('li')).map(li => li.innerHTML)
-        extractedBlocks.push({ id: genId(), type: 'bulletList', items: lis.length ? lis : [''] })
+        for (const liHtml of lis) {
+          extractedBlocks.push({ id: genId(), type: 'bulletList', content: liHtml })
+        }
       } else if (tag === 'ol') {
         const lis = Array.from(el.querySelectorAll('li')).map(li => li.innerHTML)
-        extractedBlocks.push({ id: genId(), type: 'numberedList', items: lis.length ? lis : [''] })
+        for (const liHtml of lis) {
+          extractedBlocks.push({ id: genId(), type: 'numberedList', content: liHtml })
+        }
       } else if (tag === 'blockquote') extractedBlocks.push({ id: genId(), type: 'quote', content: el.innerHTML })
       else if (tag === 'pre') extractedBlocks.push({ id: genId(), type: 'code', content: el.innerText, language: 'javascript' })
       else if (tag === 'hr') extractedBlocks.push({ id: genId(), type: 'divider' })
@@ -2669,24 +2864,24 @@ function convertBlockType(block: Block, newType: Block['type']) {
   let existingText = ''
   if (block.content) {
     existingText = block.content
-  } else if (block.items && block.items.length > 0) {
-    existingText = block.items.filter(Boolean).join('<br>')
   } else if (block.url) {
     existingText = block.url
   }
 
   block.type = newType
 
-  if (newType === 'heading1' || newType === 'heading2' || newType === 'heading3' || newType === 'paragraph' || newType === 'quote' || newType === 'callout') {
+  if (
+    newType === 'heading1' ||
+    newType === 'heading2' ||
+    newType === 'heading3' ||
+    newType === 'paragraph' ||
+    newType === 'quote' ||
+    newType === 'callout' ||
+    newType === 'bulletList' ||
+    newType === 'numberedList'
+  ) {
     block.content = existingText
     block.items = undefined
-  } else if (newType === 'bulletList' || newType === 'numberedList') {
-    if (existingText.includes('<br>')) {
-      block.items = existingText.split('<br>').map(s => s.trim()).filter(Boolean)
-    } else {
-      block.items = [existingText || '']
-    }
-    block.content = undefined
   } else if (newType === 'code') {
     block.content = existingText.replace(/<[^>]*>/g, '')
     block.language = block.language || 'javascript'
@@ -2708,15 +2903,74 @@ function convertBlockType(block: Block, newType: Block['type']) {
   }
 }
 
+function applySingleBlockType(index: number, newType: Block['type']) {
+  const block = blocks.value[index]
+  if (!block) return
+  if (block.type === newType) return
+
+  // Jika teks di dalam blok memiliki beberapa baris (<br> atau \n), dan diubah ke list:
+  // Pecah menjadi multiple blok list berurutan!
+  const rawContent = block.content || ''
+  if (
+    (newType === 'bulletList' || newType === 'numberedList') &&
+    (rawContent.includes('<br') || rawContent.includes('\n'))
+  ) {
+    const lines = rawContent.split(/<br\s*\/?>|\n/i).map(s => s.trim()).filter(Boolean)
+    if (lines.length > 1) {
+      const createdBlocks: Block[] = lines.map(text => ({
+        id: genId(),
+        type: newType,
+        content: text
+      }))
+      blocks.value.splice(index, 1, ...createdBlocks)
+      recordHistoryImmediately()
+      emitChanges()
+      nextTick(() => focusBlock(index))
+      return
+    }
+  }
+
+  convertBlockType(block, newType)
+  recordHistoryImmediately()
+  emitChanges()
+  nextTick(() => focusBlock(index))
+}
+
+function applyBatchBlockType(targetType: Block['type']) {
+  if (selectedBlockIndices.value.size === 0) return
+  const indices = Array.from(selectedBlockIndices.value).sort((a, b) => a - b)
+  const firstIndex = indices[0]
+
+  // Ubah setiap blok yang terpilih ke tipe baru secara individual (seperti di Notion)
+  for (const idx of indices) {
+    const b = blocks.value[idx]
+    if (b) {
+      convertBlockType(b, targetType)
+    }
+  }
+
+  clearBlockSelection()
+  recordHistoryImmediately()
+  emitChanges()
+  nextTick(() => focusBlock(firstIndex))
+}
+
+function turnActiveBlockInto(type: Block['type']) {
+  if (selectedBlockIndices.value.size > 0) {
+    applyBatchBlockType(type)
+    return
+  }
+  const idx = activeBlockIndex.value
+  if (idx >= 0 && idx < blocks.value.length) {
+    applySingleBlockType(idx, type)
+  }
+}
+
 function applyBlockType(type: Block['type']) {
   // Batch conversion of selected blocks
   if (blockMenu.mode === 'batchChange' && selectedBlockIndices.value.size > 0) {
-    selectedBlockIndices.value.forEach(idx => {
-      const b = blocks.value[idx]
-      if (b) convertBlockType(b, type)
-    })
+    applyBatchBlockType(type)
     closeBlockMenu()
-    emitChanges()
     return
   }
 
@@ -2733,20 +2987,16 @@ function applyBlockType(type: Block['type']) {
 
   // Mode: TURN INTO -> Converts existing block preserving data
   if (blockMenu.mode === 'turnInto') {
-    convertBlockType(block, type)
+    applySingleBlockType(index, type)
     closeBlockMenu()
-    emitChanges()
-    nextTick(() => focusBlock(index))
     return
   }
 
   // Mode: SLASH COMMAND -> Replace current slash block
   if (blockMenu.mode === 'slashCommand') {
     block.content = ''
-    convertBlockType(block, type)
+    applySingleBlockType(index, type)
     closeBlockMenu()
-    emitChanges()
-    nextTick(() => focusBlock(index))
     return
   }
 }

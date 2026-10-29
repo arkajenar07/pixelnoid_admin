@@ -44,7 +44,7 @@
           <button
             type="button"
             @click="undoBlocks"
-            :disabled="!blockEditorRef?.canUndo?.value"
+            :disabled="!(blockEditorRef?.canUndo?.value ?? blockEditorRef?.canUndo)"
             class="inline-flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
             title="Undo (Ctrl+Z)"
             aria-label="Undo"
@@ -54,7 +54,7 @@
           <button
             type="button"
             @click="redoBlocks"
-            :disabled="!blockEditorRef?.canRedo?.value"
+            :disabled="!(blockEditorRef?.canRedo?.value ?? blockEditorRef?.canRedo)"
             class="inline-flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
             title="Redo (Ctrl+Y)"
             aria-label="Redo"
